@@ -12,7 +12,7 @@ import Title from './components/Title/Title'
 class App extends Component {
     render() {
         return (
-                    <Routes/>
+           <Routes/>
         )
     }
 }

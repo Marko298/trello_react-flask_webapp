@@ -1,12 +1,14 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import {StyledTitle} from './Title.style'
+// import {StyledTitle} from './Title.style'
+
+import './Title.css'
 
 const Title = ({children}) => {
     return (
-        <StyledTitle>
+        <span className='title'>
             {children}
-        </StyledTitle>
+        </span>
     )
 }
 

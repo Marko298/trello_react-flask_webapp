@@ -1,17 +1,20 @@
 import React from 'react'
-import {StButton} from './Button.style'
+// import {StButton} from './Button.style'
 import PropTypes from 'prop-types'
 
+import './Button.style.css'
 
-const Button = ({clickHandler, children, type, disabled}) => {
+
+const Button = ({clickHandler, children, type, disabled, primary}) => {
     return (
-        <StButton
+        <button
+            className={primary ? 'button button-primary' : 'button'}
             disabled={disabled} 
             type={type}
             onClick={clickHandler}
-            primary>
+            >
             {children}
-        </StButton>
+        </button>
     )
 };
 
