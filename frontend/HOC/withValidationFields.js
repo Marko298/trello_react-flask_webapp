@@ -4,8 +4,8 @@ export function withValidationFields(Comp) {
 
     return class Wrapper extends Component {
         state = {
-            fields: [],
-            errors: {},
+            fields: {},
+            errors: {}
         }
 
         static _isEmpty = (field) => {
@@ -27,26 +27,63 @@ export function withValidationFields(Comp) {
                 return true
             }
         }
-        componentDidMount() {
-            // console.log("componentDidMount withValidationFields")
-            // console.log(this.props.children)
-        }
+
         getField = (node) => {
-            this.setState( state => ({
-                ...state,
-                fields: state.fields.concat(node)
-            }))
-        }
-        componentWillUpdate(nextProps, nextState){
-            // console.log("componentWillUpdate",nextProps, nextState)
-            // this.state.fields.forEach(f => console.log({val: f.value, name: f.name}))
-        }
-        validateBeforeSubmit = () => {
-            alert("from wrapper")
+            this.setState( state => {
+                let fields = Object.assign({}, state.fields)
+                if( !(node.name in fields) ) {
+                    fields[node.name] = node
+                    return {
+                        ...state,
+                        fields: {...fields}
+                    }
+                }
+                return null
+            })
         }
 
-        onBlur =  (e) => {
-            let {value, name} = e.target;
+        _emptyField = (value) => {
+            return value.length === 0 ? true : false
+        }
+        validateBeforeSubmit = () => {
+            const {fields} = this.state;
+            
+
+            for( let name in fields ) {
+                let node = fields[name];
+                if(node.value.length === 0) {
+                    this.displayErrors(name, node.value);
+                    return
+                   }
+                this.displayErrors(name, node.value);
+            }
+          
+
+            if( Object.keys(this.state.errors).length === 0 ) {
+                console.log('All right')
+                return
+            }
+            console.log("There is some error")
+            return
+
+        }
+
+        componentDidUpdate(prevProps, prevState){
+            const {errors: currentErrors, fields: currentField} = this.state;
+            const {errors: prevErrors} = prevState;
+            if(Object.keys(prevErrors).length === 0 
+                && Object.keys(currentErrors).length > 0
+                && Object.keys(currentField).length > 0) {
+
+                for( let name in currentField ) {
+                    let node = currentField[name];
+                    this.displayErrors(name, node.value);
+                }
+
+            }
+        }
+
+        displayErrors = (name, value) => {
             try {
                 let result = Wrapper._isEmpty(value)
                 result && this.removeError(name)
@@ -58,6 +95,11 @@ export function withValidationFields(Comp) {
             } catch ({message}) {
                 this.setError(name, message);
             }
+        }
+
+        onBlur =  (e) => {
+            let {value, name} = e.target;
+            this.displayErrors(name, value)
         }
         removeError = (elementName) => {
             this.setState(state => {
@@ -95,7 +137,7 @@ export function withValidationFields(Comp) {
             })
 
         }
-        enhancChild = () => {
+        renderChild = () => {
             const { state, props } = this
             let newProps = {
                 getField: this.getField,
@@ -116,9 +158,10 @@ export function withValidationFields(Comp) {
                 <Comp {...this.props} onSubmit={(e) => {
                         e.preventDefault();
                         this.validateBeforeSubmit();
+
                         this.props.submit();
                     }} >
-                    {this.enhancChild()}
+                    {this.renderChild()}
                 </Comp>
             )
         }

@@ -6,58 +6,68 @@ import Form from '../../components/Form/Form'
 import TextField from '../../components/TextField/TextField'
 import Title from '../Title/Title'
 
-// import PropTypes from 'prop-types'
-
-import { withRouter } from 'react-router'
+import PropTypes from 'prop-types'
 
 class Login extends Component{
+    state = {
+        fields: [
+            {email: ''}, 
+            {password: ''}
+        ]
+    }
 
-    componentWillMount() {
-        console.log("componentWillMount Login")
+    handleChange = (field) => (evant) => {
+
+        let value = evant.target.value;
+
+        this.setState(function (state) {
+            let updatedFields = state.fields
+                .reduce((acumulator, obj) => {
+                    if (field in obj) {
+                        obj[field] = value
+                    }
+                    acumulator.push(obj)
+                    return acumulator
+                }, [])
+
+            return {...state, fields: [...updatedFields]}
+        })
     }
-    clickHandler = (value) => (event) => {
-        event.preventDefault();
-        console.log("Submit is occur")
-        console.log("from clusures", value)
+    onSubmit = () => {
+        console.log("Data is sended")
     }
+    header = () => (
+        <Title>Welcome back to Trello</Title>
+    )
+    footer = () => (
+        <Link to='/signin'>Do you want to create new account ?</Link>
+    )
+
+
     render() {
-        console.log("The render is running on Login")
+
+        const {email} = this.state.fields[0]
+        const {password} = this.state.fields[1]
         return (
-            <Form>
-                <Title>Welcome back to Trello</Title>
-                <TextField label='Email'/>
-                <TextField label='Password' type='password'/>
-                <Button type='submit' clickHandler={this.clickHandler("right")}>Login</Button>
-                <Link to='/signin'>Do you want to create new account ?</Link>
+            <Form
+                submit={this.onSubmit}
+                renderHeader={this.header}
+                renderFooter={this.footer}>
+                <TextField 
+                    handleChange={this.handleChange}
+                    field={email}
+                    name="email"
+                    label='Email'/>
+                <TextField  
+                    handleChange={this.handleChange}
+                    field={password}
+                    name="password"
+                    label='Password'/>
+                <Button type='submit' primary>Login</Button>
+               
             </Form>
         )
-    }
-    componentDidMount() {
-        console.log('_____________________')
-        console.log(this.props)
-        console.log("componentDidMount Login")
-        console.log('_____________________')
-    }
-
-    componentWillReceiveProps(nextProps) {
-        console.log('_____________________')
-        console.log('New Props', nextProps)
-        console.log('_____________________')
-    }
-    shouldComponentUpdate(nextProps, nextState) {
-        console.log("shouldComponentUpdate Login")
-        return true
-    }
-    componentWillUpdate(nextProps, nextState) {
-        console.log("componentWillUpdate Login")
-    }
-    componentDidUpdate(prevProps, prevState) {
-        console.log("componentDidUpdate Login")
-    }
-    componentWillUnmount() {
-        console.log("——componentWillUnmount")
-    }
-   
+    }  
 }
 
 export default Login

@@ -22,10 +22,12 @@ class Home extends Component{
             <div>_
                 {!this.state.isAuth 
                 ?  (<Redirect to='/login'/>)
-                :  (<div>
-                <NavigationBar/>
-                <Login/>
-                </div>)}
+                :  (
+                    <div>
+                        <NavigationBar/>
+                        <Login/>
+                    </div>
+                )}
             </div>
         )
     }
