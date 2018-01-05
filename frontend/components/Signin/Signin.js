@@ -87,6 +87,7 @@ class Signin extends Component {
     }
     componentDidUpdate(prevProps, prevState) {
         // console.log("componentDidUpdate", this.state.error, prevState.error)
+        // https://learnetto.com/blog/how-to-do-simple-form-validation-in-reactjs
     }  
 }
 

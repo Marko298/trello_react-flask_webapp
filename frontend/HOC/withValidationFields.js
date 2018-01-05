@@ -42,45 +42,29 @@ export function withValidationFields(Comp) {
             })
         }
 
-        _emptyField = (value) => {
-            return value.length === 0 ? true : false
-        }
         validateBeforeSubmit = () => {
             const {fields} = this.state;
-            
+            let isFieldEmpty = false;
 
             for( let name in fields ) {
                 let node = fields[name];
                 if(node.value.length === 0) {
-                    this.displayErrors(name, node.value);
-                    return
-                   }
+                    isFieldEmpty = true
+                }
                 this.displayErrors(name, node.value);
             }
           
+            if(isFieldEmpty) {
+                return false
+            }
 
             if( Object.keys(this.state.errors).length === 0 ) {
                 console.log('All right')
-                return
+                return true
             }
             console.log("There is some error")
-            return
+            return false
 
-        }
-
-        componentDidUpdate(prevProps, prevState){
-            const {errors: currentErrors, fields: currentField} = this.state;
-            const {errors: prevErrors} = prevState;
-            if(Object.keys(prevErrors).length === 0 
-                && Object.keys(currentErrors).length > 0
-                && Object.keys(currentField).length > 0) {
-
-                for( let name in currentField ) {
-                    let node = currentField[name];
-                    this.displayErrors(name, node.value);
-                }
-
-            }
         }
 
         displayErrors = (name, value) => {
@@ -157,9 +141,9 @@ export function withValidationFields(Comp) {
             return (
                 <Comp {...this.props} onSubmit={(e) => {
                         e.preventDefault();
-                        this.validateBeforeSubmit();
-
-                        this.props.submit();
+                        const isValid = this.validateBeforeSubmit();
+                        console.log("isValid", isValid)
+                        isValid && this.props.submit();
                     }} >
                     {this.renderChild()}
                 </Comp>
