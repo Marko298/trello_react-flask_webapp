@@ -1,11 +1,8 @@
 import React from 'react'
-// import {StButton} from './Button.style'
 import PropTypes from 'prop-types'
-
 import './Button.style.css'
 
-
-const Button = ({clickHandler, children, type, disabled, primary}) => {
+function Button({clickHandler, children, type, disabled, primary}) {
     return (
         <button
             className={primary ? 'button button-primary' : 'button'}
@@ -16,7 +13,7 @@ const Button = ({clickHandler, children, type, disabled, primary}) => {
             {children}
         </button>
     )
-};
+}
 
 Button.defaultProps = {
     children: "button",

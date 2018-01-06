@@ -35,9 +35,9 @@ class User(object):
         if not Utils.email_is_valid(email):
             raise err.InvalidEmail("Please, write valid email")
         
-        User(email, Utils.hash_password(password), name).save()
+        userId = User(email, Utils.hash_password(password), name).save()
 
-        return True
+        return True, userId
         
     
     def json(self):
@@ -49,4 +49,4 @@ class User(object):
         }
 
     def save(self):
-        Database.insert("users", self.json())
+        return Database.insert("users", self.json())

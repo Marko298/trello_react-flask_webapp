@@ -2,7 +2,6 @@ import React, {Component} from 'react'
 import Routes from './routes/Routes'
 
 import Button from './components/Button/Button'
-import TextField from './components/TextField/TextField'
 import Title from './components/Title/Title'
 
 //containers
@@ -16,12 +15,5 @@ class App extends Component {
         )
     }
 }
-
-{/* <Button clickHanler={() => {console.log("click me")}} >
-    Click me
-</Button>
-
-<TextField label="here is the label"/>
-<Title>Here is the title</Title> */}
 
 export default App

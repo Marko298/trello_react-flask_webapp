@@ -29,7 +29,6 @@ module.exports = {
         contentBase: path.resolve(__dirname, "static/"),
         stats: "errors-only",
         open: true,
-        hot: true,
         compress: true,
         historyApiFallback: true
     }

@@ -1,7 +1,7 @@
 import React, {Component} from 'react'
 import {Redirect} from 'react-router-dom'
 
-import Login from '../../components/Login/Login'
+import Login from '../Login/Login'
 // import Signin from '../../components/Signin/Signin'
 import NavigationBar from '../NavigationBar/NavigationBar'
 

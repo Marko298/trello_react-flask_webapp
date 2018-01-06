@@ -1,11 +1,14 @@
 import React, {Component} from 'react'
 import {Link} from 'react-router-dom'
+import {connect} from 'react-redux'
 //components
 import Button from '../../components/Button/Button'
-import TextField from '../../components/TextField/TextField'
-import Title from '../Title/Title'
-
+import Title from '../../components/Title/Title'
 import Form from '../../components/Form/Form'
+// containers
+import TextField from '../TextField/TextField'
+//actions
+import {requestUserSignIn} from '../../actions/UserAction'
 
 
 import './Signin.style.css'
@@ -38,6 +41,16 @@ class Signin extends Component {
     }
     
     onSubmit = () => {
+        const {fields} = this.state;
+
+        const {name} = fields[0];
+        const {email} = fields[1];
+        const {password} = fields[2];
+        
+        const postRequest = {name, email, password};
+        
+        console.log("data is ready")
+        this.props.userSignIn(postRequest)
         console.log("Data is sended")
     }
 
@@ -56,7 +69,8 @@ class Signin extends Component {
         const {password} = fields[2];
   
         return (
-            <Form 
+            <Form
+                method="post" 
                 submit={this.onSubmit}
                 renderHeader={this.header}
                 renderFooter={this.footer}>
@@ -91,4 +105,16 @@ class Signin extends Component {
     }  
 }
 
-export default Signin
+function mapStateToProps(state) {
+    return {
+        user: state.user
+    }
+}
+
+function mapDispatchToProps(dispatch) {
+    return {
+        userSignIn: (data) => dispatch(requestUserSignIn(data))
+    }
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(Signin)

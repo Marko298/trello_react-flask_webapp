@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, session
+from flask import Flask, render_template, request, session, json, jsonify
 from server.models.users.user import User
 import server.models.users.errors as UserErrors
 from server.common.database import Database
@@ -16,15 +16,19 @@ def index():
 
 @app.route("/users/register", methods=["POST", "GET"])
 def user_register():
-    if request.method == "POST":
-        email = request.form['email']
-        password = request.form['password']
-        name = request.form['name']
+    if request.method == "POST" and request.is_json:   
+        CONTENT = request.get_json()
+
+        email = CONTENT['email']
+        password = CONTENT['password']
+        name = CONTENT['name']
 
         try:
-            if User.register_user(email, password, name):
+            isRegistered, userId = User.register_user(email, password, name)
+            if isRegistered:
                 session['email'] = email
-                return "registration is success"
+                return json.dumps(userId)
+
         except UserErrors.UserError as e:
             return "registr. is failed with error {}".format(e)
 
@@ -33,9 +37,11 @@ def user_register():
 
 @app.route("/users/login", methods=["POST", "GET"])
 def user_login():
-    if request.method == "POST":
-        email = request.form['email']
-        password = request.form['password']
+    if request.method == "POST" and request.is_json:
+        CONTENT = request.get_json()
+
+        email = CONTENT['email']
+        password = CONTENT['password']
 
         try:
             if User.is_login_valid(email, password):

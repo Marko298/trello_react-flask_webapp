@@ -1,28 +1,27 @@
 import React, {Component} from 'react'
-import {StForm} from './Form.style'
+//utils
 import PropTypes from 'prop-types'
-
+//style
+import './Form.style.css'
+//HOC's
 import {withValidationFields} from '../../HOC/withValidationFields'
 
 
-function Form({onSubmit, renderHeader, renderFooter, children}) {
+function Form({onSubmit, renderHeader, renderFooter, children, method}) {
     return (
-        <StForm onSubmit={onSubmit}>
+        <form onSubmit={onSubmit} className="form" method={method}>
             {renderHeader()}
             {children}
             {renderFooter()}
-        </StForm>
+        </form>
     )
 }
 Form.defaultProps = {
     renderHeader: () => {},
     renderFooter: () => {},
-    submitHanlder: () => {}
+    submitHanlder: () => {},
+    method: "GET"
 }
-// function Form({renderHeader, renderFooter, children, submitHanlder, ...props}){
-//     console.log(children)
-    
-// }
 
 
 export default withValidationFields(Form)
