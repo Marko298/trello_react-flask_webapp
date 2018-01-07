@@ -3,6 +3,8 @@ from server.common.utils import Utils
 import server.models.users.errors as err
 import uuid
 
+from server.models.boards.board import Board
+
 class User(object):
     def __init__(self, email, password, name, _id=None):
         self.email = email
@@ -23,7 +25,7 @@ class User(object):
             raise err.IncorectPassword("Wrond password")
         
         return True
-    
+            
     @staticmethod
     def register_user(email, password, name):
         user_data = Database.find_one('users', {"email": email})
@@ -33,7 +35,7 @@ class User(object):
             raise err.UserIsAlreadyExist("The user with {} is already exist".format(email))
         
         if not Utils.email_is_valid(email):
-            raise err.InvalidEmail("Please, write valid email")
+            raise err.InvalidEmail("Please, write a valid email")
         
         userId = User(email, Utils.hash_password(password), name).save()
 
@@ -50,3 +52,15 @@ class User(object):
 
     def save(self):
         return Database.insert("users", self.json())
+    
+    def createBoard(self, boardName, reletedTo=None):
+        if reletedTo is None:
+            createdBoradFor = self._id
+        else:
+            createdBoradFor = reletedTo 
+        newBoard = Board(boardName=boardName, reletedTo=createdBoradFor, authorId=self._id)
+        Board.save()
+        
+
+
+

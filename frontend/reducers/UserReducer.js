@@ -1,7 +1,7 @@
 import {USER_SIGNIN_SUCCESS, USER_SIGNIN_ERROR, USER_LOGIN_ERROR, USER_LOGIN_SUCCESS} from '../constants/UserConstants'
 
 const initialState = {
-    userId: null,
+    userId: "fakeUserId",
     error: null
 }
 

@@ -3,7 +3,7 @@ import {Redirect} from 'react-router-dom'
 
 import Login from '../Login/Login'
 // import Signin from '../../components/Signin/Signin'
-import NavigationBar from '../NavigationBar/NavigationBar'
+import NavigationBar from '../../components/NavigationBar/NavigationBar'
 
 class Home extends Component{
     // static defaultProps = {

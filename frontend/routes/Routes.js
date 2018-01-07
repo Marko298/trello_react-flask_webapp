@@ -6,20 +6,14 @@ import NavigationBar from '../containers/NavigationBar/NavigationBar'
 import Home from '../containers/Home/Home'
 import Login from '../containers/Login/Login'
 import Signin from '../containers/Signin/Signin'
+import Dashboard from '../containers/Dashboard/Dashboard'
 //routes
 import PrivateRoute from './PrivateRoute'
 
 
-function Dashboard(props) {
-    return (
-        <h1>Dashboard</h1>
-    )
-}
+
 class Routes extends Component {
     render() {
-        console.log("Render Router", this.props)
-        // <Route exact path='/login' component={Login}/>
-        // <Route exact path='/signin' component={Signin}/>
         const {userId} = this.props;
         return (
             <Router>

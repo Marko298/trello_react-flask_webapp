@@ -3,6 +3,8 @@ from server.models.users.user import User
 import server.models.users.errors as UserErrors
 from server.common.database import Database
 
+from server.models.boards.board import Board
+
 app = Flask(__name__,  template_folder="static/")
 app.secret_key = "secretkey"
 
