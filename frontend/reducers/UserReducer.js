@@ -1,7 +1,7 @@
-import {USER_SIGNIN_SUCCESS, USER_SIGNIN_ERROR, USER_LOGIN_ERROR, USER_LOGIN_SUCCESS} from '../constants/UserConstants'
+import {USER_SIGNIN_SUCCESS, USER_SIGNIN_ERROR, USER_LOGIN_ERROR, USER_LOGIN_SUCCESS, USER_LOGOUT} from '../constants/UserConstants'
 
 const initialState = {
-    userId: "fakeUserId",
+    userId: "userId",
     error: null
 }
 
@@ -30,6 +30,17 @@ const UserReducer = function (state = initialState, {type, payload}) {
             return {
                 ...state,
                 error: payload,
+                userId: null
+            }
+            /**
+            |--------------------------------------------------
+            | TEST REDUCER
+            |--------------------------------------------------
+            */
+        case USER_LOGOUT: 
+            return {
+                ...state,
+                error: null,
                 userId: null
             }
         default:

@@ -1,9 +1,11 @@
 import UserReducer from './UserReducer'
+import BoardReducer from './BoardReducer'
 import {combineReducers} from 'redux'
 
 
 export const reducer = combineReducers({
-    user: UserReducer
+    user: UserReducer,
+    boards: BoardReducer
 })
 
 // export const reducer = function(state={}, action) {

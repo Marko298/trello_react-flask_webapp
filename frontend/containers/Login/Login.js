@@ -13,6 +13,7 @@ import TextField from '../TextField/TextField'
 import {requestUserLogin} from '../../actions/UserAction'
 
 
+
 class Login extends Component{
     state = {
         fields: [
@@ -43,10 +44,10 @@ class Login extends Component{
         const {password} = this.state.fields[1]
 
         this.props.userLogin({email, password})
-        console.log("Data is sended", {email, password})
+
     }
     header = () => (
-        <Title>Welcome back to Trello</Title>
+        <Title>Welcome back to Trello :D</Title>
     )
     footer = () => (
         <Link to='/signin'>Do you want to create new account ?</Link>

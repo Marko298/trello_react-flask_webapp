@@ -4,15 +4,15 @@ import datetime
 import uuid
 
 class Board(object):
-    def __init__(self, boardName, authorId, isImportant,  _id=None, reletedTo=None):
+    def __init__(self, boardName, authorId, isImportant=False,  _id=None, reletedTo=None, styleSettings=None, timeCreated=None):
         self.boardName = boardName
         self.reletedTo = authorId if reletedTo is None else reletedTo
         self.isImportant = isImportant
         self.authorId = authorId
         self._id = uuid.uuid4().hex if _id is None else _id
 
-        self.timeCreated = datetime.datetime.now()
-        self.styleSettings = self.defaultStyleSettings()
+        self.styleSettings = self.defaultStyleSettings() if styleSettings is None else styleSettings
+        self.timeCreated = datetime.datetime.now() if timeCreated is None else timeCreated
 
     def __repr__(self):
         return "<Board {}>".format(self.title)
@@ -20,6 +20,24 @@ class Board(object):
     def defaultStyleSettings(self):
         backgroundColor = 'blue'
         return { "backgroundColor": backgroundColor }
+
+    @classmethod
+    def get_board(cls, _id):
+        cursorBoard = Database.find_one('boards', {'_id': _id})
+        return cls(**cursorBoard), cursorBoard
+
+
+    @classmethod
+    def get_boards_by_author(cls, authorId):
+        cursorBoards = Database.find('boards', {'authorId': authorId})
+        # [cls(**board) for board in cursorBoards], 
+        return [board for board in cursorBoards]
+    
+    def toggleBoardImportant(self, isImportant):
+        Database.update_one('boards', {'_id': self._id}, {'isImportant': isImportant})
+        cursorBoard = Database.find_one('boards', {'_id': self._id})
+        return cursorBoard
+
 
     def create_board(self):
         """
@@ -31,15 +49,6 @@ class Board(object):
     def set_board_to_team(self):
         pass
     
-    def toggleBoardImportant(cls, boardId):
-        boardCursor = Database.find_one('boards', {"_id": boardId})
-        board = cls(**boardCursor)
-
-        if board.isImportant:
-            board.isImportant = False
-        else:
-            board.isImportant = True
-        cls.save()
             
     
     def change_background_to(self):
@@ -66,6 +75,6 @@ class Board(object):
         }
 
     def save(self):
-        Database.insert('boards', self.json())
+        return Database.insert('boards', self.json())
         
     

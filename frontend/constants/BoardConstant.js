@@ -1,0 +1,3 @@
+export const FETCH_BOARDS = "FETCH_BOARDS"
+
+export const FETCH_BOARD_BY_ID = "FETCH_BOARD_BY_ID"

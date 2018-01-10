@@ -19,7 +19,7 @@ class Home extends Component{
     }
     render() {
         return (
-            <div>_
+            <div>
                 {!this.state.isAuth 
                 ?  (<Redirect to='/login'/>)
                 :  (
@@ -28,6 +28,7 @@ class Home extends Component{
                         <Login/>
                     </div>
                 )}
+                
             </div>
         )
     }

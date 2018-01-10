@@ -5,16 +5,19 @@ const BUILD_DIR = path.resolve(__dirname, 'frontend');
 const APP_DIR = path.resolve(__dirname, 'static');
 
 module.exports = {
-    entry: ['babel-polyfill', BUILD_DIR + "/index.js"],
+    entry: [ 
+        'babel-polyfill',
+        BUILD_DIR + "/index.js"],
     output: {
         path: APP_DIR,
         filename: 'bundle.js'
+
     },
     module: {
         rules: [
             {
                 test: /\.js$/,
-                use: 'babel-loader',
+                use: ['babel-loader'],
                 exclude: /node_modules/
             },
             {
@@ -24,12 +27,15 @@ module.exports = {
             }
         ]
     },
+    plugins: [],
     devtool: 'cheap-module-eval-source-map',
     devServer: {
         contentBase: path.resolve(__dirname, "static/"),
+        host: 'localhost',
+        port: 3000,
+        hot: true,
         stats: "errors-only",
         open: true,
-        compress: true,
         historyApiFallback: true
     }
 }

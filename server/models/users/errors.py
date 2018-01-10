@@ -14,3 +14,7 @@ class UserIsAlreadyExist(UserError):
     
 class InvalidEmail(UserError):
     pass
+
+class BoardNameIsAlerayExist(UserError):
+    pass
+

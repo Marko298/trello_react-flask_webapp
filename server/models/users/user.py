@@ -15,6 +15,16 @@ class User(object):
     def __repr__(self):
         return "<User {}>".format(self.email)
 
+    @classmethod
+    def get_user_by_id(cls, queryID):
+        cursorUser = Database.find_one('users', {"_id": queryID})
+        return cls(**cursorUser)
+
+    @staticmethod
+    def get_user_by_email(email):
+        cursorUser = Database.find_one('users', {"email": email})
+        return cursorUser
+
     @staticmethod
     def is_login_valid(email, password):
         user_data = Database.find_one('users', {"email": email})
@@ -38,8 +48,9 @@ class User(object):
             raise err.InvalidEmail("Please, write a valid email")
         
         userId = User(email, Utils.hash_password(password), name).save()
+        userCursor = Database.find_one('users', {'_id': userId})
 
-        return True, userId
+        return True, userCursor
         
     
     def json(self):
@@ -54,12 +65,34 @@ class User(object):
         return Database.insert("users", self.json())
     
     def createBoard(self, boardName, reletedTo=None):
+        board = Database.find_one('boards', {'boardName': boardName})
+
+        if board is not None:
+            raise err.BoardNameIsAlerayExist("The board name is already exist")
+
         if reletedTo is None:
             createdBoradFor = self._id
         else:
-            createdBoradFor = reletedTo 
+            createdBoradFor = reletedTo
+
         newBoard = Board(boardName=boardName, reletedTo=createdBoradFor, authorId=self._id)
-        Board.save()
+        savedBoardId = newBoard.save()
+
+        return True, savedBoardId
+
+    @staticmethod
+    def get_board(boardId):
+        boardClass, cursorBoard = Board.get_board(boardId)
+        return boardClass, cursorBoard
+        
+    
+    @classmethod
+    def get_own_boards(cls, authorEmail):
+        user = cls.get_user_by_email(authorEmail)
+        # classBoard, 
+        cursorBoard = Board.get_boards_by_author(user['_id'])
+        print(cursorBoard)
+        return cursorBoard
         
 
 

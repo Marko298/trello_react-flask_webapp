@@ -12,6 +12,7 @@ function ToolBar(props) {
             <h6>ICON[+]</h6>
             <h6>ICON[jingle]</h6>
             <h6>ICON[manage-profile]</h6>
+            {props.children}
         </div>
     )
 }

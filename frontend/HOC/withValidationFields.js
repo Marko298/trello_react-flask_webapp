@@ -1,8 +1,8 @@
-import React, {Component} from 'react'
+import React from 'react'
 
-export function withValidationFields(Comp) {
+export function withValidationFields(Component) {
 
-    return class Wrapper extends Component {
+    return class Wrapper extends React.Component {
         state = {
             fields: {},
             errors: {}
@@ -139,14 +139,14 @@ export function withValidationFields(Comp) {
         }
         render() {
             return (
-                <Comp {...this.props} onSubmit={(e) => {
+                <Component {...this.props} onSubmit={(e) => {
                         e.preventDefault();
                         const isValid = this.validateBeforeSubmit();
                         console.log("isValid", isValid)
                         isValid && this.props.submit();
                     }} >
                     {this.renderChild()}
-                </Comp>
+                </Component>
             )
         }
     }
