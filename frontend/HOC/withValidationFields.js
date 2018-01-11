@@ -59,10 +59,10 @@ export function withValidationFields(Component) {
             }
 
             if( Object.keys(this.state.errors).length === 0 ) {
-                console.log('All right')
+                // console.log('All right')
                 return true
             }
-            console.log("There is some error")
+            // console.log("There is some error")
             return false
 
         }
@@ -142,7 +142,7 @@ export function withValidationFields(Component) {
                 <Component {...this.props} onSubmit={(e) => {
                         e.preventDefault();
                         const isValid = this.validateBeforeSubmit();
-                        console.log("isValid", isValid)
+                        console.log({isValid})
                         isValid && this.props.submit();
                     }} >
                     {this.renderChild()}

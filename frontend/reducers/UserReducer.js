@@ -1,7 +1,7 @@
 import {USER_SIGNIN_SUCCESS, USER_SIGNIN_ERROR, USER_LOGIN_ERROR, USER_LOGIN_SUCCESS, USER_LOGOUT} from '../constants/UserConstants'
 
 const initialState = {
-    userId: "userId",
+    userId: "silver.ranger911@gmail.com",
     error: null
 }
 
@@ -40,7 +40,7 @@ const UserReducer = function (state = initialState, {type, payload}) {
         case USER_LOGOUT: 
             return {
                 ...state,
-                error: null,
+                error: payload,
                 userId: null
             }
         default:

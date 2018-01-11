@@ -91,7 +91,6 @@ class User(object):
         user = cls.get_user_by_email(authorEmail)
         # classBoard, 
         cursorBoard = Board.get_boards_by_author(user['_id'])
-        print(cursorBoard)
         return cursorBoard
         
 

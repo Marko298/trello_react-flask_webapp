@@ -24,11 +24,9 @@ class Routes extends Component {
                 <Switch>
                     <PrivateRoute path='/login' component={Login} isAuth={userId} redirectPath="/"/>
                     <PrivateRoute path='/signin' component={Signin} isAuth={userId} redirectPath="/"/>
+
                     <Route exact={userId ? false : true} path='/' component={(props) => redirect(props)} />
                     
-                    {/* ={userId ? false : true} */}
-                    {/* (props) => redirect(props) */}
-
                     <Route component={NotFound} />
                 </Switch>
             </Router>

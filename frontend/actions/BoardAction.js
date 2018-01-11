@@ -1,22 +1,27 @@
 import {FETCH_BOARDS} from '../constants/BoardConstant'
 import axios from 'axios'
+import Utils from '../utils'
 
 const boardRequest = (type, data) => ({type, payload: data})
 
-
+// Utils.boardsToArray(boards)
 export function fetchBoards() {
     return (dispatch) => {
 
-        axios.get('http://localhost:4000/boards', {headers: {"Access-Control-Allow-Headers": "*"}})
-        .then(response => {
-            console.log(response)
-            console.log("SUCCESS")
-            dispatch(boardRequest(FETCH_BOARDS, response.data))
+        axios({
+            url: 'http://localhost:4000/boards',
+            mathod: 'get',
+            headers: {"Access-Control-Allow-Headers": "*"},
+            withCredentials: true
+        }).then(response => {
+
+            let result = Utils.boardsToArray(response.data)
+            console.log(result)
+            dispatch(boardRequest(FETCH_BOARDS, result))
         })
         .catch(error => {
-            console.log("ERROR")
             console.log(error.message);
-            // dispatch(boardRequest(USER_SIGNIN_ERROR, error.message))
+            // dispatch(userRequest(USER_SIGNIN_ERROR, error.message))
         })
 
     }

@@ -11,7 +11,7 @@ export function requestUserSignIn(data) {
         let header = {headers: {
             "Access-Control-Allow-Headers": "*",
             "Content-Type": "application/json"
-        }}
+        }, "withCredentials": true}
 
         axios.post('http://localhost:4000/users/register', json, header)
         .then(response => {
@@ -28,11 +28,13 @@ export function requestUserSignIn(data) {
 export function requestUserLogin(data) {
     return (dispatch) => {
 
-        let json = JSON.stringify(data);
+        let json = JSON.stringify(data)
+
         let header = {headers: {
             "Access-Control-Allow-Headers": "*",
             "Content-Type": "application/json"
-        }}
+        }, "withCredentials": true}
+
         axios.post('http://localhost:4000/users/login', json, header)
             .then(response => {
                 
@@ -52,31 +54,22 @@ export function requestUserLogin(data) {
 |--------------------------------------------------
 */
 
-export function logout() {
-    return {
-        type: USER_LOGOUT
-    }
-}
-
-export function fetchBoard(id) {
-
+export function requestUserLogout() {
     return (dispatch) => {
 
         let header = {headers: {
-            "Access-Control-Allow-Headers": "*",
-            "Content-Type": "application/json"
-        }}
+            "Access-Control-Allow-Headers": "*"
+        }, "withCredentials": true}
 
-        axios.get(`http://localhost:4000/boards/${id}`, header)
-        .then(response => {
-            dispatch({type: FETCH_BOARD_BY_ID,
-                payload: response.data})
-        })
-        .catch(error => {
-            console.log(error.message);
-            dispatch(userRequest(USER_SIGNIN_ERROR, error.message))
-        })
-
+        axios.get('http://localhost:4000/users/logout', header)
+            .then(response => {
+                
+                dispatch(userRequest(USER_LOGOUT, response.data))
+            })
+            .catch(error => {
+                console.log(error.response);
+                // dispatch(userRequest(USER_LOGIN_ERROR, error.message))
+            })
     }
-    
 }
+

@@ -5,12 +5,15 @@ from server.common.database import Database
 
 from server.models.boards.board import Board
 
+
 app = Flask(__name__,  template_folder="static/")
+
+
+app.secret_key = 'A0Zr98j/3yX R~XHH!jmN]LWX/,?RT'
 
 #### FOR TESTING PURPOSE
 from flask_cors import CORS
-CORS(app)
-app.secret_key = "secretkey"
+CORS(app, supports_credentials=True)
 
 @app.before_first_request
 def init_db():
@@ -53,7 +56,7 @@ def user_login():
             if User.is_login_valid(email, password):
                 session['email'] = email
                 user = User.get_user_by_email(email)
-
+                print("/users/login session['email']", session['email'])
                 return jsonify(user)
 
         except UserErrors.UserError as e:
@@ -103,16 +106,7 @@ def toggle_board_settings(userId, boardId):
         return jsonify(error="there is the same state")
     
     return "Success GET"
-
-@app.route("/boards", methods=["GET"])
-def get_all_boards():
-    if session['email'] is not None:
-        boardsCur = User.get_own_boards(session['email'])
-        return jsonify(boardsCur)
     
-    return "You have to login, before you want to gett all boards"
-
-
 @app.route("/users/logout") 
 def user_logout():
     if session['email'] is not None:
@@ -120,12 +114,22 @@ def user_logout():
         return jsonify(data={'user': "success logout"})
 
     return jsonify(error="You are not loggined")
-    
 
-@app.route("/boards/<string:boardId>")
+##########################
+############### BOARDS API
+##########################
+@app.route("/boards", methods=["GET"])
+def get_all_boards():
+    session['email'] = "silver.ranger911@gmail.com"
+    if session['email'] is not None:
+        boardsCur = User.get_own_boards(session['email'])
+        return jsonify(boardsCur)
+    
+    return "You have to login, before you want to gett all boards"
+
+@app.route("/boards/<string:boardId>", methods=["GET"])
 def get_board_by_id(boardId):
     _, board = Board.get_board(boardId)
-
     return jsonify(board)
 
 if __name__ == '__main__':
