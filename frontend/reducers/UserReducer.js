@@ -1,7 +1,7 @@
 import {USER_SIGNIN_SUCCESS, USER_SIGNIN_ERROR, USER_LOGIN_ERROR, USER_LOGIN_SUCCESS, USER_LOGOUT} from '../constants/UserConstants'
 
 const initialState = {
-    userId: "silver.ranger911@gmail.com",
+    userId: "e5383e778a2549138e47d6d132772016",
     error: null
 }
 

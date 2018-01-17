@@ -6,8 +6,13 @@ import {connect} from 'react-redux'
 import {requestUserLogout} from '../../actions/UserAction'
 import {fetchBoards} from '../../actions/BoardAction'
 
+import EditForm from '../EditForm/EditForm'
+
 import ToolBar from '../ToolBar/ToolBar'
-import BoardsList from '../BoardsList/BoardsList'
+import Boards from '../Boards/Boards'
+
+//UTILS
+import Utils from '../../utils'
 
 let Profile = ({match}) => (
     <div>
@@ -31,10 +36,12 @@ class Dashboard extends React.Component {
         console.log("Dashboard componentWillReceiveProps", {nextProps})
         console.log("------------------------------------------------")
     }
-
+    componentDidCatch() {
+        console.log("componentDidCatch")
+    }
     componentDidMount() {
         const {boards: propBoards, fetchBoards} = this.props
-        propBoards.length === 0 ? fetchBoards() : null
+        propBoards.length === 1 ? fetchBoards() : null
     }
     logout = () => {
         this.props.requestUserLogout()
@@ -42,10 +49,11 @@ class Dashboard extends React.Component {
     }
 
     render() {
-        const { location, match } = this.props
+        const { location, match, boards } = this.props
+        
 
         return (
-            <div>
+            <div style={{position: 'releted'}}>
                 <ToolBar>
                     <Link to='/' >HOME</Link>
                     <Link to={`${this.props.match.url}profile/silver-ok`}>—profile—</Link>
@@ -55,11 +63,17 @@ class Dashboard extends React.Component {
 
                 </ToolBar>
                         {/* <Route path={`${this.props.match.path}profile/:userId`} component={Profile}/> */}
-                <div>
+                <div className="container">
                     <Switch>
 
                         <Route exact path={`${this.props.match.path}`} render={(props) => {
-                            return <BoardsList {...props} />
+                            return (
+                                <Boards {...props}>
+                                    <Boards.Important />
+                                    <Boards.Private />
+                                    <Boards.Comands />
+                                </Boards>
+                            )
                         }}/>
 
                         <Route path={`${this.props.match.path}board/:boardId`} render={(props) => {
@@ -68,14 +82,31 @@ class Dashboard extends React.Component {
                             return <h1>We are change location</h1>
                         }}/>
 
+
                         <Route path={`${this.props.match.path}profile/:userId`} render={(props) => {
                             console.log(" <Route path={`${this.props.match.path}profile/:userId`} render={(props)", props)
-
+                            
                             return <h1>profile {props.match.params.userId}</h1>
                         }}/>
-                        
+
+
+                        <Route exact path={`${this.props.match.path}:teamId`} render={(props) => {
+                            // here i will retrive from the reducer our TEAM With releted boards
+                            let foundedTeam = Utils.returnGroupById(boards, props.match.params.teamId)[0]
+                            console.log(foundedTeam)
+                            console.log({props})
+                            return <div>We are on the right spot <strong>{foundedTeam.title}</strong></div>
+                        }}/>
                     </Switch>                
                 </div>
+ 
+                 <div>
+                     <EditForm/>
+                 </div>
+                 
+                <footer>
+                    <h1>Footer</h1>
+                </footer>
             </div>
         )
     }
@@ -93,10 +124,12 @@ class Dashboard extends React.Component {
             //     <Dashboard.Container />
             //            {/* Routes */}
             // </Dashboard>
+
 /**
 |--------------------------------------------------
 | TEST ACTIONS
 |--------------------------------------------------
 */
+const mapStateToProps = ({boardsGroup: boards}) => ({boards})
 
-export default withRouter(connect(null, {requestUserLogout, fetchBoards})(Dashboard))
+export default withRouter(connect(mapStateToProps, {requestUserLogout, fetchBoards})(Dashboard))

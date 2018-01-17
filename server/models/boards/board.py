@@ -4,9 +4,20 @@ import datetime
 import uuid
 
 class Board(object):
-    def __init__(self, boardName, authorId, isImportant=False,  _id=None, reletedTo=None, styleSettings=None, timeCreated=None):
+    def __init__(self, 
+                boardName, 
+                authorId, 
+                isImportant=False,  
+                _id=None, 
+                reletedTo={"teamId": None, "teamName": None},
+                styleSettings=None,
+                timeCreated=None):
         self.boardName = boardName
-        self.reletedTo = authorId if reletedTo is None else reletedTo
+        self.reletedTo = {
+            "teamId" : authorId if reletedTo.get("teamId") is None else reletedTo.get("teamId"),
+            "teamName" : "default_name" if reletedTo.get("teamName") is None else reletedTo.get("teamName")
+        }
+        
         self.isImportant = isImportant
         self.authorId = authorId
         self._id = uuid.uuid4().hex if _id is None else _id

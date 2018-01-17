@@ -1,14 +1,14 @@
-import React from 'react'
+import React, {cloneElement, Children} from 'react'
+
 
 export function withValidationFields(Component) {
 
     return class Wrapper extends React.Component {
         state = {
-            fields: {},
             errors: {}
         }
 
-        static _isEmpty = (field) => {
+        _isEmpty = (field) => {
             if(field.length == 0) {
                 throw new Error(`isRequired fields ${field}`)
             }
@@ -19,7 +19,7 @@ export function withValidationFields(Component) {
             }
         }
     
-        static _isValidEmail(email) {
+        _isValidEmail = (email) => {
             let re = /^[\w-]+(\.[\w-]+)*@([a-z0-9-]+(\.[a-z0-9-]+)*?\.[a-z]{2,6}|(\d{1,3}\.){3}\d{1,3})(:\d{4})?$/;
             if( !re.test(email.toLowerCase()) ) {
                 throw new Error(`invalid email`)
@@ -28,52 +28,40 @@ export function withValidationFields(Component) {
             }
         }
 
-        getField = (node) => {
-            this.setState( state => {
-                let fields = Object.assign({}, state.fields)
-                if( !(node.name in fields) ) {
-                    fields[node.name] = node
-                    return {
-                        ...state,
-                        fields: {...fields}
-                    }
-                }
-                return null
-            })
-        }
-
         validateBeforeSubmit = () => {
-            const {fields} = this.state;
+            
             let isFieldEmpty = false;
 
-            for( let name in fields ) {
-                let node = fields[name];
-                if(node.value.length === 0) {
+            Children.map(this.props.children, (child) => {
+                const {field, name} = child.props
+
+                if(field !== undefined && field.length === 0) {
+                    this.displayErrors(name, field)
                     isFieldEmpty = true
                 }
-                this.displayErrors(name, node.value);
-            }
-          
+            })
+
             if(isFieldEmpty) {
                 return false
             }
 
             if( Object.keys(this.state.errors).length === 0 ) {
-                // console.log('All right')
                 return true
             }
-            // console.log("There is some error")
-            return false
 
+            return false
         }
+
 
         displayErrors = (name, value) => {
             try {
-                let result = Wrapper._isEmpty(value)
+                let result = this._isEmpty(value)
                 result && this.removeError(name)
 
+                console.log({name, value})
                 if(name.toLowerCase() === 'email') {
-                    let result = Wrapper._isValidEmail(value);
+                    console.log("CHECKING email")
+                    let result = this._isValidEmail(value);
                     result && this.removeError(name)
                 }
             } catch ({message}) {
@@ -83,8 +71,10 @@ export function withValidationFields(Component) {
 
         onBlur =  (e) => {
             let {value, name} = e.target;
+            console.log({value, name})
             this.displayErrors(name, value)
         }
+
         removeError = (elementName) => {
             this.setState(state => {
                 let errors = Object.assign({}, state.errors);
@@ -94,7 +84,6 @@ export function withValidationFields(Component) {
 
                     if(isDeleted) {
                         return {
-                            ...state,
                             errors: {...errors}
                         }
                     } else {
@@ -106,14 +95,14 @@ export function withValidationFields(Component) {
         }
 
         setError = (elementName, errorMessage) => {
-            this.setState( state => {
-                let error = Object.assign({}, state.errors)
+            this.setState( prevState => {
+                let error = Object.assign({}, prevState.errors)
+                console.log({error})
                 let anotherErrorMessage = error[elementName] === errorMessage;
 
                 if( !(elementName in error) || !anotherErrorMessage ) {
                     error[elementName] = errorMessage
                     return {
-                        ...state,
                         errors: {...error}
                     }
                 }
@@ -124,19 +113,23 @@ export function withValidationFields(Component) {
         renderChild = () => {
             const { state, props } = this
             let newProps = {
-                getField: this.getField,
                 onBlur: this.onBlur,
                 errors: ''
             }
-            return React.Children.map(props.children, child => {
-                if(child.props.name in state.errors) {
-                    return React.cloneElement(child, {...newProps, errors: state.errors[child.props.name]})
-                }
-                let inputField = React.cloneElement(child, {...newProps})
 
-                return inputField
+            return Children.map(props.children, child => {
+                
+                if(child.props.field !== undefined) {
+                    console.log(state.errors)
+                    if(child.props.name in state.errors) {
+                        return cloneElement(child, {...newProps, errors: state.errors[child.props.name]})
+                    }
+                    return cloneElement(child, {...newProps, errors: ""})
+                }
+                return cloneElement(child)
             })
         }
+
         render() {
             return (
                 <Component {...this.props} onSubmit={(e) => {

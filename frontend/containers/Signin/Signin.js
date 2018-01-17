@@ -1,12 +1,14 @@
 import React, {Component} from 'react'
 import {Link} from 'react-router-dom'
 import {connect} from 'react-redux'
+//HOC
+import {withValidationFields} from '../../HOC/withValidationFields'
 //components
 import Button from '../../components/Button/Button'
 import Title from '../../components/Title/Title'
 import Form from '../../components/Form/Form'
 // containers
-import TextField from '../TextField/TextField'
+import Input from '../Input/Input'
 //actions
 import {requestUserSignIn} from '../../actions/UserAction'
 
@@ -62,36 +64,38 @@ class Signin extends Component {
     )
 
     render() {
-        const {fields} = this.state;
+        const {fields} = this.state
 
-        const {name} = fields[0];
-        const {email} = fields[1];
-        const {password} = fields[2];
+        const FormWithValidation = withValidationFields(Form)
+
+        const {name} = fields[0]
+        const {email} = fields[1]
+        const {password} = fields[2]
   
         return (
-            <Form
+            <FormWithValidation
                 method="post" 
                 submit={this.onSubmit}
                 renderHeader={this.header}
                 renderFooter={this.footer}>
-                 <TextField
+                 <Input
                     handleChange={this.handleChange}
                     name="name"
                     field={name}
                     label='Name'/>
-                <TextField
+                <Input
                     handleChange={this.handleChange}
                     name="email"
                     field={email}
                     label='Email'/>
-                <TextField
+                <Input
                     handleChange={this.handleChange}
                     name="password"
                     field={password}
                     label='Password'
                     type='password'/>
                 <Button primary type='submit'>Sign in</Button>
-            </Form>
+            </FormWithValidation>
         )
     }
 

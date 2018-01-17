@@ -6,6 +6,7 @@ const APP_DIR = path.resolve(__dirname, 'static');
 
 module.exports = {
     entry: [ 
+        'react-hot-loader/patch',
         'babel-polyfill',
         BUILD_DIR + "/index.js"],
     output: {
@@ -17,7 +18,7 @@ module.exports = {
         rules: [
             {
                 test: /\.js$/,
-                use: ['babel-loader'],
+                use: ['react-hot-loader/webpack','babel-loader'],
                 exclude: /node_modules/
             },
             {
@@ -28,7 +29,7 @@ module.exports = {
         ]
     },
     plugins: [],
-    devtool: 'cheap-module-eval-source-map',
+    devtool: 'eval',
     devServer: {
         contentBase: path.resolve(__dirname, "static/"),
         host: 'localhost',

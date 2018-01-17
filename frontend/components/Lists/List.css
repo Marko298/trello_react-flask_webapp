@@ -1,0 +1,21 @@
+ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+ul.list {
+    display: flex;
+    flex-wrap: wrap;
+}
+ul.list > li {
+    width: calc(25% - 20px);
+    height: 100px;
+    margin: 10px !important;
+    border-radius: 10px;
+    color: #424242;
+    background-color: #bbdefb;
+}
+
+ul.list > li > div {
+    padding: 10px;
+}

@@ -1,47 +1,46 @@
 import React, {Component} from 'react'
 import {Link} from 'react-router-dom'
 import {connect}  from 'react-redux'
+//HOC
+import {withValidationFields} from '../../HOC/withValidationFields'
 //utils
 import PropTypes from 'prop-types'
 //components
 import Button from '../../components/Button/Button'
 import Title from '../../components/Title/Title'
 import Form from '../../components/Form/Form'
-//containers
-import TextField from '../TextField/TextField'
+import Input from '../Input/Input'
+
 //actions
 import {requestUserLogin} from '../../actions/UserAction'
 
 
 
+
+const FormWithValidation = withValidationFields(Form)
+
 class Login extends Component{
+
     state = {
-        fields: [
-            {email: ''}, 
-            {password: ''}
-        ]
+        email: '',
+        password: ''
     }
 
     handleChange = (field) => (evant) => {
 
         let value = evant.target.value;
 
-        this.setState(function (state) {
-            let updatedFields = state.fields
-                .reduce((acumulator, obj) => {
-                    if (field in obj) {
-                        obj[field] = value
-                    }
-                    acumulator.push(obj)
-                    return acumulator
-                }, [])
-
-            return {...state, fields: [...updatedFields]}
+        this.setState({
+            [field] : value
+            
         })
+
     }
     onSubmit = () => {
-        const {email} = this.state.fields[0]
-        const {password} = this.state.fields[1]
+        // const {email} = this.state.fields[0]
+        // const {password} = this.state.fields[1]
+
+        const { email, password } = this.state
 
         this.props.userLogin({email, password})
 
@@ -52,32 +51,44 @@ class Login extends Component{
     footer = () => (
         <Link to='/signin'>Do you want to create new account ?</Link>
     )
-
+    change = (e) => {
+        this.setState({
+            email: e.target.value
+        })
+    }
 
     render() {
 
-        const {email} = this.state.fields[0]
-        const {password} = this.state.fields[1]
+        // const {email} = this.state.fields[0]
+        // const {password} = this.state.fields[1]
+
+        const { email, password } = this.state
+        // const FormWithValidation = withValidationFields(Form)
+
         return (
             <div>
-
-                <Form
+                <FormWithValidation
                     submit={this.onSubmit}
                     renderHeader={this.header}
                     renderFooter={this.footer}>
-                    <TextField 
+
+
+                    <Input 
                         handleChange={this.handleChange}
                         field={email}
                         name="email"
-                        label='Email'/>
-                    <TextField
+                        label='Email'
+                    />
+
+                    <Input
                         type="password"  
                         handleChange={this.handleChange}
                         field={password}
                         name="password"
-                        label='Password'/>
-                    <Button type='submit' primary>Login</Button>
-                </Form>
+                        label='Password'
+                    />
+                    <Button type='submit' className={["button-primary"]} >Login</Button>
+                </FormWithValidation>
             </div>
         )
     }  

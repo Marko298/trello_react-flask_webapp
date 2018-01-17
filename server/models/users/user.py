@@ -6,15 +6,20 @@ import uuid
 from server.models.boards.board import Board
 
 class User(object):
-    def __init__(self, email, password, name, _id=None):
+    def __init__(self, email, password, name, boards=None, _id=None):
         self.email = email
         self.password = password
         self.name = name
         self._id = uuid.uuid4().hex if _id is None else _id
-    
+        self.boards = boards if boards is not None else list()
+
     def __repr__(self):
         return "<User {}>".format(self.email)
 
+    def assign_board(self, boardId):
+        Database.update_push('users', {"_id": self._id}, {"boards": boardId})
+        
+        
     @classmethod
     def get_user_by_id(cls, queryID):
         cursorUser = Database.find_one('users', {"_id": queryID})
@@ -64,21 +69,6 @@ class User(object):
     def save(self):
         return Database.insert("users", self.json())
     
-    def createBoard(self, boardName, reletedTo=None):
-        board = Database.find_one('boards', {'boardName': boardName})
-
-        if board is not None:
-            raise err.BoardNameIsAlerayExist("The board name is already exist")
-
-        if reletedTo is None:
-            createdBoradFor = self._id
-        else:
-            createdBoradFor = reletedTo
-
-        newBoard = Board(boardName=boardName, reletedTo=createdBoradFor, authorId=self._id)
-        savedBoardId = newBoard.save()
-
-        return True, savedBoardId
 
     @staticmethod
     def get_board(boardId):
@@ -89,6 +79,7 @@ class User(object):
     @classmethod
     def get_own_boards(cls, authorEmail):
         user = cls.get_user_by_email(authorEmail)
+        print("user", user)
         # classBoard, 
         cursorBoard = Board.get_boards_by_author(user['_id'])
         return cursorBoard

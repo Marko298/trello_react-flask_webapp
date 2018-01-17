@@ -1,10 +1,22 @@
 from flask import Flask, render_template, request, session, json, jsonify
-from server.models.users.user import User
-import server.models.users.errors as UserErrors
+
+### Database
 from server.common.database import Database
 
+### User
+from server.models.users.user import User
+import server.models.users.errors as UserErrors
+import server.models.users.decorators as user_dec
+
+### Borad
 from server.models.boards.board import Board
 
+### Team 
+from server.models.teams.team import Team
+import server.models.teams.errors as TeamError
+
+
+############ FLask App  ############
 
 app = Flask(__name__,  template_folder="static/")
 
@@ -18,6 +30,7 @@ CORS(app, supports_credentials=True)
 @app.before_first_request
 def init_db():
     Database.initialize()
+
 
 @app.route("/")
 def index():
@@ -65,25 +78,6 @@ def user_login():
     return "login form"
     
     
-@app.route("/user/<string:userId>/create_board", methods=["POST", "GET"])
-def user_create_board(userId):
-    user = User.get_user_by_id(userId)
-    if request.method == "POST" and request.is_json:
-        CONTENT = request.get_json()
-
-        boardName = CONTENT['boardName']
-        reletedTo = None if 'reletedTo' not in CONTENT else CONTENT['reletedTo']
-
-        try:
-            isCreated, boardId = user.createBoard(boardName, reletedTo)
-            if isCreated:
-                _, createdBoard = Board.get_board(boardId)
-                return jsonify(data=createdBoard)
-
-        except UserErrors.UserError as e:
-            return jsonify(error=e.message)
-            
-    return "Method GET is not allowed here :C "
 
 
 @app.route('/user/<string:userId>/<string:boardId>/toggle_board_settings', methods=["GET", "POST"])
@@ -106,31 +100,97 @@ def toggle_board_settings(userId, boardId):
         return jsonify(error="there is the same state")
     
     return "Success GET"
-    
-@app.route("/users/logout") 
-def user_logout():
-    if session['email'] is not None:
-        session['email'] = None
-        return jsonify(data={'user': "success logout"})
 
-    return jsonify(error="You are not loggined")
+
+@app.route("/users/logout") 
+@user_dec.login_required   
+def user_logout():
+    session['email'] = None
+    return jsonify(data={'user': "success logout"})
 
 ##########################
 ############### BOARDS API
 ##########################
+
 @app.route("/boards", methods=["GET"])
+@user_dec.login_required
 def get_all_boards():
-    session['email'] = "silver.ranger911@gmail.com"
-    if session['email'] is not None:
-        boardsCur = User.get_own_boards(session['email'])
-        return jsonify(boardsCur)
-    
-    return "You have to login, before you want to gett all boards"
+    boardsCur = User.get_own_boards(session['email'])
+    return jsonify(boardsCur)
+
 
 @app.route("/boards/<string:boardId>", methods=["GET"])
 def get_board_by_id(boardId):
     _, board = Board.get_board(boardId)
     return jsonify(board)
+
+
+@app.route("/boards/add_board/<string:teamId>", methods=["POST", "GET"])
+@user_dec.login_required
+def assign_board_to_team(teamId):
+    if request.method == "POST" and request.is_json:
+        CONTENT = request.get_json()
+        
+        user = User.get_user_by_email(session['email'])
+        authorId = user.get("_id")
+        userName = user.get("name")
+
+        boardName = CONTENT['boardName']
+
+
+        if teamId == authorId:
+            reletedTo = {
+                "teamId" : authorId,
+                "teamName": userName
+            }
+            user = User.get_user_by_id(authorId)
+            boardId = Board(boardName=boardName, authorId=authorId, reletedTo=reletedTo).save()
+            user.assign_board(boardId)
+
+        else:
+            reletedTo = {
+                "teamId" : teamId,
+                "teamName": teamCursor.get("teamName")
+            }
+            teamClass, teamCursor = Team.get_team_by_id(teamId)
+            boardId = Board(boardName=boardName, authorId=authorId, reletedTo=reletedTo).save()
+            teamClass.assign_board(boardId)
+
+        _, board = Board.get_board(boardId)
+        
+        return jsonify(board)
+
+
+##########################
+############### Teams API
+##########################
+
+@app.route("/team/create_team", methods=["POST", "GET"])
+@user_dec.login_required
+def create_team():
+    if request.method == 'POST' and request.is_json:
+        CONTENT = request.get_json()
+
+        teamName = CONTENT['teamName']
+        boards = CONTENT['boards'] if CONTENT.get('boards') is not None else None
+        
+        authorId = User.get_user_by_email(session['email']).get("_id")
+
+        team = Team(teamName=teamName, authorId=authorId, boards=boards).create_team()
+
+        return jsonify(team)
+
+@app.route("/teams")
+@user_dec.login_required
+def get_all_teams():
+    authorId = User.get_user_by_email(session['email']).get("_id")
+    try:
+        teams = Team.get_tems_by_author(authorId)
+        return jsonify(teams)
+    except TeamError.TeamError as e:
+        return jsonify(error=e)
+        
+
 
 if __name__ == '__main__':
     app.run(port=4000, debug=True)

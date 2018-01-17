@@ -24,4 +24,4 @@ Form.defaultProps = {
 }
 
 
-export default withValidationFields(Form)
+export default Form
