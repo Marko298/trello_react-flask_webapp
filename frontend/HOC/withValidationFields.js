@@ -58,9 +58,7 @@ export function withValidationFields(Component) {
                 let result = this._isEmpty(value)
                 result && this.removeError(name)
 
-                console.log({name, value})
                 if(name.toLowerCase() === 'email') {
-                    console.log("CHECKING email")
                     let result = this._isValidEmail(value);
                     result && this.removeError(name)
                 }
@@ -71,7 +69,6 @@ export function withValidationFields(Component) {
 
         onBlur =  (e) => {
             let {value, name} = e.target;
-            console.log({value, name})
             this.displayErrors(name, value)
         }
 
@@ -97,7 +94,6 @@ export function withValidationFields(Component) {
         setError = (elementName, errorMessage) => {
             this.setState( prevState => {
                 let error = Object.assign({}, prevState.errors)
-                console.log({error})
                 let anotherErrorMessage = error[elementName] === errorMessage;
 
                 if( !(elementName in error) || !anotherErrorMessage ) {
@@ -120,7 +116,6 @@ export function withValidationFields(Component) {
             return Children.map(props.children, child => {
                 
                 if(child.props.field !== undefined) {
-                    console.log(state.errors)
                     if(child.props.name in state.errors) {
                         return cloneElement(child, {...newProps, errors: state.errors[child.props.name]})
                     }

@@ -2,45 +2,30 @@ import React, {Component, Fragment, Children, cloneElement} from 'react'
 import {withRouter} from 'react-router-dom'
 //redux
 import {connect} from 'react-redux'
+//actions
+import {toggle_editMode} from '../../actions/EditModeAction'
 //components
 import TabRoutes from '../../components/TabRoutes/TabRoutes'
-import Button from '../../components/Button/Button'
 //containers
 import BoardsList from '../BoardList/BoardList'
 import BoardList from '../BoardList/BoardList'
 import EditForm from '../EditForm/EditForm'
+import ButtonAddBoard from '../ButtonAddBoard/ButtonAddBoard'
 
-//HOC
-import withEditMode from '../../HOC/withEditMode'
 
 
 class Boards extends Component {
 
     static Important = function(props) {
-       const ImportantGroupBoards = props.boards.filter( ({status}) => status === "__IMPORTANT__")
-
-       let ButtonAddBoard = withEditMode(Button)
-       
-       return <BoardsList boardsGroup={ImportantGroupBoards}>
-                    {str => (
-                            <ButtonAddBoard onClick={(e) => {
-                                console.log("CLICKed", str)
-                                }}>
-                                Add new Board 
-                            </ButtonAddBoard>
-                        )
-                    }
-                </BoardsList>
+       const ImportantGroupBoards = props.boards.filter( ({status}) => status === "__IMPORTANT__")     
+       return <BoardsList boardsGroup={ImportantGroupBoards} BoardsList/>
     }
 
     static Private = function(props) {
         const privateGroup = props.boards.filter( ({status}) => status === "__PRIVATE__")
-        let ButtonAddBoard = withEditMode(Button)
 
         return <BoardsList boardsGroup={privateGroup}>
-            <ButtonAddBoard onClick={(e) => {
-                console.log("CLICKed")
-            }}>
+            <ButtonAddBoard>
                 Add new Board
             </ButtonAddBoard>
         </BoardsList>
@@ -55,14 +40,11 @@ class Boards extends Component {
                 {path: '/account', title: "Account"}
             ]
 
-        let ButtonAddBoard = withEditMode(Button)
 
         return <BoardsList  render={(getProps) => <TabRoutes {...getProps({
             defaultProps: "just test props"
         })} match={match} routers={routes} />} boardsGroup={comandsBoards}>
-         <ButtonAddBoard onClick={(e) => {
-                console.log("CLICKed")
-            }}>
+            <ButtonAddBoard>
                 Add new Board
             </ButtonAddBoard>
         </BoardsList>
@@ -71,6 +53,7 @@ class Boards extends Component {
 
     static defaultProps = {
         boards: [],
+        isLoading: false
     }
 
     
@@ -78,6 +61,12 @@ class Boards extends Component {
         // console.log("------------------------------------------------")
         // console.log("BoardsList componentWillReceiveProps", {nextProps})
         // console.log("------------------------------------------------")
+    }
+
+    componentWillUnmount() {
+        if(this.props.editModIsOn) {
+            this.props.toggle_editMode()
+        }
     }
 
     componentDidMount() {
@@ -94,16 +83,25 @@ class Boards extends Component {
         const {boards} = this.props
 
         return (
-            <Fragment>
-                {this.renderChildren(boards)}
-            </Fragment>
+            <div>
+                {this.props.isLoading ? "Loading" : null}
+                <Fragment>
+                    {this.renderChildren(boards)}
+                </Fragment>
+
+            </div>
         )
     }
 }
 
-const mapStateToProps = ({boardsGroup: boards}) => ({boards})
+const mapStateToProps = ({organizations: {teams, isLoading}, mode}) => ({
+    boards: teams,
+    editModIsOn: mode.forms.isEditBoardShow,
+    isLoading
+})
 
-export default connect(mapStateToProps)(Boards)
+export default connect(mapStateToProps, {toggle_editMode})(Boards)
+
 // return (
 //     <Item key={_id} title={boardName} r]ender={() => {
 //         return (

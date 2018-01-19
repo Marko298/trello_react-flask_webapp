@@ -10,11 +10,13 @@ import Form from '../../components/Form/Form'
 // containers
 import Input from '../Input/Input'
 //actions
-import {requestUserSignIn} from '../../actions/UserAction'
+import UserAction from '../../actions/UserAction'
 
 
 import './Signin.style.css'
 
+
+const FormWithValidation = withValidationFields(Form)
 class Signin extends Component {
     state = {
         fields: [
@@ -51,9 +53,11 @@ class Signin extends Component {
         
         const postRequest = {name, email, password};
         
-        console.log("data is ready")
-        this.props.userSignIn(postRequest)
-        console.log("Data is sended")
+        this.props.register(postRequest).then(response => {
+            if('error' in response) {
+                console.log(response.error)
+            }
+        })
     }
 
     header = () => (
@@ -65,8 +69,6 @@ class Signin extends Component {
 
     render() {
         const {fields} = this.state
-
-        const FormWithValidation = withValidationFields(Form)
 
         const {name} = fields[0]
         const {email} = fields[1]
@@ -94,7 +96,7 @@ class Signin extends Component {
                     field={password}
                     label='Password'
                     type='password'/>
-                <Button primary type='submit'>Sign in</Button>
+                <Button type='submit'>Sign in</Button>
             </FormWithValidation>
         )
     }
@@ -115,10 +117,11 @@ function mapStateToProps(state) {
     }
 }
 
-function mapDispatchToProps(dispatch) {
-    return {
-        userSignIn: (data) => dispatch(requestUserSignIn(data))
+
+const mapDispatchToProps = (dispatch) => ({
+    register(data) {
+        return dispatch(UserAction.register(data))
     }
-}
+})
 
 export default connect(mapStateToProps, mapDispatchToProps)(Signin)

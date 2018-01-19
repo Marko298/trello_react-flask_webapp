@@ -12,7 +12,8 @@ import Form from '../../components/Form/Form'
 import Input from '../Input/Input'
 
 //actions
-import {requestUserLogin} from '../../actions/UserAction'
+// import {requestUserLogin} from '../../actions/UserAction'
+import UserActions from '../../actions/UserAction'
 
 
 
@@ -27,22 +28,21 @@ class Login extends Component{
     }
 
     handleChange = (field) => (evant) => {
-
         let value = evant.target.value;
-
         this.setState({
             [field] : value
             
         })
-
     }
     onSubmit = () => {
-        // const {email} = this.state.fields[0]
-        // const {password} = this.state.fields[1]
 
         const { email, password } = this.state
 
-        this.props.userLogin({email, password})
+        this.props.login({email, password}).then(response => {
+            if('error' in response) {
+                console.log(response.error)
+            }
+        })
 
     }
     header = () => (
@@ -58,13 +58,7 @@ class Login extends Component{
     }
 
     render() {
-
-        // const {email} = this.state.fields[0]
-        // const {password} = this.state.fields[1]
-
         const { email, password } = this.state
-        // const FormWithValidation = withValidationFields(Form)
-
         return (
             <div>
                 <FormWithValidation
@@ -94,11 +88,18 @@ class Login extends Component{
     }  
 }
 
-function mapDispatchToProps(dispatch) {
-    return {
-        userLogin: (data) => dispatch(requestUserLogin(data))
+// function mapDispatchToProps(dispatch) {
+//     return {
+//         userLogin: (data) => dispatch(requestUserLogin(data))
+//     }
+// }
+
+
+const mapDispatchToProps = (dispatch) => ({
+    login(data) {
+        return dispatch(UserActions.login(data))
     }
-}
+})
 
 
 export default connect(null, mapDispatchToProps)(Login)

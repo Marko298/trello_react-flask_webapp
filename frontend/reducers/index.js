@@ -6,6 +6,6 @@ import {combineReducers} from 'redux'
 
 export const reducer = combineReducers({
     user: UserReducer,
-    boardsGroup: BoardReducer,
+    organizations: BoardReducer,
     mode: EditModeReducer
 })

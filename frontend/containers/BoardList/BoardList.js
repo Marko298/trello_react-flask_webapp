@@ -6,14 +6,33 @@ import {connect} from 'react-redux'
 import List from '../../components/Lists/Lists'
 import Board from '../../components/Board/Board'
 import Wrapper from '../../components/Wrapper/Wrapper'
+import Row from '../../components/Row/Row'
+import Title from '../../components/Title/Title'
 
 
 class BoardsList extends React.Component {
+    static defaultProps = {
+        boards:  [
+            {
+                title: '',
+                boards: []
+            }
+        ],
+        render: () => <span>this.props.render</span>
+    }
     propsCollection = (_id) => ( {props}={} ) => {
         return {
            _id,
             ...props
         }
+    }
+    renderChildren = (teamId) => {
+        const boards = this.props.boards.filter(board => {
+            if(board._id === teamId) return board
+        })
+        return React.Children.map(this.props.children, child => {
+            return React.cloneElement(child, {selected: boards[0]})
+        })
     }
     render() {
         return (
@@ -23,10 +42,10 @@ class BoardsList extends React.Component {
     
                     return (
                         <Wrapper key={`${team._id ? team._id : idx}`}>
-                            <header>
-                                <h3>{team.title}</h3>
+                            <Row>
+                                <Title>  {team.title}  </Title>
                                 {this.props.render(this.propsCollection( team._id ))}
-                            </header>
+                            </Row>
                             <List>
                                 <Fragment>
                                 {team['boards'] instanceof Array 
@@ -38,8 +57,7 @@ class BoardsList extends React.Component {
                                     ))
                                     : null}
                                 </Fragment>
-                                {/* switch render props with children places, and in render props give the object of board list for  */}
-                                {this.props.children && <li>{this.props.children}</li> }
+                                {this.props.children && <li>{this.renderChildren(team._id)}</li> }
                             </List>
                         </Wrapper>
                     )
@@ -48,56 +66,8 @@ class BoardsList extends React.Component {
         )
     }
 } 
-// function BoardsList(props) {
-//     const propsCollection = (_id) => ( {props}={} ) => {
-//         return {
-//            _id,
-//             ...props
-//         }
-//     }
-//     return (
-//         <div>
-//             {props.boardsGroup.map((team, idx) =>  {
-//                 let temId_from_Wrapper = team._id ? team._id : idx
-
-//                 return (
-//                     <Wrapper key={`${team._id ? team._id : idx}`}>
-//                         <header>
-//                             <h3>{team.title}</h3>
-//                             {props.render(propsCollection( team._id ))}
-//                         </header>
-//                         <List>
-//                             <Fragment>
-//                             {team['boards'] instanceof Array 
-//                                 ? team.boards.map( (board, idx) => (console.log(temId_from_Wrapper)) || (
-//                                     <Board
-//                                         {...board} 
-//                                         key={`${board._id}_${idx}`}
-//                                     />
-//                                 ))
-//                                 : null}
-//                             </Fragment>
-//                             {/* switch render props with children places, and in render props give the object of board list for  */}
-//                             {props.children && <li>{props.children}</li> }
-//                         </List>
-//                     </Wrapper>
-//                 )
-//             })}
-//         </div>
-//     )
-// }
-
-BoardsList.defaultProps = {
-    boardsGroup:  [
-        {
-            title: '',
-            boards: []
-        }
-    ],
-    render: () => <span>this.props.render</span>
-}
 
 
-const mapStateToProps = ({boardsGroup: boards}) => ({boards})
+const mapStateToProps = ({organizations: {teams}}) => ({boards: teams})
 
 export default withRouter(connect(mapStateToProps)(BoardsList))

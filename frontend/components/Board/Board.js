@@ -4,6 +4,7 @@ import {connect} from 'react-redux'
 
 //actions
 import {toggleIsImportant} from '../../actions/BoardAction'
+import BoardActions from '../../actions/BoardAction'
 
 //components
 import Input from '../Input/Input'
@@ -57,11 +58,14 @@ class Board extends Component {
 }
 
 
-
-
 Board.propTypes = {
     boardName: PropTypes.string.isRequired
 }
 
+const mapDispatchToProps = (dispatch) => ({
+    toggleIsImportant(id, data) {
+        dispatch(BoardActions.toggleIsImportant(id, data))
+    }
+})
 
-export default connect(null, {toggleIsImportant})(Board)
+export default connect(null, mapDispatchToProps)(Board)

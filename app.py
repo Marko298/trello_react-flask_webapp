@@ -49,7 +49,7 @@ def user_register():
             isRegistered, user = User.register_user(email, password, name)
             if isRegistered:
                 session['email'] = email
-                return jsonify(data=user)
+                return jsonify(user)
 
         except UserErrors.UserError as e:
             return jsonify(error=e.message)
@@ -71,7 +71,6 @@ def user_login():
                 user = User.get_user_by_email(email)
                 print("/users/login session['email']", session['email'])
                 return jsonify(user)
-
         except UserErrors.UserError as e:
             return jsonify(error=e.message)
 
@@ -130,7 +129,6 @@ def get_board_by_id(boardId):
 def assign_board_to_team(teamId):
     if request.method == "POST" and request.is_json:
         CONTENT = request.get_json()
-        
         user = User.get_user_by_email(session['email'])
         authorId = user.get("_id")
         userName = user.get("name")
@@ -148,11 +146,11 @@ def assign_board_to_team(teamId):
             user.assign_board(boardId)
 
         else:
+            teamClass, teamCursor = Team.get_team_by_id(teamId)
             reletedTo = {
                 "teamId" : teamId,
                 "teamName": teamCursor.get("teamName")
             }
-            teamClass, teamCursor = Team.get_team_by_id(teamId)
             boardId = Board(boardName=boardName, authorId=authorId, reletedTo=reletedTo).save()
             teamClass.assign_board(boardId)
 

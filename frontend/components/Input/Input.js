@@ -3,14 +3,14 @@ import PropTypes from 'prop-types'
 //styles
 import "./Input.css"
 
-function Input({children, onChange, type, _id, ...props}){
+function Input({children, onChange, type, name, _id, ...props}){
     return (
         <label htmlFor={props.name}> {children}
             <input 
                 {...props}
                 onChange={onChange} 
                 type={type} 
-                name="" 
+                name={name}
             />
         </label>
     )

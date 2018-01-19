@@ -12,12 +12,5 @@ const Title = ({children}) => {
     )
 }
 
-Title.defaultProps = {
-    children: ''
-}
-
-Title.propTypes = {
-    children: PropTypes.string
-}
 
 export default Title

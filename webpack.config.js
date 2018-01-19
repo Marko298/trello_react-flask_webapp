@@ -28,7 +28,9 @@ module.exports = {
             }
         ]
     },
-    plugins: [],
+    plugins: [
+        new webpack.NamedModulesPlugin()
+    ],
     devtool: 'eval',
     devServer: {
         contentBase: path.resolve(__dirname, "static/"),

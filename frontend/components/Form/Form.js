@@ -4,7 +4,7 @@ import PropTypes from 'prop-types'
 //style
 import './Form.style.css'
 //HOC's
-import {withValidationFields} from '../../HOC/withValidationFields'
+// import {withValidationFields} from '../../HOC/withValidationFields'
 
 
 function Form({onSubmit, renderHeader, renderFooter, children, method}) {

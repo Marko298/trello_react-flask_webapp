@@ -3,8 +3,10 @@ import {Switch, Route, Link, BrowserRouter as Router, withRouter } from 'react-r
 
 import {connect} from 'react-redux'
 //actions
-import {requestUserLogout} from '../../actions/UserAction'
-import {fetchBoards} from '../../actions/BoardAction'
+// import {requestUserLogout} from '../../actions/UserAction'
+// import {fetchBoards} from '../../actions/BoardAction'
+
+import BoardActions from '../../actions/BoardAction'
 
 import EditForm from '../EditForm/EditForm'
 
@@ -13,6 +15,7 @@ import Boards from '../Boards/Boards'
 
 //UTILS
 import Utils from '../../utils'
+
 
 let Profile = ({match}) => (
     <div>
@@ -44,14 +47,14 @@ class Dashboard extends React.Component {
         propBoards.length === 1 ? fetchBoards() : null
     }
     logout = () => {
-        this.props.requestUserLogout()
-        this.props.history.push('/')
+        alert("LOGOUT")
+        // this.props.requestUserLogout()
+        // this.props.history.push('/')
     }
 
     render() {
         const { location, match, boards } = this.props
         
-
         return (
             <div style={{position: 'releted'}}>
                 <ToolBar>
@@ -92,7 +95,7 @@ class Dashboard extends React.Component {
 
                         <Route exact path={`${this.props.match.path}:teamId`} render={(props) => {
                             // here i will retrive from the reducer our TEAM With releted boards
-                            let foundedTeam = Utils.returnGroupById(boards, props.match.params.teamId)[0]
+                            // let foundedTeam = Utils.returnGroupById(boards, props.match.params.teamId)[0]
                             console.log(foundedTeam)
                             console.log({props})
                             return <div>We are on the right spot <strong>{foundedTeam.title}</strong></div>
@@ -130,6 +133,13 @@ class Dashboard extends React.Component {
 | TEST ACTIONS
 |--------------------------------------------------
 */
-const mapStateToProps = ({boardsGroup: boards}) => ({boards})
+const mapStateToProps = ({ organizations: {teams} }) => ({boards: teams})
 
-export default withRouter(connect(mapStateToProps, {requestUserLogout, fetchBoards})(Dashboard))
+const mapDispatchToProps = (dispatch) => ({
+    fetchBoards(){
+        console.log("occur")
+        dispatch(BoardActions.fetchBoards())
+    }
+})
+
+export default withRouter(connect(mapStateToProps, mapDispatchToProps)(Dashboard))

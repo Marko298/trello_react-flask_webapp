@@ -8,7 +8,7 @@ ul.list {
     flex-wrap: wrap;
 }
 ul.list > li {
-    width: calc(25% - 20px);
+    width: calc(30% - 20px);
     height: 100px;
     margin: 10px !important;
     border-radius: 10px;
