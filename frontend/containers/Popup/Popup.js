@@ -21,7 +21,7 @@ class Popup extends Component {
             <Fragment>
                 <Wrapper>
                     <Row>
-                        <Title>{props.title}</Title>
+                        <Title text={props.title} />
                         <Button onClick={props.close}>
                             X (close)
                         </Button>

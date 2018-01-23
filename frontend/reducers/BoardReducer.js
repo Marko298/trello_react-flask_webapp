@@ -13,7 +13,8 @@ import {
     BOARD_REQUEST_CREATED_SUCCESS,
     CREATE_TEAM_REQUEST,
     CREATE_TEAM_SUCCESS,
-    FETCH_TEAMS_SUCCESS
+    FETCH_TEAMS_SUCCESS,
+    BOARD_DELETE_REQUEST_SUCCESS
 } from '../constants/BoardConstant'
 
 import Utils from '../utils'
@@ -81,7 +82,6 @@ export default function BoardReducer(state=innitialState, {type, payload}) {
         }
 
         case FETCH_TEAMS_SUCCESS: {
-
             return {
                 ...state
             }
@@ -91,12 +91,26 @@ export default function BoardReducer(state=innitialState, {type, payload}) {
             const {_id, boards, teamName: title} = payload
             const teamSchema = {_id, boards, title, status: "__COMAND__"}
 
-            console.log({teamSchema})
-
             return {
                 ...state,
                 teams: [...state.teams, teamSchema],
                 isTeamCreatingLoading: false
+            }
+
+        }
+        case BOARD_DELETE_REQUEST_SUCCESS: {
+            const _id = payload
+            
+            let updatedTeams = state.teams.map(team => {
+                return {
+                    ...team,
+                    boards: team.boards.filter(board => board._id !== _id)
+                }
+            })
+
+            return {
+                ...state,
+                teams: [...updatedTeams]
             }
 
         }

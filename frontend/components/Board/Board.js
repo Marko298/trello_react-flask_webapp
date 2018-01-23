@@ -6,8 +6,13 @@ import {connect} from 'react-redux'
 import {toggleIsImportant} from '../../actions/BoardAction'
 import BoardActions from '../../actions/BoardAction'
 
+
 //components
 import Input from '../Input/Input'
+import Title from '../Title/Title'
+
+//colors
+import {Color} from '../../__asssets/color'
 
 class Board extends Component {
     state = {
@@ -34,13 +39,12 @@ class Board extends Component {
     }
     render() {
 
-        const {isImportant, boardName, teamName, _id, reletedTo, classTheme} = this.props
+        const {isImportant, boardName, teamName, _id, reletedTo, classTheme, styleSettings} = this.props
         const {isChecked} = this.state
         return (
-            <li style={{margin: '20px 0'}}>
+            <li style={{margin: '20px 0', ...styleSettings}}>
                 <div>
-                    <h3>{boardName}</h3>
-                    <p>Is important: <strong>{JSON.stringify(isImportant)}</strong></p>
+                    <Title text={boardName} medium color={Color.white}/>
                     <div>
                         <Input
                             type='checkbox' 
@@ -48,7 +52,6 @@ class Board extends Component {
                             checked={isChecked}
                             onChange={this.handleChange(_id)}
                             >
-                        Check to important —
                         </Input>
                         {this.props.children}
                     </div>

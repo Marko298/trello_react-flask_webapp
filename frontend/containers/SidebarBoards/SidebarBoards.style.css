@@ -14,11 +14,11 @@ html {
 }
 
 .sidebar {
-    width: 400px;
-    /* background-color: #f3f1f1; */
-    background-color:purple;
+    width: 280px;
     display: block;
     padding: 5px 10px;
+    border-right: 1px solid #000;
+    background-color: #fff;
 }
 
 .sidebar-fixed {

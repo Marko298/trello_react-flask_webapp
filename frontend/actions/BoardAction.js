@@ -65,7 +65,7 @@ export default class BoardActions {
     static fetchBoards() {
         return (dispatch, getState) => {
 
-            let {userId} = getState().user
+            let {userId, name} = getState().user
 
             return axios({
                 url: api.get_boards,
@@ -74,6 +74,17 @@ export default class BoardActions {
                 withCredentials: true
             }).then(response => {
                 let all_boards = Utils.boardsToArray(response.data, userId)
+                let isHavePrivateFields = all_boards.filter(board => board._id === userId)
+                
+                if(isHavePrivateFields.length === 0) {
+                    all_boards.push({
+                        status: '__PRIVATE__',
+                        _id: userId,
+                        boards: [],
+                        title: name || 'Pasha School'
+                    })
+                }
+                
                 dispatch(BoardActions.boardRequestGetSuccess(all_boards))
                 return Promise.resolve(all_boards)
 
@@ -233,7 +244,8 @@ export default class BoardActions {
             axios({
                 url: api.delete_board(boardId),
                 method: 'DELETE',
-                headers: api.headers()
+                headers: api.headers(),
+                withCredentials: true
             }).then((response) => {
                 console.log({response})
                 dispatch(BoardActions.board_success_deleted(response.data))

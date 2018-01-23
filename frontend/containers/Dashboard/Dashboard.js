@@ -15,6 +15,9 @@ import SidebarBoards from '../SidebarBoards/SidebarBoards'
 //components
 import Row from '../../components/Row/Row'
 import Wrapper from '../../components/Wrapper/Wrapper'
+import TabRoutes from '../../components/TabRoutes/TabRoutes'
+import Button from '../../components/Button/Button'
+import CreativeMenu from '../../components/CreativeMenu/CreativeMenu'
 
 //UTILS
 import Utils from '../../utils'
@@ -36,6 +39,18 @@ let Logo = () => (
     <Link to='/' >HOME</Link>
 )
 
+
+const ToggleListButton = (props) => (
+    <Button onClick={props.toggleList} className='sidebar-button-collapse'>
+        {props.isShow ? "-" : "+"}
+    </Button>
+)
+
+const RemoveBoard = (props) => (
+    <Button onClick={(e) => props.removeBoard(props._id)}>
+        X
+    </Button>
+)
 
 class Dashboard extends React.Component {
     static defaultProps = {
@@ -64,6 +79,10 @@ class Dashboard extends React.Component {
         console.log("componentDidCatch")
     }
     componentDidMount() {
+
+        console.log("this.props.important()", this.props.important)
+
+
         document.title = "Dashbaord | Trello" 
         const {boards: propBoards, fetchBoardsAndTeams} = this.props
 
@@ -84,22 +103,59 @@ class Dashboard extends React.Component {
         console.log("Create Team action is fire")
     }
 
+    // render={(getProps) => (
+    //     <TabRoutes {...getProps()} match={match} routers={routes} />
+    // )} 
+    // renderChildrenForBoard={(getProps) => <Button {...getProps()}> X </Button>} 
     render() {
         const { location, match, boards } = this.props
-        const {menu: {isCreateBoardFormShow, isCreateTeamFormShow}, sidebar: {backing, isPinned} } = this.props
+        const {menu: {
+            isCreateBoardFormShow,
+            isCreateTeamFormShow,
+            isCreativeMenuShow
+        }, sidebar: {backing, isPinned} } = this.props
+
+        const routes = [
+            {path: '', title: "Boards"},
+            {path: '/members', title: "Members"},
+            {path: '/account', title: "Account"}
+        ]
 
         return (
             <Fragment>
-                <SidebarBoards/>
+                <SidebarBoards>
+                    <Boards boards={this.props.notEmptyBoards}>
+                        <Boards.Important
+                            title="Starred Boards" 
+                            render={(getProps) => (
+                                <ToggleListButton {...getProps()} />
+                            )}
+                        />
+                        <Boards.Private 
+                            title="Personal Boards" 
+                            render={(getProps) => (
+                                <ToggleListButton {...getProps()} />
+                            )}
+                        />
+                        <Boards.Comands
+                            renderChildrenForBoard={(getProps) => <RemoveBoard {...getProps()} />}
+                            render={(getProps) => (
+                                <ToggleListButton {...getProps()} />
+                            )}
+                        />
+                    </Boards>
+                </SidebarBoards>
                     <Wrapper style={Dashboard.styles({isPinned, backing})}> 
                         <ToolBar/>
                         <Switch>
                             <Route exact path={`${this.props.match.path}`} render={(props) => {
                                 return (
-                                    <Boards {...props}>
-                                        <Boards.Important />
-                                        <Boards.Private />
-                                        <Boards.Comands />
+                                    <Boards boards={this.props.boards} {...props}>
+                                        <Boards.Important title="Starred Boards"/>
+                                        <Boards.Private withButtonAddBoard title="Personal Boards"/>
+                                        <Boards.Comands withButtonAddBoard render={(getProps) => (
+                                            <TabRoutes {...getProps()} match={match} routers={routes} />
+                                        )} />
                                     </Boards>
                                 )
                             }}/>
@@ -117,6 +173,7 @@ class Dashboard extends React.Component {
 
                             <Route exact path={`${this.props.match.path}:teamId`} render={(props) => {
                                 let foundedTeam = Utils.returnGroupById(boards, props.match.params.teamId)[0]
+                                console.log({foundedTeam})
                                 return <div>We are on the right spot <strong>{foundedTeam.title}</strong></div>
                             }}/>
                         </Switch>
@@ -134,6 +191,12 @@ class Dashboard extends React.Component {
                             title="Create Team" 
                             toShow={isCreateTeamFormShow} 
                             component={AddTeamForm} 
+                        />
+
+                        <Popup.Menu 
+                            title="Create" 
+                            toShow={isCreativeMenuShow} 
+                            component={CreativeMenu} 
                         />
                     </Popup>
                  </Wrapper>
@@ -154,7 +217,15 @@ const mapStateToProps = ({ organizations: {teams},  mode: {menu, sidebar}}) => (
     sidebar: {
         backing: sidebar.backing,
         isPinned: sidebar.isPinned
-    }
+    },
+    notEmptyBoards: teams.filter(team => team.boards.length > 0),
+    important: teams.map(team => {
+            if(team.status === "__IMPORTANT__") {
+                return
+            }
+
+            return team.boards.filter(board => board.isImportant)
+        }).filter(b => b && b.hasOwnProperty('length') && b.length > 0)
 })
 
 const mapDispatchToProps = (dispatch) => ({

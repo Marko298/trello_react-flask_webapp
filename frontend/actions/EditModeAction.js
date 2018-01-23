@@ -4,7 +4,9 @@ import {
     TOGGLE_CREATE_BOARD_FORM,
     TOGGLE_CREATE_TEAM_FORM,
     TOGGLE_SIDEBAR_BOARDLIST,
-    FIX_SIDEBAR
+    FIX_SIDEBAR,
+    UNFIX_SIDEBAR,
+    TOGGLE_CRATIVE_MENU
 
 } from '../constants/EditModeConstant'
 
@@ -47,6 +49,17 @@ export default class PopupActions {
         }
     }
 
+    static unfix_sidebar() {
+        return {
+            type: UNFIX_SIDEBAR
+        }
+    }
 
+    
+    static toggle_creative_menu() {
+        return {
+            type: TOGGLE_CRATIVE_MENU
+        }
+    }
 
 }

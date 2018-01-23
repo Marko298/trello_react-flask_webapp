@@ -4,7 +4,10 @@ import {
     TOGGLE_CREATE_BOARD_FORM,
     TOGGLE_CREATE_TEAM_FORM,
     TOGGLE_SIDEBAR_BOARDLIST,
-    FIX_SIDEBAR
+    FIX_SIDEBAR,
+    UNFIX_SIDEBAR,
+    TOGGLE_CRATIVE_MENU
+
 } from '../constants/EditModeConstant'
 
 const initialEditModeState = {
@@ -14,7 +17,8 @@ const initialEditModeState = {
     },
     menu: {
         isCreateBoardFormShow: false,
-        isCreateTeamFormShow: false
+        isCreateTeamFormShow: false,
+        isCreativeMenuShow: false
     },
     sidebar: {
         isPinned: false,
@@ -106,6 +110,28 @@ export default function EditModeReducer(state = initialEditModeState, {type, set
                     isPinned: true,
                     isFixed: true,
                     backing: marginLeft
+                }
+            }
+        }
+
+        case UNFIX_SIDEBAR: {
+            return {
+                ...state,
+                sidebar : {
+                    isPinned: false,
+                    isFixed: true,
+                    backing: 0
+                }
+            }
+        }
+
+        case TOGGLE_CRATIVE_MENU: {
+            return {
+                ...state,
+                menu: {
+                    isCreativeMenuShow: true,
+                    isCreateBoardFormShow: false,
+                    isCreateTeamFormShow: false
                 }
             }
         }

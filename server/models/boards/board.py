@@ -29,7 +29,7 @@ class Board(object):
         return "<Board {}>".format(self.title)
 
     def defaultStyleSettings(self):
-        backgroundColor = 'blue'
+        backgroundColor = 'rgb(0, 121, 191)'
         return { "backgroundColor": backgroundColor }
 
     @classmethod

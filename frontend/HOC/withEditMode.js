@@ -15,7 +15,6 @@ const withEditMode = (action, {topCordinates}={}) => (Component) => {
             top: 0,
             width: 0
         }
-        
 
         getCordinates = () => {
             const {width, top, left} = this.node.getBoundingClientRect()

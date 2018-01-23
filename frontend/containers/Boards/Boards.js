@@ -14,8 +14,6 @@ import ButtonAddBoard from '../ButtonAddBoard/ButtonAddBoard'
 import withEditMode from '../../HOC/withEditMode';
 
 
-
-
 import Button from '../../components/Button/Button'
 const actions = () => ({
     toggle: PopupActions.toggle_editMode,
@@ -27,36 +25,47 @@ class Boards extends Component {
 
     static Important = function(props) {
        const ImportantGroupBoards = props.boards.filter( ({status}) => status === "__IMPORTANT__")     
-       return <BoardsList boardsGroup={ImportantGroupBoards} BoardsList/>
+       return <BoardsList title={props.title} boardsGroup={ImportantGroupBoards} render={props.render}/>
     }
 
     static Private = function(props) {
         const privateGroup = props.boards.filter( ({status}) => status === "__PRIVATE__")
 
-        return <BoardsList boardsGroup={privateGroup}>
-            <ButtonAddBoard>
-                Add new Board
-            </ButtonAddBoard>
-        </BoardsList>
+        return props.withButtonAddBoard !== undefined 
+        ? (
+            <BoardsList title={props.title} boardsGroup={privateGroup} render={props.render}>
+                <ButtonAddBoard>
+                    Add new Board
+                </ButtonAddBoard>
+            </BoardsList>
+        )
+        : (
+            <BoardsList title={props.title} boardsGroup={privateGroup} render={props.render} />
+        )
     }
 
     static Comands = withRouter(function({match ,...props}) {
         const comandsBoards = props.boards.filter( ({status}) => status === "__COMAND__" )
 
-            const routes = [
-                {path: '', title: "Boards"},
-                {path: '/members', title: "Members"},
-                {path: '/account', title: "Account"}
-            ]
-            
-        return <BoardsList  render={(getProps) => (
-            <TabRoutes {...getProps()} match={match} routers={routes} />
-        )} boardsGroup={comandsBoards}>
-            <ButtonAddBoard>
-                Add new Board
-            </ButtonAddBoard>
-        </BoardsList>
-        
+        return comandsBoards.map(board => {
+            return props.withButtonAddBoard !== undefined 
+            ? (
+                <BoardsList 
+                    boardsGroup={[board]} 
+                    render={props.render}
+                >
+                    <ButtonAddBoard>
+                        Add new Board
+                    </ButtonAddBoard>
+                </BoardsList>
+            )
+            : (
+                <BoardsList
+                    renderChildrenForBoard={props.renderChildrenForBoard} 
+                    boardsGroup={[board]} render={props.render} 
+                />
+            )
+        })
     })
 
     static defaultProps = {
@@ -69,15 +78,6 @@ class Boards extends Component {
 
     }
     
-    componentWillReceiveProps(nextProps) {
-        // console.log("------------------------------------------------")
-        // console.log("BoardsList componentWillReceiveProps", {nextProps})
-        // console.log("------------------------------------------------")
-    }
-
-    componentWillUnmount() {
-    }
-
     renderChildren = (boards) => Children.map(
             this.props.children,
             child => cloneElement(child, {boards})
@@ -106,8 +106,7 @@ class Boards extends Component {
     }
 }
 
-const mapStateToProps = ({organizations: {teams, isLoading}, mode}) => ({
-    boards: teams,
+const mapStateToProps = ({organizations: {isLoading}, mode}) => ({
     editModIsOn: mode.forms.isPopupShow,
     isLoading
 })

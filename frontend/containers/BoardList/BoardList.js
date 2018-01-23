@@ -8,6 +8,7 @@ import Board from '../../components/Board/Board'
 import Wrapper from '../../components/Wrapper/Wrapper'
 import Row from '../../components/Row/Row'
 import Title from '../../components/Title/Title'
+import BoardActions from '../../actions/BoardAction';
 
 
 class BoardsList extends React.Component {
@@ -25,13 +26,17 @@ class BoardsList extends React.Component {
         renderChildrenForBoard: () =>  <span>this.props.renderChildrenForBoard</span>,
         Theme:  {
             titleWrapper: ''
-        }
+        },
+        title: ''
     }
-    propsCollection = (_id) => ( {props}={} ) => {
+    propsCollection = (_id='') => ( {props}={} ) => {
         return {
            _id,
             toggleList: () => {
                 this.setState({isShow: !this.state.isShow})
+            },
+            removeBoard: (id) => {
+                this.props.removeBoard(id)
             },
             isShow: this.state.isShow,
             ...props
@@ -48,7 +53,7 @@ class BoardsList extends React.Component {
 
     render() {
         const {isShow} = this.state
-        const {Theme: {titleWrapper}} = this.props
+        const {Theme: {titleWrapper}, title} = this.props
         return (
             <div>
                 {this.props.boardsGroup.map((team, idx) =>  {
@@ -57,7 +62,7 @@ class BoardsList extends React.Component {
                     return (
                         <Wrapper key={`${team._id ? team._id : idx}`}>
                             <Row spaceBetween className={titleWrapper}>
-                                <Title text={team.title} tiny large />
+                                <Title text={title ? title : team.title} tiny large />
                                 {this.props.render(this.propsCollection( team._id ))}
                             </Row>
                             <List style={{display: isShow ? 'block' : 'none'}}>
@@ -68,7 +73,7 @@ class BoardsList extends React.Component {
                                                 {...board} 
                                                 key={`${board._id}_${idx}`}
                                             >
-                                            {this.props.renderChildrenForBoard(this.propsCollection(board._id))}
+                                                {this.props.renderChildrenForBoard(this.propsCollection(board._id))}
                                             </Board>
                                         ))
                                         : null}
@@ -86,4 +91,10 @@ class BoardsList extends React.Component {
 
 const mapStateToProps = ({organizations: {teams}}) => ({boards: teams})
 
-export default withRouter(connect(mapStateToProps)(BoardsList))
+const mapDispatchToProps = (dispatch) => ({
+    removeBoard(_id) {
+        dispatch( BoardActions.delete_board(_id) )
+    }
+})
+
+export default withRouter(connect(mapStateToProps, mapDispatchToProps)(BoardsList))

@@ -6,7 +6,8 @@ const initialState = {
     userId: "b2b63710b865419ba4db2e873baddf90",
     email: null,
     error: null,
-    isLoading: false
+    isLoading: false,
+    name: ''
 }
 
 const UserReducer = function (state = initialState, {type, payload}) {
