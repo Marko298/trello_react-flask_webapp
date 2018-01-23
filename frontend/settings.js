@@ -46,6 +46,23 @@ class API {
         return `${this.url}/user/${userId}/${boardId}/toggle_board_settings`
     }
 
+    delete_board(boardId) {
+        return `${this.url}/boards/remove_board/${boardId}`
+    }
+
+    /**
+    |--------------------------------------------------
+    | TEAMS ENDPOINTS
+    |--------------------------------------------------
+    */
+    get create_team() {
+        return `${this.url}/team/create_team`
+    }
+
+    get get_teams() {
+        return `${this.url}/teams`
+    }
+
 }
 
 const api = new API

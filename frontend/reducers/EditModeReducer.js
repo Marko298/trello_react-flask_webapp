@@ -1,8 +1,25 @@
-import {TOGGLE_EDIT_MODE_BOARDS, SETUP_CORDINATES} from '../constants/EditModeConstant'
+import {
+    TOGGLE_EDIT_MODE_BOARDS,
+    SETUP_CORDINATES,
+    TOGGLE_CREATE_BOARD_FORM,
+    TOGGLE_CREATE_TEAM_FORM,
+    TOGGLE_SIDEBAR_BOARDLIST,
+    FIX_SIDEBAR
+} from '../constants/EditModeConstant'
 
 const initialEditModeState = {
     forms: {
-        isEditBoardShow: false
+        // isEditBoardShow: false
+        isPopupShow: false
+    },
+    menu: {
+        isCreateBoardFormShow: false,
+        isCreateTeamFormShow: false
+    },
+    sidebar: {
+        isPinned: false,
+        isFixed: false,
+        backing: 0
     },
     selected: {},
     top: 0,
@@ -10,17 +27,16 @@ const initialEditModeState = {
     width: 0
 }
 
-export default function EditModeReducer(state = initialEditModeState, {type, settings}) {
+export default function EditModeReducer(state = initialEditModeState, {type, settings, marginLeft}) {
     switch (type) {
-        case TOGGLE_EDIT_MODE_BOARDS:
-
-            if(state.forms.isEditBoardShow) {
+        case TOGGLE_EDIT_MODE_BOARDS: {
+            if(state.forms.isPopupShow) {
 
                 return {
                     ...state,
                     selected: {},
                     forms: {
-                        isEditBoardShow: !state.forms.isEditBoardShow
+                        isPopupShow: !state.forms.isPopupShow
                     }
                 }
 
@@ -28,24 +44,72 @@ export default function EditModeReducer(state = initialEditModeState, {type, set
             return {
                 ...state,
                 forms: {
-                    isEditBoardShow: !state.forms.isEditBoardShow
+                    isPopupShow: !state.forms.isPopupShow
                 }
             }
 
-        case SETUP_CORDINATES:
+        }
 
-            let {isEditBoardShow} = state.forms
+            
+        case SETUP_CORDINATES: {
+            let {isPopupShow} = state.forms
             let selected = {}
-
-            if(isEditBoardShow) {
+    
+            if(isPopupShow) {
                 selected = {...settings.selected}
             } 
-
+    
             return {
                 ...state,
                 selected: selected,
                 ...settings
             }
+        }
+
+
+        case TOGGLE_CREATE_BOARD_FORM: {
+            return {
+                ...state,
+                menu: {
+                    isCreateBoardFormShow: true,
+                    isCreateTeamFormShow: false
+                }
+            }
+        }
+        
+        case TOGGLE_CREATE_TEAM_FORM: {
+            return {
+                ...state,
+                menu: {
+                    isCreateBoardFormShow: false,
+                    isCreateTeamFormShow: true
+                }
+            }
+        }
+        
+        case TOGGLE_SIDEBAR_BOARDLIST: {
+            return {
+                ...state,
+                sidebar: {
+                    ...state.sidebar,
+                    isFixed: !state.sidebar.isFixed,
+                    backing: 0
+                }
+            }
+        }
+
+
+        case FIX_SIDEBAR: {
+            return {
+                ...state,
+                sidebar: {
+                    isPinned: true,
+                    isFixed: true,
+                    backing: marginLeft
+                }
+            }
+        }
+
         default:
             return state
     }

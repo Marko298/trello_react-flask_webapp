@@ -3,16 +3,25 @@ import {withRouter} from 'react-router-dom'
 //redux
 import {connect} from 'react-redux'
 //actions
-import {toggle_editMode} from '../../actions/EditModeAction'
+import PopupActions from '../../actions/EditModeAction'
 //components
 import TabRoutes from '../../components/TabRoutes/TabRoutes'
 //containers
 import BoardsList from '../BoardList/BoardList'
 import BoardList from '../BoardList/BoardList'
-import EditForm from '../EditForm/EditForm'
+// import EditForm from '../EditForm/EditForm'
 import ButtonAddBoard from '../ButtonAddBoard/ButtonAddBoard'
+import withEditMode from '../../HOC/withEditMode';
 
 
+
+
+import Button from '../../components/Button/Button'
+const actions = () => ({
+    toggle: PopupActions.toggle_editMode,
+    menu: PopupActions.toggle_create_team_form
+})
+let AddTeamButton = withEditMode(actions)(Button)
 
 class Boards extends Component {
 
@@ -39,11 +48,10 @@ class Boards extends Component {
                 {path: '/members', title: "Members"},
                 {path: '/account', title: "Account"}
             ]
-
-
-        return <BoardsList  render={(getProps) => <TabRoutes {...getProps({
-            defaultProps: "just test props"
-        })} match={match} routers={routes} />} boardsGroup={comandsBoards}>
+            
+        return <BoardsList  render={(getProps) => (
+            <TabRoutes {...getProps()} match={match} routers={routes} />
+        )} boardsGroup={comandsBoards}>
             <ButtonAddBoard>
                 Add new Board
             </ButtonAddBoard>
@@ -55,7 +63,11 @@ class Boards extends Component {
         boards: [],
         isLoading: false
     }
+    
+    create_team = () => {
+        console.log("CREATE TEAM FROM BOARDS")
 
+    }
     
     componentWillReceiveProps(nextProps) {
         // console.log("------------------------------------------------")
@@ -64,14 +76,6 @@ class Boards extends Component {
     }
 
     componentWillUnmount() {
-        if(this.props.editModIsOn) {
-            this.props.toggle_editMode()
-        }
-    }
-
-    componentDidMount() {
-        // console.log(this.props)
-        // console.log("componentDidMount BoardsList")
     }
 
     renderChildren = (boards) => Children.map(
@@ -80,14 +84,22 @@ class Boards extends Component {
         )
 
     render() {
+        let styles = {
+            position: 'relative',
+            overflowY: 'auto'
+        }
         const {boards} = this.props
 
         return (
-            <div>
+            <div style={styles}>
                 {this.props.isLoading ? "Loading" : null}
                 <Fragment>
                     {this.renderChildren(boards)}
                 </Fragment>
+
+                <AddTeamButton>
+                    Create team
+                </AddTeamButton>
 
             </div>
         )
@@ -96,11 +108,11 @@ class Boards extends Component {
 
 const mapStateToProps = ({organizations: {teams, isLoading}, mode}) => ({
     boards: teams,
-    editModIsOn: mode.forms.isEditBoardShow,
+    editModIsOn: mode.forms.isPopupShow,
     isLoading
 })
 
-export default connect(mapStateToProps, {toggle_editMode})(Boards)
+export default connect(mapStateToProps)(Boards)
 
 // return (
 //     <Item key={_id} title={boardName} r]ender={() => {

@@ -1,20 +1,24 @@
-import React from 'react'
+import React, {Fragment} from 'react'
 import {Switch, Route, Link, BrowserRouter as Router, withRouter } from 'react-router-dom'
 
 import {connect} from 'react-redux'
 //actions
-// import {requestUserLogout} from '../../actions/UserAction'
-// import {fetchBoards} from '../../actions/BoardAction'
-
 import BoardActions from '../../actions/BoardAction'
-
-import EditForm from '../EditForm/EditForm'
-
+//containers
 import ToolBar from '../ToolBar/ToolBar'
 import Boards from '../Boards/Boards'
+import Popup from '../Popup/Popup'
+import AddBoardForm from '../AddBoardForm/AddBoardForm'
+import SidebarBoards from '../SidebarBoards/SidebarBoards'
+ 
+
+//components
+import Row from '../../components/Row/Row'
+import Wrapper from '../../components/Wrapper/Wrapper'
 
 //UTILS
 import Utils from '../../utils'
+import AddTeamForm from '../AddTeamForm/AddTeamForm';
 
 
 let Profile = ({match}) => (
@@ -28,10 +32,27 @@ let Board = ({match}) => (
     </div>
 )
 
+let Logo = () => (
+    <Link to='/' >HOME</Link>
+)
+
 
 class Dashboard extends React.Component {
     static defaultProps = {
-        boards: []
+        boards: [],
+        sidebar: {
+            backing: 0,
+            isPinned: false
+        }
+    }
+
+    static styles = ({isPinned, backing}) => {
+        return {
+            height: '100%',
+            marginLeft: isPinned ? backing + 'px' : 0,
+            display: 'flex',
+            flexDirection: 'column'
+        }
     }
     
     componentWillReceiveProps(nextProps) {
@@ -43,102 +64,102 @@ class Dashboard extends React.Component {
         console.log("componentDidCatch")
     }
     componentDidMount() {
-        const {boards: propBoards, fetchBoards} = this.props
-        propBoards.length === 1 ? fetchBoards() : null
+        document.title = "Dashbaord | Trello" 
+        const {boards: propBoards, fetchBoardsAndTeams} = this.props
+
+        propBoards.length === 1
+            ? fetchBoardsAndTeams().then(response => {
+                console.log("Response from component", {response})
+              })
+            : null
     }
+
     logout = () => {
         alert("LOGOUT")
         // this.props.requestUserLogout()
         // this.props.history.push('/')
     }
+ 
+    create_team = () => {
+        console.log("Create Team action is fire")
+    }
 
     render() {
         const { location, match, boards } = this.props
-        
+        const {menu: {isCreateBoardFormShow, isCreateTeamFormShow}, sidebar: {backing, isPinned} } = this.props
+
         return (
-            <div style={{position: 'releted'}}>
-                <ToolBar>
-                    <Link to='/' >HOME</Link>
-                    <Link to={`${this.props.match.url}profile/silver-ok`}>—profile—</Link>
-                    <div/>
-                    <Link to={`${this.props.match.url}board/9fbabd96602348eaba70fdaf8154944f`}>board</Link>
-                    <button onClick={this.logout}>LOG OUT</button>
+            <Fragment>
+                <SidebarBoards/>
+                    <Wrapper style={Dashboard.styles({isPinned, backing})}> 
+                        <ToolBar/>
+                        <Switch>
+                            <Route exact path={`${this.props.match.path}`} render={(props) => {
+                                return (
+                                    <Boards {...props}>
+                                        <Boards.Important />
+                                        <Boards.Private />
+                                        <Boards.Comands />
+                                    </Boards>
+                                )
+                            }}/>
 
-                </ToolBar>
-                        {/* <Route path={`${this.props.match.path}profile/:userId`} component={Profile}/> */}
-                <div className="container">
-                    <Switch>
+                            <Route path={`${this.props.match.path}board/:boardId/:teamId`} render={(props) => {
+                                const {teamId, boardId} = props.match.params
+                                const board = Utils.returnBoardFromTeam(boards, teamId, boardId)
+                                return <i>We are change location <strong> {board.boardName} </strong> </i>
+                            }}/>
 
-                        <Route exact path={`${this.props.match.path}`} render={(props) => {
-                            return (
-                                <Boards {...props}>
-                                    <Boards.Important />
-                                    <Boards.Private />
-                                    <Boards.Comands />
-                                </Boards>
-                            )
-                        }}/>
+                            <Route path={`${this.props.match.path}profile/:userId`} render={(props) => {
+                                console.log(" <Route path={`${this.props.match.path}profile/:userId`} render={(props)", props)
+                                return <h1>profile {props.match.params.userId}</h1>
+                            }}/>
 
-                        <Route path={`${this.props.match.path}board/:boardId`} render={(props) => {
-                            console.log(" <Route path={`${this.props.match.path}/:boardId`} render={(props)", props)
+                            <Route exact path={`${this.props.match.path}:teamId`} render={(props) => {
+                                let foundedTeam = Utils.returnGroupById(boards, props.match.params.teamId)[0]
+                                return <div>We are on the right spot <strong>{foundedTeam.title}</strong></div>
+                            }}/>
+                        </Switch>
+                    </Wrapper> 
 
-                            return <h1>We are change location</h1>
-                        }}/>
+                 <Wrapper className='pop-over'>
+                    <Popup>
+                        <Popup.Menu 
+                            title="Create Board"
+                            toShow={isCreateBoardFormShow}
+                            component={AddBoardForm} 
+                        />
 
-
-                        <Route path={`${this.props.match.path}profile/:userId`} render={(props) => {
-                            console.log(" <Route path={`${this.props.match.path}profile/:userId`} render={(props)", props)
-                            
-                            return <h1>profile {props.match.params.userId}</h1>
-                        }}/>
-
-
-                        <Route exact path={`${this.props.match.path}:teamId`} render={(props) => {
-                            // here i will retrive from the reducer our TEAM With releted boards
-                            // let foundedTeam = Utils.returnGroupById(boards, props.match.params.teamId)[0]
-                            console.log(foundedTeam)
-                            console.log({props})
-                            return <div>We are on the right spot <strong>{foundedTeam.title}</strong></div>
-                        }}/>
-                    </Switch>                
-                </div>
- 
-                 <div>
-                     <EditForm/>
-                 </div>
+                        <Popup.Menu 
+                            title="Create Team" 
+                            toShow={isCreateTeamFormShow} 
+                            component={AddTeamForm} 
+                        />
+                    </Popup>
+                 </Wrapper>
                  
                 <footer>
                     <h1>Footer</h1>
                 </footer>
-            </div>
+            </Fragment>
         )
     }
 }
-            // <Dashboard>
-            //     <ToolBar>
-            //         <ToolBar.BoardsList/>
-            //         <ToolBar.Search/>
-            //         <ToolBar.Create/>
-            //         <ToolBar.Notification/>
-            //         <ToolBar.Profile/>
-            //         {/* /Navigation/ */}
-                    
-            //     </ToolBar>
-            //     <Dashboard.Container />
-            //            {/* Routes */}
-            // </Dashboard>
 
-/**
-|--------------------------------------------------
-| TEST ACTIONS
-|--------------------------------------------------
-*/
-const mapStateToProps = ({ organizations: {teams} }) => ({boards: teams})
+
+
+const mapStateToProps = ({ organizations: {teams},  mode: {menu, sidebar}}) => ({
+    boards: teams,
+    menu: {...menu},
+    sidebar: {
+        backing: sidebar.backing,
+        isPinned: sidebar.isPinned
+    }
+})
 
 const mapDispatchToProps = (dispatch) => ({
-    fetchBoards(){
-        console.log("occur")
-        dispatch(BoardActions.fetchBoards())
+    fetchBoardsAndTeams() {
+        return dispatch(BoardActions.fetchBoardsAndTeams())
     }
 })
 

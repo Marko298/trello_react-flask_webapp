@@ -2,26 +2,32 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import './Button.style.css'
 
+const styles = function(props) {
+    return {
+        
+    }
+}
+
 
 function Button({onClick, children, type, disabled, descruption,...props}) {
-    let button = null;
 
-    let isObject = typeof props.className === 'object'
-    const className = props.className &&
-            isObject && props.className
-            ? "button ".concat( props.className.join(" "))
-            : 'button'
+    // let isObject = typeof props.className === 'object'
+    // const className = props.className &&
+    //         isObject && props.className
+    //         ? "button ".concat( props.className.join(" "))
+    //         : 'button'
+    let defaultClass = 'button'
+    let addonsClasses = props.className ? props.className : ''
 
-            // ref={node => button = node}
     return (
         <div>
             <button
                 {...props}
-                ref={n => button = n}
-                className={className}
+                className={defaultClass.concat(" ", addonsClasses)}  
                 disabled={disabled} 
                 type={type}
                 onClick={onClick}
+                style={styles(props)}
             >
                 {children}
             </button>

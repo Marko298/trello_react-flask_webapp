@@ -12,7 +12,7 @@ function List({...props}) {
             ? "list ".concat( props.className.join(" "))
             : 'list'
     return (
-        <ul className={className}>
+        <ul className={className} {...props}>
             {props.children}
         </ul>
     )

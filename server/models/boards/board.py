@@ -1,5 +1,5 @@
 from server.common.database import Database
-import server.models.boards.errors as err
+import server.models.boards.errors as error
 import datetime
 import uuid
 
@@ -35,19 +35,29 @@ class Board(object):
     @classmethod
     def get_board(cls, _id):
         cursorBoard = Database.find_one('boards', {'_id': _id})
-        return cls(**cursorBoard), cursorBoard
+        if cursorBoard is not None:
+            return cls(**cursorBoard), cursorBoard
+        else:
+            raise error.BoardIsNotExistInDatabase("The board with this Id is not exist in Database")
 
 
     @classmethod
     def get_boards_by_author(cls, authorId):
         cursorBoards = Database.find('boards', {'authorId': authorId})
-        # [cls(**board) for board in cursorBoards], 
         return [board for board in cursorBoards]
     
     def toggleBoardImportant(self, isImportant):
         Database.update_one('boards', {'_id': self._id}, {'isImportant': isImportant})
         cursorBoard = Database.find_one('boards', {'_id': self._id})
         return cursorBoard
+
+    @classmethod
+    def remove_board(cls, boardId, removeFromTeamCollection):
+        _, boardCursor = Board.get_board(boardId)
+
+        teamId = boardCursor['reletedTo']['teamId']
+        deletedBoard = Database.delete_one('boards', {"_id": boardId})
+        removeFromTeamCollection(teamId, boardId)
 
 
     def create_board(self):

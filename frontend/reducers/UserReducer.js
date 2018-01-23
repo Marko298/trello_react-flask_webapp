@@ -3,7 +3,7 @@
 import {USER_REQUEST_FAILED, USER_REQUEST, USER_LOGIN_SUCCESS, USER_REQUEST_LOGOUT} from '../constants/UserConstants'
 
 const initialState = {
-    userId: "e5383e778a2549138e47d6d132772016",
+    userId: "b2b63710b865419ba4db2e873baddf90",
     email: null,
     error: null,
     isLoading: false

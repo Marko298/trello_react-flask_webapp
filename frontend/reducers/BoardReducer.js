@@ -1,11 +1,19 @@
-import {FETCH_BOARDS, FETCH_BOARD_BY_ID, TOGGLE_IS_IMPORTANT_BOARD, CREATE_BOARD_REQUEST} from '../constants/BoardConstant'
+import {
+    FETCH_BOARDS,
+    FETCH_BOARD_BY_ID,
+    TOGGLE_IS_IMPORTANT_BOARD,
+    CREATE_BOARD_REQUEST
+} from '../constants/BoardConstant'
 
 import {
     BOARD_REQUEST,
     BOARD_REQUEST_GET_SUCCESS,
     BOARD_REQUEST_POST_SUCCESS,
     BOARD_REQUEST_ERROR,
-    BOARD_REQUEST_CREATED_SUCCESS
+    BOARD_REQUEST_CREATED_SUCCESS,
+    CREATE_TEAM_REQUEST,
+    CREATE_TEAM_SUCCESS,
+    FETCH_TEAMS_SUCCESS
 } from '../constants/BoardConstant'
 
 import Utils from '../utils'
@@ -17,7 +25,8 @@ const innitialState = {
             boards: []
         }
     ],
-    isLoading: false
+    isLoading: false,
+    isTeamCreatingLoading: false
 }
 
 
@@ -27,7 +36,7 @@ export default function BoardReducer(state=innitialState, {type, payload}) {
             return {...state, isLoading: true}
 
         case BOARD_REQUEST_GET_SUCCESS:
-            return {teams: [...payload], isLoading: false}
+            return {...state, teams: [...payload], isLoading: false}
         
         // case FETCH_BOARD_BY_ID:
             // return [...state, ...payload]
@@ -47,7 +56,7 @@ export default function BoardReducer(state=innitialState, {type, payload}) {
             let assignToImportant = Utils.setBoardsToImportant(boards)
             let wrappToArray = Utils.flattObjectToArray(assignToImportant)
 
-            // return [...wrappToArray, ...newState]
+
             return {...state, teams: [...wrappToArray, ...newState]}
         }
            
@@ -62,6 +71,34 @@ export default function BoardReducer(state=innitialState, {type, payload}) {
 
             return {...state, teams: [...oldGroup, ...updatedGroup]}
             
+        }
+
+        case CREATE_TEAM_REQUEST: {
+            return {
+                ...state,
+                isTeamCreatingLoading: true
+            }
+        }
+
+        case FETCH_TEAMS_SUCCESS: {
+
+            return {
+                ...state
+            }
+        }
+
+        case CREATE_TEAM_SUCCESS: {
+            const {_id, boards, teamName: title} = payload
+            const teamSchema = {_id, boards, title, status: "__COMAND__"}
+
+            console.log({teamSchema})
+
+            return {
+                ...state,
+                teams: [...state.teams, teamSchema],
+                isTeamCreatingLoading: false
+            }
+
         }
 
             default:

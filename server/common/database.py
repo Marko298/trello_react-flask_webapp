@@ -26,11 +26,16 @@ class Database(object):
     
     @staticmethod
     def delete_one(collection, data):
-        Database.DATABASE[collection].delete_one(data)
+        return Database.DATABASE[collection].delete_one(data)
 
     @staticmethod
     def update_one(collection, query, newData):
         Database.DATABASE[collection].update_one(query, {"$set": newData})
+        
+    @staticmethod
+    def delete_one_from_array(collection, query, data):
+        Database.DATABASE[collection].update_one(query, {"$pull": data})
+        
         
     @staticmethod
     def update_push(collection, query, newData):

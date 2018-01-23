@@ -26,6 +26,8 @@ class Signin extends Component {
         ]
     }
 
+    
+
     handleChange = (field) => (evant) => {
 
         let value = evant.target.value;
@@ -99,6 +101,9 @@ class Signin extends Component {
                 <Button type='submit'>Sign in</Button>
             </FormWithValidation>
         )
+    }
+    componentDidMount() {
+        document.title = "Sign in | Trello"
     }
 
     componentWillUpdate(nextProps, nextState) {

@@ -1,12 +1,12 @@
 .button {
     border: none;
     cursor: pointer;
-    line-height: 2.5;
-    padding: 0 12px;
+    /* line-height: 2.5; */
+    /* padding: 0 12px; */
     text-align: center;
     font-weight: bolder;
     border-radius: 5px;
-    margin: 15px 0;
+    /* margin: 15px 0; */
     font-size: 20px;
     background-color: #ffffff;
     color: #757575;

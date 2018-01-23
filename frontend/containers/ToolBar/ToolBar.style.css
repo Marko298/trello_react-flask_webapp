@@ -1,5 +1,15 @@
 .tool-bar {
-    display: flex;
-    justify-content: space-around;
+    display: block;
     padding: 20px 0;
+    /* display: flex;
+    db */
+    /* justify-content: space-around; */
+    /* justify-content: flex-end; */
+    /* top: 0;
+    left: 0; */
+    width: 100%;
+    /* position: fixed; */
+    background-color: #6c6da8 ;
+    position: relative;
+    
 }

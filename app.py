@@ -10,6 +10,7 @@ import server.models.users.decorators as user_dec
 
 ### Borad
 from server.models.boards.board import Board
+import server.models.boards.errors as BoardError
 
 ### Team 
 from server.models.teams.team import Team
@@ -159,6 +160,19 @@ def assign_board_to_team(teamId):
         return jsonify(board)
 
 
+@app.route('/boards/remove_board/<string:boardId>', methods=["DELETE"])
+@user_dec.login_required
+def remove_board(boardId):
+    if request.method == 'DELETE':
+        
+        try:
+            Board.remove_board(boardId, Team.remove_board)
+            return jsonify(boardId)
+
+        except BoardError.BoardError as error:
+            return jsonify(error=error.message)
+        return "Done"
+    
 ##########################
 ############### Teams API
 ##########################

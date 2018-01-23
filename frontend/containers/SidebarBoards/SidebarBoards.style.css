@@ -1,0 +1,39 @@
+#app {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+body {
+    position: relative;
+    overflow-y: auto;
+    height: 100%;
+}
+
+html {
+    height: 100%;
+}
+
+.sidebar {
+    width: 400px;
+    /* background-color: #f3f1f1; */
+    background-color:purple;
+    display: block;
+    padding: 5px 10px;
+}
+
+.sidebar-fixed {
+    overflow-y: scroll;    
+    position: fixed;
+    z-index: 200;
+}
+
+
+
+.sidebar-title-container {
+    padding: 0 10px;
+}
+
+.sidebar-button-collapse {
+    width: 30px;
+    height: 30px;
+}

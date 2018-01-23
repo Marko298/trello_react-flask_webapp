@@ -44,6 +44,14 @@ class Team(object):
         }
 
         Database.update_push('teams', query, addBoard)
+    
+    @classmethod
+    def remove_board(cls, teamId, board):
+        Database.delete_one_from_array(
+            'teams',
+            {"_id": teamId},
+            {"boards": board}
+        )
 
     def json(self): 
         return {

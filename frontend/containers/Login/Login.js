@@ -21,6 +21,10 @@ import UserActions from '../../actions/UserAction'
 const FormWithValidation = withValidationFields(Form)
 
 class Login extends Component{
+           
+    componentDidMount() {
+        document.title = "Log in | Trello"
+    }
 
     state = {
         email: '',
@@ -81,7 +85,7 @@ class Login extends Component{
                         name="password"
                         label='Password'
                     />
-                    <Button type='submit' className={["button-primary"]} >Login</Button>
+                    <Button type='submit' >Login</Button>
                 </FormWithValidation>
             </div>
         )

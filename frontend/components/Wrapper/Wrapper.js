@@ -3,9 +3,9 @@ import React from 'react'
 //styles
 import './Wrapper.css'
 
-function Wrapper({children}) {
+function Wrapper({children, ...props}) {
     return (
-        <div style={{padding: '0 50px', borderBottom: '1px solid black'}}>
+        <div {...props}>
             {children}
         </div>
     )

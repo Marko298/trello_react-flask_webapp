@@ -1,20 +1,38 @@
-import React from 'react'
-
+import React, {Component} from 'react'
+import {connect} from 'react-redux'
+import {Link} from 'react-router-dom'
+//action
+import PopupActions from '../../actions/EditModeAction'
+//components
+import Button from '../../components/Button/Button'
+import Row from '../../components/Row/Row'
 //styles
 import './ToolBar.style.css'
 
-function ToolBar(props) {
-    return (
-        <div className='tool-bar'>
-            <h6>Borads</h6>
-            <input type='text' placeholder='search borads... '/>
-            <h6>HOME[TRELLO]</h6>
-            <h6>ICON[+]</h6>
-            <h6>ICON[jingle]</h6>
-            <h6>ICON[manage-profile]</h6>
-            {props.children}
-        </div>
-    )
+
+class ToolBar extends Component {
+
+    render() {
+        return (
+            <div className="tool-bar">
+                <Row>
+                    <Button onClick={this.props.toggleSidebar}>
+                        BOARDS
+                    </Button> 
+                    <input />   
+                    <Link to='/'>HOME</Link>
+                    <h6>ICON[+]</h6>
+                </Row>
+            </div>
+        )
+    }
 }
 
-export default ToolBar
+
+const mapDispatchToProps = (dispatch) => ({
+    toggleSidebar(){
+        dispatch(PopupActions.toggle_sidebard_boardlist())
+    }
+})
+
+export default connect(null, mapDispatchToProps)(ToolBar)

@@ -120,6 +120,7 @@ var Utils = (function() {
         return currentTeam
 
     }
+    
     function returnBoardFromTeam(boardsGroup, teamId, id) {
         let group = returnGroupById(boardsGroup, teamId)
 

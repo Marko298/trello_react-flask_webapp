@@ -11,6 +11,9 @@ import Title from '../../components/Title/Title'
 
 
 class BoardsList extends React.Component {
+    state = {
+        isShow: true
+    }
     static defaultProps = {
         boards:  [
             {
@@ -18,11 +21,19 @@ class BoardsList extends React.Component {
                 boards: []
             }
         ],
-        render: () => <span>this.props.render</span>
+        render: () => <span>this.props.render</span>,
+        renderChildrenForBoard: () =>  <span>this.props.renderChildrenForBoard</span>,
+        Theme:  {
+            titleWrapper: ''
+        }
     }
     propsCollection = (_id) => ( {props}={} ) => {
         return {
            _id,
+            toggleList: () => {
+                this.setState({isShow: !this.state.isShow})
+            },
+            isShow: this.state.isShow,
             ...props
         }
     }
@@ -34,7 +45,10 @@ class BoardsList extends React.Component {
             return React.cloneElement(child, {selected: boards[0]})
         })
     }
+
     render() {
+        const {isShow} = this.state
+        const {Theme: {titleWrapper}} = this.props
         return (
             <div>
                 {this.props.boardsGroup.map((team, idx) =>  {
@@ -42,20 +56,22 @@ class BoardsList extends React.Component {
     
                     return (
                         <Wrapper key={`${team._id ? team._id : idx}`}>
-                            <Row>
-                                <Title>  {team.title}  </Title>
+                            <Row spaceBetween className={titleWrapper}>
+                                <Title text={team.title} tiny large />
                                 {this.props.render(this.propsCollection( team._id ))}
                             </Row>
-                            <List>
+                            <List style={{display: isShow ? 'block' : 'none'}}>
                                 <Fragment>
-                                {team['boards'] instanceof Array 
-                                    ? team.boards.map( (board, idx) => (console.log(temId_from_Wrapper)) || (
-                                        <Board
-                                            {...board} 
-                                            key={`${board._id}_${idx}`}
-                                        />
-                                    ))
-                                    : null}
+                                    {team['boards'] instanceof Array 
+                                        ? team.boards.map( (board, idx) => (
+                                            <Board
+                                                {...board} 
+                                                key={`${board._id}_${idx}`}
+                                            >
+                                            {this.props.renderChildrenForBoard(this.propsCollection(board._id))}
+                                            </Board>
+                                        ))
+                                        : null}
                                 </Fragment>
                                 {this.props.children && <li>{this.renderChildren(team._id)}</li> }
                             </List>

@@ -34,22 +34,24 @@ class Board extends Component {
     }
     render() {
 
-        const {isImportant, boardName, teamName, _id, reletedTo} = this.props
+        const {isImportant, boardName, teamName, _id, reletedTo, classTheme} = this.props
         const {isChecked} = this.state
-
         return (
             <li style={{margin: '20px 0'}}>
                 <div>
                     <h3>{boardName}</h3>
                     <p>Is important: <strong>{JSON.stringify(isImportant)}</strong></p>
-                    <Input
-                        type='checkbox' 
-                        name="isImportant"
-                        checked={isChecked}
-                        onChange={this.handleChange(_id)}
-                    >
-                    Check to important —
-                    </Input>
+                    <div>
+                        <Input
+                            type='checkbox' 
+                            name="isImportant"
+                            checked={isChecked}
+                            onChange={this.handleChange(_id)}
+                            >
+                        Check to important —
+                        </Input>
+                        {this.props.children}
+                    </div>
                     <p>{isImportant ? teamName : null}</p>
                 </div>
             </li>
