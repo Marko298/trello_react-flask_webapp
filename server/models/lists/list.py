@@ -37,3 +37,12 @@ class List(object):
             "forBoard" : self.forBoard,
             "items" : self.items
         }
+    
+    @staticmethod
+    def list_schema_for_client():
+        return {
+            "_id" : "",
+            "title" : "",
+            "forBoard" : "",
+            "items": list()
+        }

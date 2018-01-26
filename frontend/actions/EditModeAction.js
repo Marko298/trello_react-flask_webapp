@@ -8,7 +8,9 @@ import {
     UNFIX_SIDEBAR,
     TOGGLE_CRATIVE_MENU,
     TOGGLE_ACCOUNT_SETTINGS_MENU,
-    SWITCH_COMPONENTS_IN_EDITING_PAGE 
+    SWITCH_COMPONENTS_IN_EDITING_PAGE,
+    TOGGLE_CREATE_LIST_MENU ,
+    TOGGLE_MENU_BOARD_PAGE
 } from '../constants/EditModeConstant'
 
 
@@ -89,5 +91,17 @@ export default class PopupActions {
             }
         }
 
+    }
+
+    static toggle_create_list_menu() {
+        return {
+            type: TOGGLE_CREATE_LIST_MENU
+        }
+    }
+
+    static toggle_menu_on_boardPage() {
+        return {
+            type: TOGGLE_MENU_BOARD_PAGE
+        }
     }
 }

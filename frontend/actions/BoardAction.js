@@ -22,6 +22,7 @@ import {
 import axios from 'axios'
 import Utils from '../utils'
 import UserActions from './UserAction';
+import ListActions from './ListAction'
 
 
 export default class BoardActions {
@@ -205,7 +206,8 @@ export default class BoardActions {
 
             return Promise.all([
                 dispatch(BoardActions.fetchBoards()),
-                dispatch(BoardActions.fetchTeams())
+                dispatch(BoardActions.fetchTeams()),
+                dispatch(ListActions.get_list_schema())
             ]).then((responseArray) => {
 
                 let boards = [...responseArray[0]]

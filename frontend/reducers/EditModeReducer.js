@@ -8,7 +8,9 @@ import {
     UNFIX_SIDEBAR,
     TOGGLE_CRATIVE_MENU,
     TOGGLE_ACCOUNT_SETTINGS_MENU,
-    SWITCH_COMPONENTS_IN_EDITING_PAGE
+    SWITCH_COMPONENTS_IN_EDITING_PAGE,
+    TOGGLE_CREATE_LIST_MENU,
+    TOGGLE_MENU_BOARD_PAGE
 
 } from '../constants/EditModeConstant'
 
@@ -20,7 +22,8 @@ const initialEditModeState = {
         isCreateBoardFormShow: false,
         isCreateTeamFormShow: false,
         isCreativeMenuShow: false,
-        isAccountSettingsMenuShow: false
+        isAccountSettingsMenuShow: false,
+        isCreateListNebuShow: false
     },
     switchBetweenComponents: {
         toShowFirstComponent: true,
@@ -31,6 +34,7 @@ const initialEditModeState = {
         isFixed: false,
         backing: 0
     },
+    isMenuInBoardPageShow: false,
     selected: {},
     top: 0,
     left: 0,
@@ -159,6 +163,23 @@ export default function EditModeReducer(state = initialEditModeState, {type, set
                     toShowFirstComponent: switchBetweenComponents.toShowFirstComponent,
                     toShowSecondComponent: switchBetweenComponents.toShowSecondComponent
                 }
+            }
+        }
+
+        case TOGGLE_CREATE_LIST_MENU: {
+            return {
+                ...state,
+                menu: {
+                    ...initialEditModeState.menu,
+                    isCreateListNebuShow: true
+                }
+            }
+        }
+
+        case TOGGLE_MENU_BOARD_PAGE: {
+            return {
+                ...state,
+                isMenuInBoardPageShow: !state.isMenuInBoardPageShow
             }
         }
 

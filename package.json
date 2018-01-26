@@ -6,7 +6,7 @@
   "scripts": {
     "babel": "babel test.js  --wacth --out-file t.js",
     "w": "webpack-dev-server --hot --inline",
-    "build" : "webpack"
+    "build": "webpack"
   },
   "author": "",
   "license": "ISC",
@@ -40,6 +40,7 @@
     "redux-logger": "^3.0.6",
     "redux-thunk": "^2.2.0",
     "styled-components": "^2.4.0",
+    "uuid": "^3.2.1",
     "webpack": "^3.10.0"
   }
 }

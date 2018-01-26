@@ -69,6 +69,10 @@ class API {
         return `${this.url}/list/get_releted_lists/${boardId}`
     }
 
+    get get_list_schema() {
+        return `${this.url}/list/list_schema`
+    }
+
 }
 
 const api = new API

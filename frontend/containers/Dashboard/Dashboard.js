@@ -15,6 +15,8 @@ import SidebarBoards from '../SidebarBoards/SidebarBoards'
 import AccountSettingsMenu from '../AccountSettingsMenu/AccountSettingsMenu'
 import EditFormOrganization from '../EditFormOrganization/EditFormOrganization'
 import EditFormProfile from '../EditFormProfile/EditFormProfile'
+import BoardPage from '../BoardPage/BoardPage'
+import AddListForm from '../AddListForm/AddListForm'
  
 
 //components
@@ -103,12 +105,6 @@ class Dashboard extends React.Component {
             : null
     }
 
-    logout = () => {
-        alert("LOGOUT")
-        // this.props.requestUserLogout()
-        // this.props.history.push('/')
-    }
- 
     create_team = () => {
         console.log("Create Team action is fire")
     }
@@ -123,7 +119,8 @@ class Dashboard extends React.Component {
             isCreateBoardFormShow,
             isCreateTeamFormShow,
             isCreativeMenuShow,
-            isAccountSettingsMenuShow
+            isAccountSettingsMenuShow,
+            isCreateListNebuShow
         }, sidebar: {backing, isPinned}, userId } = this.props
 
         const routes = [
@@ -175,11 +172,15 @@ class Dashboard extends React.Component {
                                 const {teamId, boardId} = props.match.params
                                 const board = Utils.returnBoardFromTeam(boards, teamId, boardId)
 
+                                console.log({board})
+
+                                // <i>We are change location <strong> {board.boardName} </strong> </i>
                                 return (
-                                    <div style={{position: 'relative', overflowY: 'auto'}}> 
-                                        <i>We are change location <strong> {board.boardName} </strong> </i>
+                                    <div style={{position: 'relative', overflowY: 'auto', height: '100%'}}> 
+                                        <BoardPage board={board}/>
                                     </div>
                                 )
+                                
                             }}/>
 
                             {/* <Route path={`${this.props.match.path}profile/:userId`} render={(props) => {
@@ -242,6 +243,11 @@ class Dashboard extends React.Component {
                             toShow={isAccountSettingsMenuShow} 
                             component={AccountSettingsMenu} 
                         />
+                        <Popup.Menu 
+                            title="Create List"
+                            toShow={isCreateListNebuShow} 
+                            component={AddListForm} 
+                        />
                     </Popup>
                  </Wrapper>
             </Fragment>
@@ -251,7 +257,10 @@ class Dashboard extends React.Component {
 
 
 
-const mapStateToProps = ({user,organizations: {teams},  mode: {menu, sidebar}}) => ({
+const mapStateToProps = ({
+    user,organizations: {teams},
+    mode: {menu, sidebar}
+}) => ({
     userId: user.userId,
     boards: teams,
     menu: {...menu},

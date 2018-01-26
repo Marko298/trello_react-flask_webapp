@@ -20,6 +20,7 @@ function Input(props) {
                 name={name}
                 placeholder={`Type from ${label}`}
                 onChange={handleChange(name)}
+                {...props}
             />
                 {errors.length > 0 && <span>{errors}</span>}
         </div>

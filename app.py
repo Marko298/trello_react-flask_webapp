@@ -216,15 +216,17 @@ def create_list(boardId):
     if request.method == 'POST' and request.is_json:
         CONTENT = request.get_json()
 
-        title = CONTENT.get('title')
+        title = CONTENT.get('title') 
+        forBoard = CONTENT.get('forBoard') if CONTENT.get('forBoard') is not None else None
+        _id = CONTENT.get('_id') if CONTENT.get('_id') is not None else None
 
         try:
             classBoard, cursorBoard = Board.get_board(boardId)
         except BoardError.BoardError as error:
             return jsonify(error=error.message)
 
-        if isinstance(classBoard, Board):
-            listId = List(title=title, forBoard=boardId).save()
+        if isinstance(classBoard, Board) and boardId == forBoard:
+            listId = List(title=title, forBoard=forBoard, _id=_id).save()
             classBoard.assign_list_to_board(listId)
 
             try:
@@ -241,6 +243,13 @@ def get_list(boardId):
     if request.method == 'GET':
         cursorLists, classLists = List.get_all_lists_releted_to_board(boardId)
         return jsonify(cursorLists)
+
+  
+@app.route('/list/list_schema', methods=['GET'])
+def list_schema():
+    listSchema = List.list_schema_for_client()
+    return jsonify(listSchema)
+    
         
 
 if __name__ == '__main__':

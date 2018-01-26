@@ -48,7 +48,12 @@ class Board extends Component {
 
         return (
             <li style={{margin: '20px 0', ...styleSettings}} className='li-t'>
-                <Link to={`${this.props.match.url}board/${_id}/${reletedTo.teamId}`} >
+                <Link to={{
+                    state: {
+                        boardId: _id
+                    },
+                    pathname: `${this.props.match.url}board/${_id}/${reletedTo.teamId}`
+                }} >
                     <Title text={boardName} medium color={Color.white}/>
                     <p>{isImportant ? teamName : null}</p>
                 </Link> 
