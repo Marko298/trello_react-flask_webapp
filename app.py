@@ -16,6 +16,9 @@ import server.models.boards.errors as BoardError
 from server.models.teams.team import Team
 import server.models.teams.errors as TeamError
 
+### List
+from server.models.lists.list import List
+import server.models.lists.errors as ListErrors
 
 ############ FLask App  ############
 
@@ -203,6 +206,42 @@ def get_all_teams():
         return jsonify(error=e)
         
 
+##########################
+############### Lists API
+##########################
+
+@app.route('/list/create_list_for_board/<string:boardId>', methods=["POST"])
+@user_dec.login_required
+def create_list(boardId):
+    if request.method == 'POST' and request.is_json:
+        CONTENT = request.get_json()
+
+        title = CONTENT.get('title')
+
+        try:
+            classBoard, cursorBoard = Board.get_board(boardId)
+        except BoardError.BoardError as error:
+            return jsonify(error=error.message)
+
+        if isinstance(classBoard, Board):
+            listId = List(title=title, forBoard=boardId).save()
+            classBoard.assign_list_to_board(listId)
+
+            try:
+                cursorList, _ = List.get_list_by_id(listId)
+            except ListErrors.ListErrors as error:
+                return jsonify(error=error.message)
+
+        return jsonify(cursorList)
+
+    
+@app.route('/list/get_releted_lists/<string:boardId>', methods=["GET"])
+@user_dec.login_required
+def get_list(boardId):
+    if request.method == 'GET':
+        cursorLists, classLists = List.get_all_lists_releted_to_board(boardId)
+        return jsonify(cursorLists)
+        
 
 if __name__ == '__main__':
     app.run(port=4000, debug=True)

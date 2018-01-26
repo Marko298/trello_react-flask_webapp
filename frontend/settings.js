@@ -55,6 +55,20 @@ class API {
         return `${this.url}/teams`
     }
 
+     /**
+    |--------------------------------------------------
+    | LISTS ENDPOINTS
+    |--------------------------------------------------
+    */
+
+    create_list(boardId){
+        return `${this.url}/list/create_list_for_board/${boardId}`
+    }
+
+    get_lists_for_board(boardId) {
+        return `${this.url}/list/get_releted_lists/${boardId}`
+    }
+
 }
 
 const api = new API

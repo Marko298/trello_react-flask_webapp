@@ -11,7 +11,8 @@ class Board(object):
                 _id=None, 
                 reletedTo={"teamId": None, "teamName": None},
                 styleSettings=None,
-                timeCreated=None):
+                timeCreated=None,
+                lists=None):
         self.boardName = boardName
         self.reletedTo = {
             "teamId" : authorId if reletedTo.get("teamId") is None else reletedTo.get("teamId"),
@@ -24,6 +25,8 @@ class Board(object):
 
         self.styleSettings = self.defaultStyleSettings() if styleSettings is None else styleSettings
         self.timeCreated = datetime.datetime.now() if timeCreated is None else timeCreated
+
+        self.lists = lists if lists is not None else list()
 
     def __repr__(self):
         return "<Board {}>".format(self.title)
@@ -39,7 +42,6 @@ class Board(object):
             return cls(**cursorBoard), cursorBoard
         else:
             raise error.BoardIsNotExistInDatabase("The board with this Id is not exist in Database")
-
 
     @classmethod
     def get_boards_by_author(cls, authorId):
@@ -59,18 +61,9 @@ class Board(object):
         deletedBoard = Database.delete_one('boards', {"_id": boardId})
         removeFromTeamCollection(teamId, boardId)
 
-
-    def create_board(self):
-        """
-            You can create board for personal profit
-            or you can create board releted to any team
-        """
-        pass
-
-    def set_board_to_team(self):
-        pass
-    
-            
+    def assign_list_to_board(cls, listId):
+        print("The assign_list_to_board — {}".format(cls._id))
+        Database.update_push('boards', {'_id': cls._id}, {"lists": listId})
     
     def change_background_to(self):
         pass
@@ -92,7 +85,8 @@ class Board(object):
             "styleSettings" : self.styleSettings,
             "timeCreated" : self.timeCreated,
             "_id" : self._id,
-            "authorId" : self.authorId
+            "authorId" : self.authorId,
+            "lists" : self.lists
         }
 
     def save(self):
