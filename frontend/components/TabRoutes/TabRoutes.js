@@ -4,7 +4,7 @@ import {Link, withRouter} from 'react-router-dom'
 //styles
 import './TabRoutes.css'
 
-function TabRoutes({children, routers, match, _id=''}) {
+function TabRoutes({children, routers, match, _id}) {
     return (
         <div>
             <span>
@@ -17,6 +17,10 @@ function TabRoutes({children, routers, match, _id=''}) {
             {children}
         </div>
     )
+}
+
+TabRoutes.defaultProps = {
+    _id: ''
 }
 
 export default TabRoutes

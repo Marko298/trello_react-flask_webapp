@@ -1,6 +1,7 @@
 import React, {Component} from 'react'
 import PropTypes from 'prop-types'
 import {connect} from 'react-redux'
+import {Link, withRouter} from 'react-router-dom'
 
 //actions
 import {toggleIsImportant} from '../../actions/BoardAction'
@@ -18,6 +19,9 @@ class Board extends Component {
     state = {
         isChecked: false
     }
+    static propTypes = {
+        boardName: PropTypes.string.isRequired
+    }
     componentDidMount() {
         this.setState((prevState) => {
             return {
@@ -31,7 +35,6 @@ class Board extends Component {
     })
 
     handleChange = (_id) => (e) => {
-        
         this.setState(this.toggleCheckbox)
         let request = { isImportant: !this.state.isChecked}
         this.props.toggleIsImportant(_id, request)
@@ -39,33 +42,32 @@ class Board extends Component {
     }
     render() {
 
+        
         const {isImportant, boardName, teamName, _id, reletedTo, classTheme, styleSettings} = this.props
         const {isChecked} = this.state
+
         return (
-            <li style={{margin: '20px 0', ...styleSettings}}>
-                <div>
+            <li style={{margin: '20px 0', ...styleSettings}} className='li-t'>
+                <Link to={`${this.props.match.url}board/${_id}/${reletedTo.teamId}`} >
                     <Title text={boardName} medium color={Color.white}/>
+                    <p>{isImportant ? teamName : null}</p>
+                </Link> 
                     <div>
                         <Input
+                            className='inp-t'
                             type='checkbox' 
                             name="isImportant"
                             checked={isChecked}
                             onChange={this.handleChange(_id)}
-                            >
+                        >
                         </Input>
                         {this.props.children}
                     </div>
-                    <p>{isImportant ? teamName : null}</p>
-                </div>
             </li>
         )
     }
 }
 
-
-Board.propTypes = {
-    boardName: PropTypes.string.isRequired
-}
 
 const mapDispatchToProps = (dispatch) => ({
     toggleIsImportant(id, data) {
@@ -73,4 +75,4 @@ const mapDispatchToProps = (dispatch) => ({
     }
 })
 
-export default connect(null, mapDispatchToProps)(Board)
+export default withRouter(connect(null, mapDispatchToProps)(Board))

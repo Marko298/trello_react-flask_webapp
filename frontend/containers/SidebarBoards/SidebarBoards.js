@@ -38,10 +38,7 @@ class SidebarBoards extends React.Component {
             top: isPinned ? '0px' : '63px'
         }
     }
-    componentDidMount() {
-        console.log("SidebarBoards componentDidMount")
-        console.log("this.Sidebar ", )
-    }
+
     getElement = (element) => {
         if(this.Sidebar) return
         this.Sidebar = element

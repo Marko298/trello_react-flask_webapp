@@ -10,18 +10,13 @@ const withEditMode = (action, {topCordinates}={}) => (Component) => {
         static defaultProps = {
             selected: {}
         }
-        state = {
-            left: 0,
-            top: 0,
-            width: 0
-        }
 
         getCordinates = () => {
             const {width, top, left} = this.node.getBoundingClientRect()
             const isTopCordinatesAlreadyExist = topCordinates !== undefined && topCordinates
-            
+            // parseInt(width) + 'px'
             let settings = {
-                width: parseInt(width) + 'px',
+                width: width > 400 ? '400px' : '300px',
                 top: isTopCordinatesAlreadyExist || parseInt(top + window.scrollY) + 'px',
                 left: parseInt(left + window.scrollX) + 'px'
             }
@@ -39,20 +34,11 @@ const withEditMode = (action, {topCordinates}={}) => (Component) => {
             const {toggle, menuToShow} = this.props
 
             return (
-                <div 
-                    ref={getElement} 
-                    onClick={ compose( getCordinates, toggle, menuToShow ) }
-                >
+                <div ref={getElement} onClick={ compose( getCordinates, toggle, menuToShow ) } >
                     <Component {...this.props}/>
                 </div>
             )
         }
-
-        componentDidMount() {
-            const {width, top, left} = this.node.getBoundingClientRect()
-            this.setState((state) => ({width, top, left}) )
-        }
-
     }
 
     const mergeProps = (stateProps, dispatchProps, ownProps) => {
@@ -61,7 +47,7 @@ const withEditMode = (action, {topCordinates}={}) => (Component) => {
         return {
             ...ownProps,
             toggle() {
-                dispatch(action().toggle())
+                action().toggle && dispatch(action().toggle())
             },
             menuToShow() {
                 dispatch(action().menu())

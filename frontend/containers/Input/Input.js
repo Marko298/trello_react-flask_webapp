@@ -5,7 +5,7 @@ import './Input.style.css'
 
 
 function Input(props) {
-    const {label, field, name, type, handleChange, children, onFocus, onBlur, errors} = props
+    const {label, field, name, type, handleChange, children, onFocus, onBlur, errors, onChange} = props
 
     return (
         <div className='wrapper'>
@@ -20,7 +20,6 @@ function Input(props) {
                 name={name}
                 placeholder={`Type from ${label}`}
                 onChange={handleChange(name)}
-
             />
                 {errors.length > 0 && <span>{errors}</span>}
         </div>

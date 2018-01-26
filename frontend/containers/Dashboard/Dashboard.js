@@ -4,12 +4,17 @@ import {Switch, Route, Link, BrowserRouter as Router, withRouter } from 'react-r
 import {connect} from 'react-redux'
 //actions
 import BoardActions from '../../actions/BoardAction'
+import PopupActions from '../../actions/EditModeAction'
+
 //containers
 import ToolBar from '../ToolBar/ToolBar'
 import Boards from '../Boards/Boards'
 import Popup from '../Popup/Popup'
 import AddBoardForm from '../AddBoardForm/AddBoardForm'
 import SidebarBoards from '../SidebarBoards/SidebarBoards'
+import AccountSettingsMenu from '../AccountSettingsMenu/AccountSettingsMenu'
+import EditFormOrganization from '../EditFormOrganization/EditFormOrganization'
+import EditFormProfile from '../EditFormProfile/EditFormProfile'
  
 
 //components
@@ -18,6 +23,11 @@ import Wrapper from '../../components/Wrapper/Wrapper'
 import TabRoutes from '../../components/TabRoutes/TabRoutes'
 import Button from '../../components/Button/Button'
 import CreativeMenu from '../../components/CreativeMenu/CreativeMenu'
+import FormForEditing from '../../components/FormForEditing/FormForEditing'
+import Information from '../../components/Information/Information'
+
+//HOC's
+import withToggleBTWComponents from '../../HOC/withToggleBTWComponents'
 
 //UTILS
 import Utils from '../../utils'
@@ -71,16 +81,16 @@ class Dashboard extends React.Component {
     }
     
     componentWillReceiveProps(nextProps) {
-        console.log("------------------------------------------------")
-        console.log("Dashboard componentWillReceiveProps", {nextProps})
-        console.log("------------------------------------------------")
+        // console.log("------------------------------------------------")
+        // console.log("Dashboard componentWillReceiveProps", {nextProps})
+        // console.log("------------------------------------------------")
     }
     componentDidCatch() {
         console.log("componentDidCatch")
     }
     componentDidMount() {
 
-        console.log("this.props.important()", this.props.important)
+        // console.log("this.props.important()", this.props.important)
 
 
         document.title = "Dashbaord | Trello" 
@@ -88,7 +98,7 @@ class Dashboard extends React.Component {
 
         propBoards.length === 1
             ? fetchBoardsAndTeams().then(response => {
-                console.log("Response from component", {response})
+                // console.log("Response from component", {response})
               })
             : null
     }
@@ -112,8 +122,9 @@ class Dashboard extends React.Component {
         const {menu: {
             isCreateBoardFormShow,
             isCreateTeamFormShow,
-            isCreativeMenuShow
-        }, sidebar: {backing, isPinned} } = this.props
+            isCreativeMenuShow,
+            isAccountSettingsMenuShow
+        }, sidebar: {backing, isPinned}, userId } = this.props
 
         const routes = [
             {path: '', title: "Boards"},
@@ -163,18 +174,43 @@ class Dashboard extends React.Component {
                             <Route path={`${this.props.match.path}board/:boardId/:teamId`} render={(props) => {
                                 const {teamId, boardId} = props.match.params
                                 const board = Utils.returnBoardFromTeam(boards, teamId, boardId)
-                                return <i>We are change location <strong> {board.boardName} </strong> </i>
+
+                                return (
+                                    <div style={{position: 'relative', overflowY: 'auto'}}> 
+                                        <i>We are change location <strong> {board.boardName} </strong> </i>
+                                    </div>
+                                )
                             }}/>
 
-                            <Route path={`${this.props.match.path}profile/:userId`} render={(props) => {
+                            {/* <Route path={`${this.props.match.path}profile/:userId`} render={(props) => {
                                 console.log(" <Route path={`${this.props.match.path}profile/:userId`} render={(props)", props)
                                 return <h1>profile {props.match.params.userId}</h1>
-                            }}/>
+                            }}/> */}
 
-                            <Route exact path={`${this.props.match.path}:teamId`} render={(props) => {
+                            <Route path={`${this.props.match.path}:teamId`} render={(props) => {
                                 let foundedTeam = Utils.returnGroupById(boards, props.match.params.teamId)[0]
+                                let isProfileEditings = userId === foundedTeam._id
                                 console.log({foundedTeam})
-                                return <div>We are on the right spot <strong>{foundedTeam.title}</strong></div>
+
+                                let BoardEditing = withToggleBTWComponents(EditFormOrganization)({
+                                    FirstComponent: FormForEditing,
+                                    SecondComponent: Information
+                                })
+
+                                let ProfileEditing = withToggleBTWComponents(EditFormProfile)({
+                                    FirstComponent: FormForEditing,
+                                    SecondComponent: Information
+                                })
+
+                                let {title}  = foundedTeam
+                                
+                                return (
+                                    
+                                    isProfileEditings 
+                                    ? <ProfileEditing title={title} /> 
+                                    : <BoardEditing title={title}/>
+                                )
+
                             }}/>
                         </Switch>
                     </Wrapper> 
@@ -185,25 +221,29 @@ class Dashboard extends React.Component {
                             title="Create Board"
                             toShow={isCreateBoardFormShow}
                             component={AddBoardForm} 
+                            stepBackWithAction={PopupActions.toggle_creative_menu} 
                         />
 
                         <Popup.Menu 
                             title="Create Team" 
                             toShow={isCreateTeamFormShow} 
                             component={AddTeamForm} 
+                            stepBackWithAction={PopupActions.toggle_creative_menu} 
                         />
 
                         <Popup.Menu 
-                            title="Create" 
+                            title="Create"
                             toShow={isCreativeMenuShow} 
                             component={CreativeMenu} 
                         />
+
+                        <Popup.Menu 
+                            title="Profile Pasha School"
+                            toShow={isAccountSettingsMenuShow} 
+                            component={AccountSettingsMenu} 
+                        />
                     </Popup>
                  </Wrapper>
-                 
-                <footer>
-                    <h1>Footer</h1>
-                </footer>
             </Fragment>
         )
     }
@@ -211,7 +251,8 @@ class Dashboard extends React.Component {
 
 
 
-const mapStateToProps = ({ organizations: {teams},  mode: {menu, sidebar}}) => ({
+const mapStateToProps = ({user,organizations: {teams},  mode: {menu, sidebar}}) => ({
+    userId: user.userId,
     boards: teams,
     menu: {...menu},
     sidebar: {

@@ -3,15 +3,7 @@ class API {
     constructor() {
         this.url = 'http://localhost:4000'
     }
-    // get headers () {
-    //     return {
-    //         headers: {
-    //             "Access-Control-Allow-Headers": "*",
-    //             "Content-Type": "application/json"
-    //         }, "withCredentials": true
-    //     }
-    // }
-
+    
     headers = () => ({
         "Access-Control-Allow-Headers": "*",
         "Content-Type": "application/json"

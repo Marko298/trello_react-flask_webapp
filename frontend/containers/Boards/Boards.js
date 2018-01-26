@@ -2,24 +2,16 @@ import React, {Component, Fragment, Children, cloneElement} from 'react'
 import {withRouter} from 'react-router-dom'
 //redux
 import {connect} from 'react-redux'
-//actions
-import PopupActions from '../../actions/EditModeAction'
 //components
 import TabRoutes from '../../components/TabRoutes/TabRoutes'
 //containers
 import BoardsList from '../BoardList/BoardList'
 import BoardList from '../BoardList/BoardList'
-// import EditForm from '../EditForm/EditForm'
 import ButtonAddBoard from '../ButtonAddBoard/ButtonAddBoard'
-import withEditMode from '../../HOC/withEditMode';
+import AddTeamButton from '../ButtonAddTeam/ButtonAddTeam'
 
 
-import Button from '../../components/Button/Button'
-const actions = () => ({
-    toggle: PopupActions.toggle_editMode,
-    menu: PopupActions.toggle_create_team_form
-})
-let AddTeamButton = withEditMode(actions)(Button)
+// export AddTeamButton
 
 class Boards extends Component {
 

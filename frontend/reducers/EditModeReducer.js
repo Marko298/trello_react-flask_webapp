@@ -6,19 +6,25 @@ import {
     TOGGLE_SIDEBAR_BOARDLIST,
     FIX_SIDEBAR,
     UNFIX_SIDEBAR,
-    TOGGLE_CRATIVE_MENU
+    TOGGLE_CRATIVE_MENU,
+    TOGGLE_ACCOUNT_SETTINGS_MENU,
+    SWITCH_COMPONENTS_IN_EDITING_PAGE
 
 } from '../constants/EditModeConstant'
 
 const initialEditModeState = {
     forms: {
-        // isEditBoardShow: false
         isPopupShow: false
     },
     menu: {
         isCreateBoardFormShow: false,
         isCreateTeamFormShow: false,
-        isCreativeMenuShow: false
+        isCreativeMenuShow: false,
+        isAccountSettingsMenuShow: false
+    },
+    switchBetweenComponents: {
+        toShowFirstComponent: true,
+        toShowSecondComponent: false
     },
     sidebar: {
         isPinned: false,
@@ -31,7 +37,7 @@ const initialEditModeState = {
     width: 0
 }
 
-export default function EditModeReducer(state = initialEditModeState, {type, settings, marginLeft}) {
+export default function EditModeReducer(state = initialEditModeState, {type, settings, marginLeft, switchBetweenComponents}) {
     switch (type) {
         case TOGGLE_EDIT_MODE_BOARDS: {
             if(state.forms.isPopupShow) {
@@ -75,8 +81,8 @@ export default function EditModeReducer(state = initialEditModeState, {type, set
             return {
                 ...state,
                 menu: {
+                    ...initialEditModeState.menu,
                     isCreateBoardFormShow: true,
-                    isCreateTeamFormShow: false
                 }
             }
         }
@@ -85,7 +91,7 @@ export default function EditModeReducer(state = initialEditModeState, {type, set
             return {
                 ...state,
                 menu: {
-                    isCreateBoardFormShow: false,
+                    ...initialEditModeState.menu,
                     isCreateTeamFormShow: true
                 }
             }
@@ -129,9 +135,29 @@ export default function EditModeReducer(state = initialEditModeState, {type, set
             return {
                 ...state,
                 menu: {
+                    ...initialEditModeState.menu,
                     isCreativeMenuShow: true,
-                    isCreateBoardFormShow: false,
-                    isCreateTeamFormShow: false
+                }
+            }
+        }
+
+        case TOGGLE_ACCOUNT_SETTINGS_MENU: {
+
+            return {
+                ...state,
+                menu: {
+                    ...initialEditModeState.menu,
+                    isAccountSettingsMenuShow: true
+                }
+            }
+        }
+
+        case SWITCH_COMPONENTS_IN_EDITING_PAGE: {
+            return {
+                ...state,
+                switchBetweenComponents: {
+                    toShowFirstComponent: switchBetweenComponents.toShowFirstComponent,
+                    toShowSecondComponent: switchBetweenComponents.toShowSecondComponent
                 }
             }
         }

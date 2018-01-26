@@ -1,4 +1,3 @@
-// import {USER_SIGNIN_SUCCESS, USER_SIGNIN_ERROR, USER_LOGIN_ERROR, USER_LOGIN_SUCCESS, USER_LOGOUT} from '../constants/UserConstants'
 
 import {USER_REQUEST_FAILED, USER_REQUEST, USER_LOGIN_SUCCESS, USER_REQUEST_LOGOUT} from '../constants/UserConstants'
 
@@ -39,7 +38,10 @@ const UserReducer = function (state = initialState, {type, payload}) {
             }
         }
         case USER_REQUEST_LOGOUT: {
-            return initialState
+            return {
+                ...initialState,
+                userId: null
+            }
         }
         
         // case USER_SIGNIN_SUCCESS:

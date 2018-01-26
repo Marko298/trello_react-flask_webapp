@@ -10,11 +10,17 @@ import withEditMode from '../../HOC/withEditMode'
 //styles
 import './ToolBar.style.css'
 
-const actions = () => ({
+const actionsForCreativeMenu = () => ({
     toggle: PopupActions.toggle_editMode,
     menu: PopupActions.toggle_creative_menu
 })
-let CreativeMenu = withEditMode(actions)(Button)
+let CreativeMenu = withEditMode(actionsForCreativeMenu)(Button)
+
+const actionsForAccountSettingsMenu = () => ({
+    toggle: PopupActions.toggle_editMode,
+    menu: PopupActions.toggle_account_settings_menu
+})
+let AccountSettings = withEditMode(actionsForAccountSettingsMenu)(Button)
 
 class ToolBar extends Component {
     render() {
@@ -30,6 +36,8 @@ class ToolBar extends Component {
                     <input />   
                     <Link to='/'>HOME</Link>
                     <CreativeMenu>ICON[+]</CreativeMenu>
+                    
+                    <AccountSettings>Account Settings</AccountSettings>
                 </Row>
             </div>
         )

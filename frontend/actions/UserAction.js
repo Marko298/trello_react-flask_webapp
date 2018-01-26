@@ -38,6 +38,7 @@ export default class UserActions {
         }
     }
 
+
     static login(data) {
         return (dispatch) => {
 
@@ -93,9 +94,10 @@ export default class UserActions {
                 headers: api.headers(),
                 withCredentials: true
             }).then(response => {
-                // dispatch(UserActions.userRequestLogout(response.data))
+                console.log("Logout success")
+                dispatch(UserActions.userRequestLogout())
 
-                // return Promise.resolve(response.data)
+                return Promise.resolve()
                 // console.log("LOGOUT is occur")
             }).catch(error => {
                 console.log("ERROR TO LOGOUT!")
@@ -103,39 +105,4 @@ export default class UserActions {
         }
     }
 }
-
-
-
-
-// export function requestUserSignIn(data) {
-//     return (dispatch) => {
-
-//         let json = JSON.stringify(data);
-
-//         axios.post(api.register_user, json, api.headers)
-//         .then(response => {
-//             dispatch(userRequest(USER_SIGNIN_SUCCESS, response.data))
-//         })
-//         .catch(error => {
-//             console.log(error.message);
-//             dispatch(userRequest(USER_SIGNIN_ERROR, error.message))
-//         })
-
-//     }
-// }
-
-
-
-// export function requestUserLogout() {
-//     return (dispatch) => {
-//         axios.get(api.logout_user, api.headers)
-//             .then(response => {
-//                 dispatch(userRequest(USER_LOGOUT, response.data))
-//             })
-//             .catch(error => {
-//                 console.log(error.response);
-//                 // dispatch(userRequest(USER_LOGIN_ERROR, error.message))
-//             })
-//     }
-// }
 
