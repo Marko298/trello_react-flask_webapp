@@ -17,7 +17,7 @@ const UserReducer = function (state = initialState, {type, payload}) {
                 isLoading: true 
             }
         }
-
+        
         case USER_LOGIN_SUCCESS: {
             return {
                 ...state,

@@ -5,20 +5,24 @@ import {connect} from 'react-redux'
 import PopupActions from '../actions/EditModeAction'
 
 
-const withEditMode = (action, {topCordinates}={}) => (Component) => {
+const withEditMode = (action) => (Component) => {
     class Wrapper extends React.Component {
         static defaultProps = {
-            selected: {}
+            selected: {},
+            customWidth: 0,
+            customTop: 0,
+            customLeft: 0
+
         }
 
         getCordinates = () => {
             const {width, top, left} = this.node.getBoundingClientRect()
-            const isTopCordinatesAlreadyExist = topCordinates !== undefined && topCordinates
-            // parseInt(width) + 'px'
+            const {customLeft, customTop, customWidth} = this.props
+
             let settings = {
-                width: width > 400 ? '400px' : '300px',
-                top: isTopCordinatesAlreadyExist || parseInt(top + window.scrollY) + 'px',
-                left: parseInt(left + window.scrollX) + 'px'
+                width: customWidth ? customWidth + 'px': width > 400 ? '400px' : '300px',
+                top: customTop ? customTop + 'px' : parseInt(top + window.scrollY) + 'px',
+                left: customLeft ? customLeft + 'px': parseInt(left + window.scrollX) + 'px'
             }
             settings.selected = this.props.selected
             this.props.get_cordinates(settings)
@@ -28,6 +32,14 @@ const withEditMode = (action, {topCordinates}={}) => (Component) => {
             if(this.node) return
             this.node = element
         }
+
+        componentWillReceiveProps(next) {
+            if(!next.isPopupShow && this.props.isPopupShow) {
+                this.props.clear_cordinates()
+            }
+            // console.log("componentWillReceiveProps withEditMode", next, this.props)
+        }
+
 
         render() {
             const {getElement, getCordinates} = this
@@ -41,24 +53,29 @@ const withEditMode = (action, {topCordinates}={}) => (Component) => {
         }
     }
 
-    const mergeProps = (stateProps, dispatchProps, ownProps) => {
-        const { dispatch } = dispatchProps
-
-        return {
-            ...ownProps,
-            toggle() {
-                action().toggle && dispatch(action().toggle())
-            },
-            menuToShow() {
-                dispatch(action().menu())
-            },
-            get_cordinates: (cods) => {
-                dispatch(PopupActions.get_cordinates(cods))
-            }
+    const mapDispatchToProps = (dispatch) => ({
+        toggle() {
+            action().toggle && dispatch(action().toggle())
+        },
+        menuToShow() {
+            dispatch(action().menu())
+        },
+        get_cordinates: (cods) => {
+            dispatch(PopupActions.get_cordinates(cods))
+        },
+        clear_cordinates() {
+            dispatch(PopupActions.clear_cordinates())
         }
-    }
+    })
 
-    return connect(null, null, mergeProps)(Wrapper)
+    const mapStateToProps = ({mode}) => ({
+        left: mode.left,
+        top: mode.top,
+        width: mode.width,
+        isPopupShow: mode.forms.isPopupShow
+    })
+
+    return connect(mapStateToProps, mapDispatchToProps)(Wrapper)
 }
 
 

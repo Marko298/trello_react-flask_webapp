@@ -16,8 +16,7 @@ import AccountSettingsMenu from '../AccountSettingsMenu/AccountSettingsMenu'
 import EditFormOrganization from '../EditFormOrganization/EditFormOrganization'
 import EditFormProfile from '../EditFormProfile/EditFormProfile'
 import BoardPage from '../BoardPage/BoardPage'
-import AddListForm from '../AddListForm/AddListForm'
- 
+
 
 //components
 import Row from '../../components/Row/Row'
@@ -120,7 +119,6 @@ class Dashboard extends React.Component {
             isCreateTeamFormShow,
             isCreativeMenuShow,
             isAccountSettingsMenuShow,
-            isCreateListNebuShow
         }, sidebar: {backing, isPinned}, userId } = this.props
 
         const routes = [
@@ -158,13 +156,45 @@ class Dashboard extends React.Component {
                         <Switch>
                             <Route exact path={`${this.props.match.path}`} render={(props) => {
                                 return (
-                                    <Boards boards={this.props.boards} {...props}>
-                                        <Boards.Important title="Starred Boards"/>
-                                        <Boards.Private withButtonAddBoard title="Personal Boards"/>
-                                        <Boards.Comands withButtonAddBoard render={(getProps) => (
-                                            <TabRoutes {...getProps()} match={match} routers={routes} />
-                                        )} />
-                                    </Boards>
+                                    <Fragment>
+                                    
+                                        <Boards boards={this.props.boards} {...props}>
+                                            <Boards.Important title="Starred Boards"/>
+                                            <Boards.Private withButtonAddBoard title="Personal Boards"/>
+                                            <Boards.Comands withButtonAddBoard render={(getProps) => (
+                                                <TabRoutes {...getProps()} match={match} routers={routes} />
+                                            )} />
+                                        </Boards>
+
+                                        <Popup>
+                                            <Popup.Menu 
+                                                title="Create Board"
+                                                toShow={isCreateBoardFormShow}
+                                                component={AddBoardForm} 
+                                                stepBackWithAction={PopupActions.toggle_creative_menu} 
+                                            />
+
+                                            <Popup.Menu 
+                                                title="Create Team" 
+                                                toShow={isCreateTeamFormShow} 
+                                                component={AddTeamForm} 
+                                                stepBackWithAction={PopupActions.toggle_creative_menu} 
+                                            />
+
+                                            <Popup.Menu 
+                                                title="Create"
+                                                toShow={isCreativeMenuShow} 
+                                                component={CreativeMenu} 
+                                            />
+
+                                            <Popup.Menu 
+                                                title="Profile Pasha School"
+                                                toShow={isAccountSettingsMenuShow} 
+                                                component={AccountSettingsMenu} 
+                                            />
+                                        </Popup>
+
+                                    </Fragment>
                                 )
                             }}/>
 
@@ -176,7 +206,7 @@ class Dashboard extends React.Component {
 
                                 // <i>We are change location <strong> {board.boardName} </strong> </i>
                                 return (
-                                    <div style={{position: 'relative', overflowY: 'auto', height: '100%'}}> 
+                                    <div style={{position: 'relative', overflowY: 'auto', flexGrow: 1}}> 
                                         <BoardPage board={board}/>
                                     </div>
                                 )
@@ -191,7 +221,6 @@ class Dashboard extends React.Component {
                             <Route path={`${this.props.match.path}:teamId`} render={(props) => {
                                 let foundedTeam = Utils.returnGroupById(boards, props.match.params.teamId)[0]
                                 let isProfileEditings = userId === foundedTeam._id
-                                console.log({foundedTeam})
 
                                 let BoardEditing = withToggleBTWComponents(EditFormOrganization)({
                                     FirstComponent: FormForEditing,
@@ -206,7 +235,6 @@ class Dashboard extends React.Component {
                                 let {title}  = foundedTeam
                                 
                                 return (
-                                    
                                     isProfileEditings 
                                     ? <ProfileEditing title={title} /> 
                                     : <BoardEditing title={title}/>
@@ -217,38 +245,7 @@ class Dashboard extends React.Component {
                     </Wrapper> 
 
                  <Wrapper className='pop-over'>
-                    <Popup>
-                        <Popup.Menu 
-                            title="Create Board"
-                            toShow={isCreateBoardFormShow}
-                            component={AddBoardForm} 
-                            stepBackWithAction={PopupActions.toggle_creative_menu} 
-                        />
-
-                        <Popup.Menu 
-                            title="Create Team" 
-                            toShow={isCreateTeamFormShow} 
-                            component={AddTeamForm} 
-                            stepBackWithAction={PopupActions.toggle_creative_menu} 
-                        />
-
-                        <Popup.Menu 
-                            title="Create"
-                            toShow={isCreativeMenuShow} 
-                            component={CreativeMenu} 
-                        />
-
-                        <Popup.Menu 
-                            title="Profile Pasha School"
-                            toShow={isAccountSettingsMenuShow} 
-                            component={AccountSettingsMenu} 
-                        />
-                        <Popup.Menu 
-                            title="Create List"
-                            toShow={isCreateListNebuShow} 
-                            component={AddListForm} 
-                        />
-                    </Popup>
+                   
                  </Wrapper>
             </Fragment>
         )

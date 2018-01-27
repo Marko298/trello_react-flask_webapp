@@ -1,9 +1,6 @@
 import api from '../settings'
 
-import {
-    FETCH_BOARDS,
-    CREATE_BOARD_REQUEST
-} from '../constants/BoardConstant'
+import {FETCH_BOARDS, CREATE_BOARD_REQUEST} from '../constants/BoardConstant'
 
 import {
     BOARD_REQUEST,
@@ -24,43 +21,26 @@ import Utils from '../utils'
 import UserActions from './UserAction';
 import ListActions from './ListAction'
 
-
 export default class BoardActions {
     static boardRequest() {
-        return {
-            type: BOARD_REQUEST
-        }
+        return {type: BOARD_REQUEST}
     }
     static toggleImportant(response) {
-        return {
-            type: TOGGLE_IS_IMPORTANT_BOARD,
-            payload: response
-        }
+        return {type: TOGGLE_IS_IMPORTANT_BOARD, payload: response}
     }
     static boardRequestFailed(message) {
-        return {
-            type: BOARD_REQUEST_ERROR,
-            error: message
-        }
+        return {type: BOARD_REQUEST_ERROR, error: message}
     }
     static boardRequestGetSuccess(data) {
-        return {
-            type: BOARD_REQUEST_GET_SUCCESS,
-            payload: data
-        }
+        return {type: BOARD_REQUEST_GET_SUCCESS, payload: data}
     }
 
     static creatingBoardRequest() {
-        return {
-            type: "BOARD_REQUEST_CREATING"
-        }
+        return {type: "BOARD_REQUEST_CREATING"}
     }
 
     static boardCreated(response) {
-        return {
-            type: BOARD_REQUEST_CREATED_SUCCESS,
-            payload: response
-        }
+        return {type: BOARD_REQUEST_CREATED_SUCCESS, payload: response}
     }
 
     static fetchBoards() {
@@ -71,13 +51,15 @@ export default class BoardActions {
             return axios({
                 url: api.get_boards,
                 mathod: 'get',
-                headers: {"Access-Control-Allow-Headers": "*"},
+                headers: {
+                    "Access-Control-Allow-Headers": "*"
+                },
                 withCredentials: true
             }).then(response => {
                 let all_boards = Utils.boardsToArray(response.data, userId)
                 let isHavePrivateFields = all_boards.filter(board => board._id === userId)
-                
-                if(isHavePrivateFields.length === 0) {
+
+                if (isHavePrivateFields.length === 0) {
                     all_boards.push({
                         status: '__PRIVATE__',
                         _id: userId,
@@ -85,7 +67,7 @@ export default class BoardActions {
                         title: name || 'Pasha School'
                     })
                 }
-                
+
                 dispatch(BoardActions.boardRequestGetSuccess(all_boards))
                 return Promise.resolve(all_boards)
 
@@ -127,38 +109,32 @@ export default class BoardActions {
                 withCredentials: true,
                 data: JSON.stringify(board)
             }).then(response => {
-                
+
                 console.log({response})
                 dispatch(BoardActions.boardCreated(response.data))
 
                 return Promise.resolve(response.data)
-    
+
             }).catch(error => {
                 console.log("ERROR creating board", {error})
-            }) 
+            })
         }
 
     }
 
-
     static create_team_request() {
-        return {
-            type : CREATE_TEAM_REQUEST
-        }
+        return {type: CREATE_TEAM_REQUEST}
     }
 
     static created_team_successfully(data) {
-        return {
-            type: CREATE_TEAM_SUCCESS,
-            payload: data
-        }
+        return {type: CREATE_TEAM_SUCCESS, payload: data}
     }
 
     static create_team(data) {
         return (dispatch) => {
 
             dispatch(BoardActions.create_team_request())
-            return  axios({
+            return axios({
                 url: api.create_team,
                 method: "POST",
                 headers: api.headers(),
@@ -174,10 +150,7 @@ export default class BoardActions {
     }
 
     static fetch_boards_success(response) {
-        return {
-            type: FETCH_TEAMS_SUCCESS,
-            payload: response
-        }
+        return {type: FETCH_TEAMS_SUCCESS, payload: response}
     }
 
     static fetchTeams() {
@@ -188,7 +161,7 @@ export default class BoardActions {
                 method: "GET",
                 withCredentials: true,
                 headers: api.headers()
-            }).then( response => {
+            }).then(response => {
                 const {data} = response
                 dispatch(BoardActions.fetch_boards_success(data))
                 return Promise.resolve(data)
@@ -234,10 +207,7 @@ export default class BoardActions {
     }
 
     static board_success_deleted(response) {
-        return {
-            type: BOARD_DELETE_REQUEST_SUCCESS,
-            payload: response
-        }
+        return {type: BOARD_DELETE_REQUEST_SUCCESS, payload: response}
     }
 
     static delete_board(boardId) {

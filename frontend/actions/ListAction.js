@@ -1,10 +1,4 @@
-import {
-    LIST_REQUEST,
-    LIST_REQUEST_GET_SUCCESS,
-    LIST_REQUEST_POST_SUCCESS,
-    LIST_GET_SCHEMA,
-    LIST_POST_REQUEST,
-} from '../constants/ListConstant'
+import {LIST_REQUEST, LIST_REQUEST_GET_SUCCESS, LIST_REQUEST_POST_SUCCESS, LIST_GET_SCHEMA, LIST_POST_REQUEST} from '../constants/ListConstant'
 
 import axios from 'axios'
 import api from '../settings'
@@ -12,43 +6,35 @@ import uuidv1 from 'uuid/v1'
 
 export default class ListActions {
     static list_request() {
-        return {
-            type: LIST_REQUEST
-        }
+        return {type: LIST_REQUEST}
     }
     static list_successfully_created(response) {
-        return {
-            type: LIST_REQUEST_POST_SUCCESS,
-            payload: response
-        }
+        return {type: LIST_REQUEST_POST_SUCCESS, payload: response}
     }
 
     static list_fetched(response) {
-        return {
-            type: LIST_REQUEST_GET_SUCCESS,
-            payload: response
-        }
+        return {type: LIST_REQUEST_GET_SUCCESS, payload: response}
     }
 
     static start_post_request(timeData) {
-        return {
-            type: LIST_POST_REQUEST,
-            timeData
-        }
+        return {type: LIST_POST_REQUEST, timeData}
     }
 
-
-    static create_list({title}, boardId) {
+    static create_list({
+        title
+    }, boardId) {
         return (dispatch, getState) => {
-            
+
             const state = getState()
-            const {lists: {list_schema}} = state
+            const {lists: {
+                    list_schema
+                }} = state
 
             let createRequest = {
                 ...list_schema,
                 _id: uuidv1(),
                 forBoard: boardId,
-                title 
+                title
             }
 
             dispatch(ListActions.start_post_request(createRequest))
@@ -73,7 +59,7 @@ export default class ListActions {
         return (dispatch) => {
 
             dispatch(ListActions.list_request())
-            
+
             axios({
                 url: api.get_lists_for_board(boardId),
                 method: "GET",
@@ -89,10 +75,7 @@ export default class ListActions {
     }
 
     static get_schema_request(response) {
-        return {
-            type: LIST_GET_SCHEMA,
-            payload: response
-        }
+        return {type: LIST_GET_SCHEMA, payload: response}
     }
 
     static get_list_schema() {

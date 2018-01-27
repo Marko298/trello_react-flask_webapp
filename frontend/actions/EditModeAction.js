@@ -9,70 +9,52 @@ import {
     TOGGLE_CRATIVE_MENU,
     TOGGLE_ACCOUNT_SETTINGS_MENU,
     SWITCH_COMPONENTS_IN_EDITING_PAGE,
-    TOGGLE_CREATE_LIST_MENU ,
-    TOGGLE_MENU_BOARD_PAGE
+    TOGGLE_CREATE_LIST_MENU,
+    TOGGLE_MENU_BOARD_PAGE,
+    POPUP_MENU_CLOSE
 } from '../constants/EditModeConstant'
 
-
 export default class PopupActions {
+    static clear_cordinates() {
+        return {type: POPUP_MENU_CLOSE}
+    }
     static toggle_editMode() {
-        return {
-            type: TOGGLE_EDIT_MODE_BOARDS
-        }
+        return {type: TOGGLE_EDIT_MODE_BOARDS}
     }
     static get_cordinates(settings) {
-        return {
-            type: SETUP_CORDINATES,
-            settings
-        }
+        return {type: SETUP_CORDINATES, settings}
     }
 
     static toggle_create_board_form() {
-        return {
-            type: TOGGLE_CREATE_BOARD_FORM
-        }
-    
+        return {type: TOGGLE_CREATE_BOARD_FORM}
+
     }
     static toggle_create_team_form() {
-        return {
-            type: TOGGLE_CREATE_TEAM_FORM
-        }
+        return {type: TOGGLE_CREATE_TEAM_FORM}
     }
 
     static toggle_sidebard_boardlist() {
-        return {
-            type: TOGGLE_SIDEBAR_BOARDLIST
-        }
+        return {type: TOGGLE_SIDEBAR_BOARDLIST}
     }
 
     static fix_sidebar(match) {
-        return {
-            type: FIX_SIDEBAR,
-            marginLeft: match
-        }
+        return {type: FIX_SIDEBAR, marginLeft: match}
     }
 
     static unfix_sidebar() {
-        return {
-            type: UNFIX_SIDEBAR
-        }
+        return {type: UNFIX_SIDEBAR}
     }
 
-    
     static toggle_creative_menu() {
-        return {
-            type: TOGGLE_CRATIVE_MENU
-        }
+        return {type: TOGGLE_CRATIVE_MENU}
     }
 
     static toggle_account_settings_menu() {
-        return {
-            type: TOGGLE_ACCOUNT_SETTINGS_MENU
-        }
+        return {type: TOGGLE_ACCOUNT_SETTINGS_MENU}
     }
 
     static swtich_between_components(from) {
-        if(from === 'first') {
+        if (from === 'first') {
             return {
                 type: SWITCH_COMPONENTS_IN_EDITING_PAGE,
                 switchBetweenComponents: {
@@ -94,14 +76,10 @@ export default class PopupActions {
     }
 
     static toggle_create_list_menu() {
-        return {
-            type: TOGGLE_CREATE_LIST_MENU
-        }
+        return {type: TOGGLE_CREATE_LIST_MENU}
     }
 
     static toggle_menu_on_boardPage() {
-        return {
-            type: TOGGLE_MENU_BOARD_PAGE
-        }
+        return {type: TOGGLE_MENU_BOARD_PAGE}
     }
 }

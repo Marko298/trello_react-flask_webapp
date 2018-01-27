@@ -1,60 +1,49 @@
-import api from '../settings'
+import {
+    USER_REQUEST,
+    USER_LOGIN_SUCCESS,
+    USER_REQUEST_FAILED,
+    USER_SIGNIN_SUCCESS,
+    USER_REQUEST_LOGOUT
+} from '../constants/UserConstants'
 
-// import {USER_SIGNIN_SUCCESS, USER_SIGNIN_ERROR, USER_LOGIN_ERROR, USER_LOGIN_SUCCESS, USER_LOGOUT, FETCH_BOARD_BY_ID} from '../constants/UserConstants'
+import api from '../settings'
 import axios from 'axios'
 
-const userRequest = (type, data) => ({type, payload: data})
-
-import {USER_REQUEST, USER_LOGIN_SUCCESS, USER_REQUEST_FAILED, USER_SIGNIN_SUCCESS, USER_REQUEST_LOGOUT} from '../constants/UserConstants'
 
 export default class UserActions {
-    static userRequest () {
-        return {
-            type: USER_REQUEST
-        }
+    static userRequest() {
+        return {type: USER_REQUEST}
     }
     static userRequestLogout() {
-        return {
-            type: USER_REQUEST_LOGOUT
-        }
+        return {type: USER_REQUEST_LOGOUT}
     }
     static userRequestLogined(response) {
-        return {
-            type: USER_LOGIN_SUCCESS,
-            payload: response
-        }
+        return {type: USER_LOGIN_SUCCESS, payload: response}
     }
     static userRequestFailed(message) {
-        return {
-            type: USER_REQUEST_FAILED,
-            payload: message
-        }
+        return {type: USER_REQUEST_FAILED, payload: message}
     }
 
     static userRequestSigin(data) {
-        return {
-            type: USER_SIGNIN_SUCCESS,
-            payload: data
-        }
+        return {type: USER_SIGNIN_SUCCESS, payload: data}
     }
-
 
     static login(data) {
         return (dispatch) => {
 
             dispatch(UserActions.userRequest())
-            
+
             return axios({
                 url: api.login_user,
                 method: 'post',
                 headers: api.headers(),
                 data: JSON.stringify(data),
-                withCredentials: true,
+                withCredentials: true
             }).then((response) => {
-                
+
                 dispatch(UserActions.userRequestLogined(response.data))
                 return Promise.resolve(response.data)
-                
+
             }).catch((error) => {
                 console.log("ERROR", {error})
                 dispatch(UserActions.userRequestFailed(error.message))
@@ -62,12 +51,12 @@ export default class UserActions {
             })
         }
     }
-    
+
     static register(data) {
         return (dispatch) => {
 
             dispatch(UserActions.userRequest())
-            
+
             return axios({
                 method: 'post',
                 url: api.register_user,
@@ -105,4 +94,3 @@ export default class UserActions {
         }
     }
 }
-

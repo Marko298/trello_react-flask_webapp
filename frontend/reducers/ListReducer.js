@@ -13,11 +13,7 @@ const initialState = {
     },
     list_schema: {},
     boardProject: {
-        lists: [
-            {
-                title: ''
-            }
-        ]
+        lists: []
     }
 }
 

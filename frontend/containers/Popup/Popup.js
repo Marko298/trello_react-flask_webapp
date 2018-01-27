@@ -11,23 +11,14 @@ import Title from '../../components/Title/Title'
 //containers
 import AddBoardForm from '../AddBoardForm/AddBoardForm'
 import AddTeamForm from '../AddTeamForm/AddTeamForm'
-//HOC
-import withEditMode from '../../HOC/withEditMode'
-const actions = () => ({
-    menu: PopupActions.toggle_creative_menu
-})
-let CreativeMenu = withEditMode(actions)(Button)
-{/* <CreativeMenu>
-    back
-</CreativeMenu> */}
 
-// {props.render()}
 
 const GoBack = (props) => {
     return (
         <button onClick={props.onClick}>back</button>
     )
 }
+
 class Popup extends Component {
     state = {
         allowStepBack: false
@@ -76,6 +67,10 @@ class Popup extends Component {
         // console.log("_____________________________________________")
     }
 
+    componentWillUnmount() {
+        this.props.isPopupShow && this.toggle()
+    }
+
 
     componentDidUpdate(prevProps, prevState) {
         if(!this.props.isPopupShow && this.state.allowStepBack) {
@@ -120,6 +115,8 @@ class Popup extends Component {
     }
 
     render() {
+
+        console.log("POPUP render with new props ", this.props)
         
         const {width, top, left, isPopupShow} = this.props
         const styles = {width, top, left, display: isPopupShow ? 'block' : 'none'}

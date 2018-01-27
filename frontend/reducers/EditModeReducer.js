@@ -10,7 +10,8 @@ import {
     TOGGLE_ACCOUNT_SETTINGS_MENU,
     SWITCH_COMPONENTS_IN_EDITING_PAGE,
     TOGGLE_CREATE_LIST_MENU,
-    TOGGLE_MENU_BOARD_PAGE
+    TOGGLE_MENU_BOARD_PAGE,
+    POPUP_MENU_CLOSE
 
 } from '../constants/EditModeConstant'
 
@@ -80,6 +81,14 @@ export default function EditModeReducer(state = initialEditModeState, {type, set
             }
         }
 
+        case POPUP_MENU_CLOSE: {
+            return {
+                ...state,
+                top: 0,
+                left: 0,
+                width: 0
+            }
+        }
 
         case TOGGLE_CREATE_BOARD_FORM: {
             return {
