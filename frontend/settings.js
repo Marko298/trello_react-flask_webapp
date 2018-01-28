@@ -73,6 +73,21 @@ class API {
         return `${this.url}/list/list_schema`
     }
 
+     /**
+    |--------------------------------------------------
+    | CARDS ENDPOINTS
+    |--------------------------------------------------
+    */
+
+    create_card(listId) {
+        return `${this.url}/card/create_card_for_list/${listId}`
+    }
+
+    get get_card_schema() {
+        return `${this.url}/card/card_schema`
+    }
+    
+
 }
 
 const api = new API

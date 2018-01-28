@@ -20,6 +20,9 @@ import server.models.teams.errors as TeamError
 from server.models.lists.list import List
 import server.models.lists.errors as ListErrors
 
+## Card
+from server.models.cards.card import Card
+
 ############ FLask App  ############
 
 app = Flask(__name__,  template_folder="static/")
@@ -251,6 +254,46 @@ def list_schema():
     return jsonify(listSchema)
     
         
+##########################
+############### Card API
+##########################
+@app.route('/card/create_card_for_list/<string:listId>', methods=['POST'])
+@user_dec.login_required
+def create_card(listId):
+    if request.method == 'POST' and request.is_json:
+        CONTENT = request.get_json()
+
+        title = CONTENT.get('title')
+        forList = CONTENT.get('forList') if CONTENT.get('forList') is not None else listId
+        _id = CONTENT.get('_id') if CONTENT.get('_id') is not None else None
+
+        try:
+            _, classList = List.get_list_by_id(listId)
+        except ListErrors.ListErrors as error:
+            return jsonify(error=error.message)
+
+        cardId = Card(
+            title=title,
+            forList=forList,
+            _id=_id
+        ).save()
+
+        classList.save_card_for_list(listId)
+        _, cursorCard = Card.get_card_by_id(cardId)
+        return  jsonify(cursorCard)
+        
+
+# @app.route('/card/get_all_cards/<string:boardId>/<string:>')
+# def get_all_cards(boardId):
+#     # I can get the lists ids
+#     # and for each list I have to find releted cards
+#     # and return their inners
+#     pass
+
+@app.route('/card/card_schema', methods=['GET'])
+def card_schema():
+    cardSchema = Card.card_schema_for_client()
+    return jsonify(cardSchema)
 
 if __name__ == '__main__':
     app.run(port=4000, debug=True)

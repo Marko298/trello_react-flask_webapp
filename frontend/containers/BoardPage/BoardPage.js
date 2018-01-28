@@ -8,12 +8,19 @@ import Input from '../Input/Input'
 //containers
 import Popup from '../Popup/Popup'
 import AddListForm from '../AddListForm/AddListForm'
+import ListsContainer from '../ListsContainer/ListsContainer'
 //HOC
 import withEditMode from '../../HOC/withEditMode'
 //actions
 import PopupActions from '../../actions/EditModeAction'
 //styles
 import './BoardPage.style.css'
+
+
+
+
+    
+
 
 
 let actionCreateList = () => ({
@@ -37,7 +44,6 @@ class BoardPage extends Component {
         this.props.toggle_menu()
     }
 
-
     componentDidUpdate(prev) {
         if(prev.lists.length !== this.props.lists.length) {
             let {width, left, top} = this.button.getBoundingClientRect()
@@ -53,10 +59,12 @@ class BoardPage extends Component {
                     left: this.state.customLeft  + 'px',
                     top: parseInt(top, 10) + 'px'
                 })
-
             })
-
         }
+    }
+
+    TEST_CLIKC_CREAETE_CARD = (listId) => (e) => {
+        console.log("CLICK TO CREATE NEW CARD for", listId)
     }
 
     componentDidMount() {
@@ -66,11 +74,11 @@ class BoardPage extends Component {
         }))
     }
 
-
     boundElement = (element) => {
         if(this.button) return 
         this.button = findDOMNode(element)
     }
+
     render() {
   
         const {board:
@@ -100,14 +108,15 @@ class BoardPage extends Component {
 
                     <div className='board-canvas'>
                         <section className='list-container'>
-                            {/* here is will render all columns of all lists or will be Route's here perhaps */}
                             {this.props.lists.map(list => {
                                 return (
-                                    <div className='column' key={list._id}>
-                                        {list.title}
+                                    <div className='column'>
+                                        <ListsContainer {...list} />
                                     </div>
                                 )
                             })}
+                            {/* here is will render all columns of all lists or will be Route's here perhaps */}
+                           
                             <div className='column' id="test">
                                 <CreateList ref={this.boundElement} customLeft={customLeft}>
                                     create list

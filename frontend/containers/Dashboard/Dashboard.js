@@ -1,4 +1,7 @@
 import React, {Fragment} from 'react'
+
+import ReactDOM from 'react-dom'
+
 import {Switch, Route, Link, BrowserRouter as Router, withRouter } from 'react-router-dom'
 
 import {connect} from 'react-redux'
@@ -63,6 +66,46 @@ const RemoveBoard = (props) => (
     </Button>
 )
 
+
+
+const Modal = ({ match, history, ...props }) => {
+    console.log({modal: {props, match}})
+    const back = (e) => {
+      e.stopPropagation()
+      history.goBack()
+    }
+
+    return (
+        <div
+            onClick={back}
+            style={{
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            bottom: 0,
+            right: 0,
+            background: 'rgba(0, 0, 0, 0.8)'
+            }}
+        >
+            <div className='modal' style={{
+                position: 'absolute',
+                background: '#fff',
+                top: 25,
+                left: '10%',
+                right: '10%',
+                padding: 15,
+                border: '2px solid #444'
+            }}>
+                <h1>'titlte'</h1>
+                {/* <Image color={image.color} /> */}
+                <button type='button' onClick={back}>
+                    Close
+                </button>
+            </div>
+        </div>
+    )
+}
+
 class Dashboard extends React.Component {
     static defaultProps = {
         boards: [],
@@ -78,6 +121,19 @@ class Dashboard extends React.Component {
             marginLeft: isPinned ? backing + 'px' : 0,
             display: 'flex',
             flexDirection: 'column'
+        }
+    }
+
+    previouseLocation = this.props.location
+
+    componentWillUpdate(nextProps) {
+        const {location} = this.props
+
+        if(
+            nextProps.history.action !== 'POP' &&
+            (!location.state || !location.state.modal)
+        ) {
+            this.previouseLocation = this.props.location
         }
     }
     
@@ -127,6 +183,14 @@ class Dashboard extends React.Component {
             {path: '/account', title: "Account"}
         ]
 
+        // const {location} = this.props
+
+        const isModal = !!(
+            location.state &&
+            location.state.modal &&
+            this.previouseLocation !== location
+        )
+
         return (
             <Fragment>
                 <SidebarBoards>
@@ -153,7 +217,7 @@ class Dashboard extends React.Component {
                 </SidebarBoards>
                     <Wrapper style={Dashboard.styles({isPinned, backing})}> 
                         <ToolBar/>
-                        <Switch>
+                        <Switch location={isModal ? this.previouseLocation : location}>
                             <Route exact path={`${this.props.match.path}`} render={(props) => {
                                 return (
                                     <Fragment>
@@ -218,6 +282,8 @@ class Dashboard extends React.Component {
                                 return <h1>profile {props.match.params.userId}</h1>
                             }}/> */}
 
+                            <Route path={`${this.props.match.path}:cardId/:listTitle`} component={Profile} />
+
                             <Route path={`${this.props.match.path}:teamId`} render={(props) => {
                                 let foundedTeam = Utils.returnGroupById(boards, props.match.params.teamId)[0]
                                 let isProfileEditings = userId === foundedTeam._id
@@ -241,7 +307,19 @@ class Dashboard extends React.Component {
                                 )
 
                             }}/>
+
+
                         </Switch>
+
+                        {isModal ? <Route path={`/card/:cardId/:listTitle`} render={(props) => {
+                                   return ReactDOM.createPortal(
+                                        <Modal {...props} />,
+                                        document.getElementById('portal')
+                                    )
+                        }}/> : null}
+
+                        {/* <Modal {...this.props}/> */}
+
                     </Wrapper> 
 
                  <Wrapper className='pop-over'>

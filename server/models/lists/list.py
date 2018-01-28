@@ -5,11 +5,11 @@ import uuid
 
 
 class List(object):
-    def __init__(self, title, forBoard, items=None, _id=None):
+    def __init__(self, title, forBoard, cards=None, _id=None):
         self.title = title
         self.forBoard = forBoard
         self._id = uuid.uuid4().hex if _id is None else _id
-        self.items = items if items is not None else list()
+        self.cards = cards if cards is not None else list()
     
     def __repr__(self):
         return "<List with tyje title — {}>".format(self.title)
@@ -25,6 +25,11 @@ class List(object):
         else:
             raise err.ListWithTihsIdIsNotExist("The list with this is is not exist in database")
 
+    def save_card_for_list(self, cardId):
+        cursorList = Database.find_one('lists', { '_id': self._id })
+        Database.update_push('lists', { '_id' : self._id }, {'cards': cardId})
+      
+
     @classmethod
     def get_all_lists_releted_to_board(cls, boardId):
         cursorLists = Database.find('lists', {"forBoard": boardId})
@@ -35,7 +40,7 @@ class List(object):
             "_id" : self._id,
             "title" : self.title,
             "forBoard" : self.forBoard,
-            "items" : self.items
+            "cards" : self.cards
         }
     
     @staticmethod
@@ -44,5 +49,5 @@ class List(object):
             "_id" : "",
             "title" : "",
             "forBoard" : "",
-            "items": list()
+            "cards": list()
         }

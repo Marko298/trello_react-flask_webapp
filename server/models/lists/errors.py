@@ -5,4 +5,6 @@ class ListErrors(Exception):
 class ListWithTihsIdIsNotExist(ListErrors):
     pass
 
+class TheCardIdIsAlreadyExistInList(ListErrors):
+    pass
 
