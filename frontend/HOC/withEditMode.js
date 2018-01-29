@@ -4,18 +4,23 @@ import {connect} from 'react-redux'
 //actions
 import PopupActions from '../actions/EditModeAction'
 
+const addonsSettings = {
+    usePreviousePosition: false
+}
 
-const withEditMode = (action) => (Component) => {
+const withEditMode = (action, addonsSettings={}) => (Component) => {
     class Wrapper extends React.Component {
         static defaultProps = {
             selected: {},
             customWidth: 0,
             customTop: 0,
             customLeft: 0
-
         }
 
         getCordinates = () => {
+            if(addonsSettings.usePreviousePosition) {
+                return null
+            }
             const {width, top, left} = this.node.getBoundingClientRect()
             const {customLeft, customTop, customWidth} = this.props
 
@@ -37,7 +42,6 @@ const withEditMode = (action) => (Component) => {
             if(!next.isPopupShow && this.props.isPopupShow) {
                 this.props.clear_cordinates()
             }
-            // console.log("componentWillReceiveProps withEditMode", next, this.props)
         }
 
 

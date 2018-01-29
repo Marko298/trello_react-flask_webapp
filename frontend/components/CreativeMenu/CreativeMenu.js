@@ -4,8 +4,6 @@ import withEditMode from '../../HOC/withEditMode'
 import Button from '../Button/Button'
 import PopupActions from '../../actions/EditModeAction'
 
-// import ButtonAddBoard from '../../containers/ButtonAddBoard/ButtonAddBoard'
-// import ButtonAddTeam from '../../containers/ButtonAddTeam/ButtonAddTeam'
 
 const actionsForTeam = () => ({
     menu: PopupActions.toggle_create_team_form
@@ -15,9 +13,8 @@ const actionsForBoard = () => ({
 })
 
 
-let ButtonAddTeam = withEditMode(actionsForTeam)(Button)
-let ButtonAddBoard = withEditMode(actionsForBoard)(Button)
-
+let ButtonAddTeam = withEditMode(actionsForTeam, {usePreviousePosition: true})(Button)
+let ButtonAddBoard = withEditMode(actionsForBoard, {usePreviousePosition: true})(Button)
 
 
 export default function CreativeMenu() {

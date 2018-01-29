@@ -116,8 +116,6 @@ class Popup extends Component {
 
     render() {
 
-        console.log("POPUP render with new props ", this.props)
-        
         const {width, top, left, isPopupShow} = this.props
         const styles = {width, top, left, display: isPopupShow ? 'block' : 'none'}
 

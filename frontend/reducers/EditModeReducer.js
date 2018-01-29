@@ -9,7 +9,7 @@ import {
     TOGGLE_CRATIVE_MENU,
     TOGGLE_ACCOUNT_SETTINGS_MENU,
     SWITCH_COMPONENTS_IN_EDITING_PAGE,
-    TOGGLE_CREATE_LIST_MENU,
+    // TOGGLE_CREATE_LIST_MENU,
     TOGGLE_MENU_BOARD_PAGE,
     POPUP_MENU_CLOSE
 
@@ -24,7 +24,7 @@ const initialEditModeState = {
         isCreateTeamFormShow: false,
         isCreativeMenuShow: false,
         isAccountSettingsMenuShow: false,
-        isCreateListNebuShow: false
+        // isCreateListNebuShow: false
     },
     switchBetweenComponents: {
         toShowFirstComponent: true,
@@ -175,15 +175,15 @@ export default function EditModeReducer(state = initialEditModeState, {type, set
             }
         }
 
-        case TOGGLE_CREATE_LIST_MENU: {
-            return {
-                ...state,
-                menu: {
-                    ...initialEditModeState.menu,
-                    isCreateListNebuShow: true
-                }
-            }
-        }
+        // case TOGGLE_CREATE_LIST_MENU: {
+        //     return {
+        //         ...state,
+        //         menu: {
+        //             ...initialEditModeState.menu,
+        //             isCreateListNebuShow: true
+        //         }
+        //     }
+        // }
 
         case TOGGLE_MENU_BOARD_PAGE: {
             return {

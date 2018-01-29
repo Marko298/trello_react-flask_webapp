@@ -1,6 +1,6 @@
 import React, {Fragment} from 'react'
 
-import ReactDOM from 'react-dom'
+import {createPortal} from 'react-dom'
 
 import {Switch, Route, Link, BrowserRouter as Router, withRouter } from 'react-router-dom'
 
@@ -19,8 +19,6 @@ import AccountSettingsMenu from '../AccountSettingsMenu/AccountSettingsMenu'
 import EditFormOrganization from '../EditFormOrganization/EditFormOrganization'
 import EditFormProfile from '../EditFormProfile/EditFormProfile'
 import BoardPage from '../BoardPage/BoardPage'
-
-
 //components
 import Row from '../../components/Row/Row'
 import Wrapper from '../../components/Wrapper/Wrapper'
@@ -142,8 +140,8 @@ class Dashboard extends React.Component {
         // console.log("Dashboard componentWillReceiveProps", {nextProps})
         // console.log("------------------------------------------------")
     }
-    componentDidCatch() {
-        console.log("componentDidCatch")
+    componentDidCatch(err, info) {
+        console.log("componentDidCatch", err, info)
     }
     componentDidMount() {
 
@@ -180,10 +178,9 @@ class Dashboard extends React.Component {
         const routes = [
             {path: '', title: "Boards"},
             {path: '/members', title: "Members"},
-            {path: '/account', title: "Account"}
+            {path: '/settings', title: "settings"}
         ]
 
-        // const {location} = this.props
 
         const isModal = !!(
             location.state &&
@@ -230,33 +227,7 @@ class Dashboard extends React.Component {
                                             )} />
                                         </Boards>
 
-                                        <Popup>
-                                            <Popup.Menu 
-                                                title="Create Board"
-                                                toShow={isCreateBoardFormShow}
-                                                component={AddBoardForm} 
-                                                stepBackWithAction={PopupActions.toggle_creative_menu} 
-                                            />
-
-                                            <Popup.Menu 
-                                                title="Create Team" 
-                                                toShow={isCreateTeamFormShow} 
-                                                component={AddTeamForm} 
-                                                stepBackWithAction={PopupActions.toggle_creative_menu} 
-                                            />
-
-                                            <Popup.Menu 
-                                                title="Create"
-                                                toShow={isCreativeMenuShow} 
-                                                component={CreativeMenu} 
-                                            />
-
-                                            <Popup.Menu 
-                                                title="Profile Pasha School"
-                                                toShow={isAccountSettingsMenuShow} 
-                                                component={AccountSettingsMenu} 
-                                            />
-                                        </Popup>
+                                       
 
                                     </Fragment>
                                 )
@@ -282,7 +253,8 @@ class Dashboard extends React.Component {
                                 return <h1>profile {props.match.params.userId}</h1>
                             }}/> */}
 
-                            <Route path={`${this.props.match.path}:cardId/:listTitle`} component={Profile} />
+                            
+                            
 
                             <Route path={`${this.props.match.path}:teamId`} render={(props) => {
                                 let foundedTeam = Utils.returnGroupById(boards, props.match.params.teamId)[0]
@@ -307,23 +279,46 @@ class Dashboard extends React.Component {
                                 )
 
                             }}/>
-
-
                         </Switch>
 
                         {isModal ? <Route path={`/card/:cardId/:listTitle`} render={(props) => {
-                                   return ReactDOM.createPortal(
+                                   return createPortal(
                                         <Modal {...props} />,
                                         document.getElementById('portal')
                                     )
                         }}/> : null}
 
-                        {/* <Modal {...this.props}/> */}
 
                     </Wrapper> 
 
                  <Wrapper className='pop-over'>
-                   
+                 <Popup>
+                        <Popup.Menu 
+                            title="Create Board"
+                            toShow={isCreateBoardFormShow}
+                            component={AddBoardForm} 
+                            stepBackWithAction={PopupActions.toggle_creative_menu} 
+                        />
+
+                        <Popup.Menu 
+                            title="Create Team" 
+                            toShow={isCreateTeamFormShow} 
+                            component={AddTeamForm} 
+                            stepBackWithAction={PopupActions.toggle_creative_menu} 
+                        />
+
+                        <Popup.Menu 
+                            title="Create"
+                            toShow={isCreativeMenuShow} 
+                            component={CreativeMenu} 
+                        />
+
+                        <Popup.Menu 
+                            title="Profile Pasha School"
+                            toShow={isAccountSettingsMenuShow} 
+                            component={AccountSettingsMenu} 
+                        />
+                    </Popup>
                  </Wrapper>
             </Fragment>
         )

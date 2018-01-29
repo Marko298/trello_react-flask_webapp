@@ -6,11 +6,11 @@ import Button from '../../components/Button/Button'
 import Title from '../../components/Title/Title'
 import Input from '../Input/Input'
 //containers
-import Popup from '../Popup/Popup'
+// import Popup from '../Popup/Popup'
 import AddListForm from '../AddListForm/AddListForm'
 import ListsContainer from '../ListsContainer/ListsContainer'
 //HOC
-import withEditMode from '../../HOC/withEditMode'
+// import withEditMode from '../../HOC/withEditMode'
 //actions
 import PopupActions from '../../actions/EditModeAction'
 //styles
@@ -23,17 +23,17 @@ import './BoardPage.style.css'
 
 
 
-let actionCreateList = () => ({
-    toggle: PopupActions.toggle_editMode,
-    menu: PopupActions.toggle_create_list_menu
-})
-let CreateList = withEditMode(actionCreateList)(Button)
+// let actionCreateList = () => ({
+//     toggle: PopupActions.toggle_editMode,
+//     menu: PopupActions.toggle_create_list_menu
+// })
+// let CreateList = withEditMode(actionCreateList)(Button)
 
 class BoardPage extends Component {
 
-    state = {
-        customLeft: 0
-    }
+    // state = {
+    //     customLeft: 0
+    // }
 
     static defaultProps = {
         lists: [],
@@ -46,20 +46,20 @@ class BoardPage extends Component {
 
     componentDidUpdate(prev) {
         if(prev.lists.length !== this.props.lists.length) {
-            let {width, left, top} = this.button.getBoundingClientRect()
+            // let {width, left, top} = this.button.getBoundingClientRect()
 
-            this.setState(function(prevState) {
-                return {
-                    customLeft: this.button.offsetLeft
-                }
-            }, function setCordinates(){
+            // this.setState(function(prevState) {
+            //     return {
+            //         customLeft: this.button.offsetLeft
+            //     }
+            // }, function setCordinates(){
 
-                this.props.setNewCordinates({
-                    width: parseInt(width, 10) + 'px',
-                    left: this.state.customLeft  + 'px',
-                    top: parseInt(top, 10) + 'px'
-                })
-            })
+            //     this.props.setNewCordinates({
+            //         width: parseInt(width, 10) + 'px',
+            //         left: this.state.customLeft  + 'px',
+            //         top: parseInt(top, 10) + 'px'
+            //     })
+            // })
         }
     }
 
@@ -68,26 +68,25 @@ class BoardPage extends Component {
     }
 
     componentDidMount() {
-        this.setState(prevState => ({
-            ...prevState,
-            customLeft: this.button.offsetLeft
-        }))
+        // this.setState(prevState => ({
+        //     ...prevState,
+        //     customLeft: this.button.offsetLeft
+        // }))
     }
 
-    boundElement = (element) => {
-        if(this.button) return 
-        this.button = findDOMNode(element)
-    }
+    // boundElement = (element) => {
+    //     if(this.button) return 
+    //     this.button = findDOMNode(element)
+    // }
 
     render() {
   
         const {board:
             {boardName, isImportant, reletedTo},
-            isMenuInBoardPageShow,
-            isCreateListNebuShow
+            isMenuInBoardPageShow
         } = this.props
 
-        const {customLeft} = this.state
+        // const {customLeft} = this.state
         return (
             <div className='board-wrapper'>
                 <div className='board-content'>
@@ -118,18 +117,18 @@ class BoardPage extends Component {
                             {/* here is will render all columns of all lists or will be Route's here perhaps */}
                            
                             <div className='column' id="test">
-                                <CreateList ref={this.boundElement} customLeft={customLeft}>
-                                    create list
-                                </CreateList>
+                            <AddListForm/>
+                            {/* <AddListForm> */}
+
                             </div>
 
-                            <Popup>
+                            {/* <Popup>
                                 <Popup.Menu 
                                     title="Create List"
                                     toShow={isCreateListNebuShow} 
                                     component={AddListForm} 
                                 />
-                            </Popup>
+                            </Popup> */}
                         </section>
                     </div>
                 </div>
@@ -155,7 +154,7 @@ const mapStateToProps = ({
     lists: boardProject.lists,
     isPostRequstPending : status.isPostRequstPending,
     isMenuInBoardPageShow: isMenuInBoardPageShow,
-    isCreateListNebuShow: menu.isCreateListNebuShow
+    // isCreateListNebuShow: menu.isCreateListNebuShow
 })
 
 const mapDispatchToProps = (dispatch) => ({
@@ -169,3 +168,8 @@ const mapDispatchToProps = (dispatch) => ({
 })
 
 export default connect(mapStateToProps, mapDispatchToProps)(BoardPage)
+
+
+// <CreateList ref={this.boundElement} customLeft={customLeft}>
+// create list
+// </CreateList>
