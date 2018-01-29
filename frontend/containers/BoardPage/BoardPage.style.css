@@ -63,6 +63,7 @@
 
 
 .column {
+    vertical-align: top;
     width: 270px;
     margin: 0 5px;
     display: inline-block;

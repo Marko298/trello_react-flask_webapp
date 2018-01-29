@@ -8,8 +8,6 @@ import {
     UNFIX_SIDEBAR,
     TOGGLE_CRATIVE_MENU,
     TOGGLE_ACCOUNT_SETTINGS_MENU,
-    SWITCH_COMPONENTS_IN_EDITING_PAGE,
-    // TOGGLE_CREATE_LIST_MENU,
     TOGGLE_MENU_BOARD_PAGE,
     POPUP_MENU_CLOSE
 
@@ -24,12 +22,8 @@ const initialEditModeState = {
         isCreateTeamFormShow: false,
         isCreativeMenuShow: false,
         isAccountSettingsMenuShow: false,
-        // isCreateListNebuShow: false
     },
-    switchBetweenComponents: {
-        toShowFirstComponent: true,
-        toShowSecondComponent: false
-    },
+   
     sidebar: {
         isPinned: false,
         isFixed: false,
@@ -42,7 +36,10 @@ const initialEditModeState = {
     width: 0
 }
 
-export default function EditModeReducer(state = initialEditModeState, {type, settings, marginLeft, switchBetweenComponents}) {
+export default function EditModeReducer(
+    state = initialEditModeState, 
+    {type, settings, marginLeft, switchBetweenComponents}
+) {
     switch (type) {
         case TOGGLE_EDIT_MODE_BOARDS: {
             if(state.forms.isPopupShow) {
@@ -164,26 +161,6 @@ export default function EditModeReducer(state = initialEditModeState, {type, set
                 }
             }
         }
-
-        case SWITCH_COMPONENTS_IN_EDITING_PAGE: {
-            return {
-                ...state,
-                switchBetweenComponents: {
-                    toShowFirstComponent: switchBetweenComponents.toShowFirstComponent,
-                    toShowSecondComponent: switchBetweenComponents.toShowSecondComponent
-                }
-            }
-        }
-
-        // case TOGGLE_CREATE_LIST_MENU: {
-        //     return {
-        //         ...state,
-        //         menu: {
-        //             ...initialEditModeState.menu,
-        //             isCreateListNebuShow: true
-        //         }
-        //     }
-        // }
 
         case TOGGLE_MENU_BOARD_PAGE: {
             return {
