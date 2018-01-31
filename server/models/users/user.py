@@ -1,4 +1,5 @@
 from server.common.database import Database
+from server.models.labels.label import Label
 from server.common.utils import Utils
 import server.models.users.errors as err
 import uuid
@@ -12,6 +13,10 @@ class User(object):
         self.name = name
         self._id = uuid.uuid4().hex if _id is None else _id
         self.boards = boards if boards is not None else list()
+        
+    @property
+    def labels(self):
+        return Label.default_labels()
 
     def __repr__(self):
         return "<User {}>".format(self.email)
@@ -63,7 +68,8 @@ class User(object):
             "email": self.email,
             "password" : self.password,
             "name" : self.name,
-            "_id" : self._id
+            "_id" : self._id,
+            "labels" : self.labels
         }
 
     def save(self):

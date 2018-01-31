@@ -13,7 +13,6 @@ function TabRoutes({children, routers, match, _id}) {
             {routers.map((route, idx) => (
                 <Link key={idx} to={`${match.url}${_id}${route.path}`}>{route.title}</Link>
             ))}
-            {/* Render the list of links with a path that comes from props, so in props I wll get arrays */}
             {children}
         </div>
     )

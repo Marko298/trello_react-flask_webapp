@@ -61,7 +61,10 @@ class AddBoardForm extends Component {
             return resp
         }).then((resp) => {
             const {history, match} = this.props
-            history.push(`${match.url}board/${resp._id}/${resp.reletedTo.teamId}`)
+            history.push(
+                `${match.url}board/${resp._id}/${resp.reletedTo.teamId}`,
+                {boardId: resp._id}
+            )
         })
 
     }

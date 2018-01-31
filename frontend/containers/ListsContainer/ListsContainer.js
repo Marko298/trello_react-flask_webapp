@@ -1,18 +1,11 @@
-import React, {Component} from 'react'
+import React, {Component, Children} from 'react'
 import {connect} from 'react-redux'
+import {func} from 'prop-types'
 import {Link, withRouter} from 'react-router-dom'
-import slug from 'slug'
-
-//actions
-import CardActions from '../../actions/CardAction'
 
 //components
 import Title from '../../components/Title/Title'
 import Button from '../../components/Button/Button'
-
-
-
-
 
 
 class ListsContainer extends Component {
@@ -23,14 +16,24 @@ class ListsContainer extends Component {
         cards: []
     }
 
-    handleClick = (e) => {
-        this.props.create_card("iii")
+    static propTypes = {
+        children: func.isRequired
+    }
+
+    // handleClick = (e) => {
+    //     this.props.create_card("iii")
+    // }
+
+    componentDidMount() {
+
     }
 
     render() {
 
         const {
-            title
+            title,
+            _id,
+            forBoard
         } = this.props
 
         return (
@@ -41,10 +44,9 @@ class ListsContainer extends Component {
                 </div>
                 {this.props.cards.map(card => {
                     return (
-
-                        <div>
+                        <div key={card._id}>
                             <Link to={{
-                                pathname: `/card/${card._id}/${slug(title)}`,
+                                pathname: `/card/${card._id}/${_id}`,
                                 state: {
                                     modal: true
                                 }
@@ -56,9 +58,10 @@ class ListsContainer extends Component {
                 })}
 
                 <div>
-                    <Button onClick={this.handleClick}>
+                    {/* <Button onClick={this.handleClick}>
                         create card
-                    </Button>
+                    </Button> */}
+                    {Children.only(this.props.children(_id, forBoard))}
                 </div>
 
             </div>
@@ -66,12 +69,12 @@ class ListsContainer extends Component {
     }
 } 
 
-const mapDispatchToProps = (dispatch, ownProps) => ({
-    create_card(title) {
-        let {_id: listId} = ownProps
-        let data = {title}
-        dispatch(CardActions.create_card_request(listId, data))
-    }
-})
+// const mapDispatchToProps = (dispatch, ownProps) => ({
+//     create_card(title) {
+//         let {_id: listId} = ownProps
+//         let data = {title}
+//         dispatch(CardActions.create_card_request(listId, data))
+//     }
+// })
 
-export default connect(null, mapDispatchToProps)(ListsContainer)
+export default connect(null, null)(ListsContainer)

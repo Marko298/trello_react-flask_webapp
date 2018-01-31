@@ -9,7 +9,8 @@ import {
     TOGGLE_CRATIVE_MENU,
     TOGGLE_ACCOUNT_SETTINGS_MENU,
     TOGGLE_MENU_BOARD_PAGE,
-    POPUP_MENU_CLOSE
+    POPUP_MENU_CLOSE,
+    TOGGLE_LABEL_MENU
 } from '../constants/EditModeConstant'
 
 export default class PopupActions {
@@ -53,5 +54,9 @@ export default class PopupActions {
 
     static toggle_menu_on_boardPage() {
         return {type: TOGGLE_MENU_BOARD_PAGE}
+    }
+
+    static toggle_menu_labelList() {
+        return {type: TOGGLE_LABEL_MENU}
     }
 }

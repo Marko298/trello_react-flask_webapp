@@ -9,7 +9,8 @@ import {
     TOGGLE_CRATIVE_MENU,
     TOGGLE_ACCOUNT_SETTINGS_MENU,
     TOGGLE_MENU_BOARD_PAGE,
-    POPUP_MENU_CLOSE
+    POPUP_MENU_CLOSE,
+    TOGGLE_LABEL_MENU
 
 } from '../constants/EditModeConstant'
 
@@ -22,6 +23,7 @@ const initialEditModeState = {
         isCreateTeamFormShow: false,
         isCreativeMenuShow: false,
         isAccountSettingsMenuShow: false,
+        isLabelListShow: false
     },
    
     sidebar: {
@@ -59,7 +61,6 @@ export default function EditModeReducer(
                     isPopupShow: !state.forms.isPopupShow
                 }
             }
-
         }
 
             
@@ -152,7 +153,6 @@ export default function EditModeReducer(
         }
 
         case TOGGLE_ACCOUNT_SETTINGS_MENU: {
-
             return {
                 ...state,
                 menu: {
@@ -166,6 +166,16 @@ export default function EditModeReducer(
             return {
                 ...state,
                 isMenuInBoardPageShow: !state.isMenuInBoardPageShow
+            }
+        }
+
+        case TOGGLE_LABEL_MENU: {
+            return {
+                ...state,
+                menu: {
+                    ...initialEditModeState.menu,
+                    isLabelListShow: true
+                }
             }
         }
 

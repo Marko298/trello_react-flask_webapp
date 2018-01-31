@@ -11,11 +11,6 @@ const styles = function(props) {
 
 function Button({onClick, children, type, disabled, descruption,...props}) {
 
-    // let isObject = typeof props.className === 'object'
-    // const className = props.className &&
-    //         isObject && props.className
-    //         ? "button ".concat( props.className.join(" "))
-    //         : 'button'
     let defaultClass = 'button'
     let addonsClasses = props.className ? props.className : ''
 

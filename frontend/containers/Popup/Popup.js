@@ -48,6 +48,10 @@ class Popup extends Component {
         return props.toShow && <PopupMenuComponent /> 
     }
 
+    componentDidMount() {
+        console.log("this.props", this.props)
+    }
+
     componentWillReceiveProps(nextProps) {
         if(this.props.menu.isCreativeMenuShow 
             && (nextProps.menu.isCreateTeamFormShow || nextProps.menu.isCreateBoardFormShow)
@@ -61,10 +65,7 @@ class Popup extends Component {
         if(this.props.location.pathname !== nextProps.location.pathname && nextProps.isPopupShow) {
             this.toggle()
         }
-        // console.log("_____________________________________________")
-        // console.log("componentWillReceiveProps, Popup", 
-        // "nextProps.isPopupShow", nextProps.menu, this.props.menu, this.state)
-        // console.log("_____________________________________________")
+
     }
 
     componentWillUnmount() {
@@ -141,4 +142,4 @@ const mapStateToProps = ({mode, mode: {menu}, organizations: {teams}}) => ({
 //     }
 // })
 
-export default withRouter(connect(mapStateToProps, null)(Popup))
+export default connect(mapStateToProps, null)(Popup)

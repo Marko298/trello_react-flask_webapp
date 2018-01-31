@@ -6,27 +6,37 @@ import {withRouter} from 'react-router-dom'
 import UserActions from '../../actions/UserAction'
 //components
 import Button from '../../components/Button/Button'
-
-
 import TabRoutes from '../../components/TabRoutes/TabRoutes'
 
-const routes = [
-    {path: '', title: "Profile"},
-    {path: '/cards', title: "Cards"},
-    {path: '/settings', title: "Settings"}
-]
+// const routes = [
+//     {path: '', title: "Profile"},
+//     {path: '/cards', title: "Cards"},
+//     {path: '/settings', title: "Settings"}
+// ]
 
 class AccountSettingsMenu extends React.Component {
+
+    static routes = [
+        {path: '', title: "Profile"},
+        {path: '/cards', title: "Cards"},
+        {path: '/settings', title: "Settings"}
+    ]
+
     handleLogoutAction = () => {
         this.props.logout().then(() => {
            this.props.history.push('/')
         })
     }
+
     render() {
         const {match, userId} = this.props
         return (
             <div>
-                <TabRoutes _id={userId} routers={routes} match={match}/>
+                <TabRoutes 
+                    _id={userId} 
+                    routers={AccountSettingsMenu.routes} 
+                    match={match}
+                />
                 <Button onClick={this.handleLogoutAction}>
                     Logout
                 </Button>

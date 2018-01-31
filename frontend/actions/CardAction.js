@@ -1,7 +1,8 @@
 import {
     CARD_POST_REQUEST,
     CARD_REQUEST_POST_SUCCESS,
-    GET_SCHEMA_CARD
+    GET_SCHEMA_CARD,
+    CARD_GET_REQUEST_SUCCESSFULL
 } from '../constants/CardConstant'
 
 import axios from 'axios'
@@ -45,7 +46,7 @@ export default class CardActions {
         }
     }
 
-    static create_card_request(listId, {title}) {
+    static create_card_request(listId, {title, boardId}) {
         return (dispatch, getState) => {
 
             const state = getState()
@@ -55,7 +56,8 @@ export default class CardActions {
                 ...card_schema,
                 forList: listId,
                 _id: uuidv1(),
-                title
+                title,
+                boardId
             }
 
             dispatch(CardActions.create_static_card(createSchemaRequest))
@@ -74,6 +76,39 @@ export default class CardActions {
             }).catch(error => {
                 console.log("cannot create this card")
             })
+        }
+    }
+
+    static fetch_cards_successfully(response) {
+        return {
+            type: CARD_GET_REQUEST_SUCCESSFULL,
+            payload: response
+        }
+    }   
+
+    static fetch_cards(boardId) {
+        return (dispatch) => {
+
+            return axios({
+                url: api.get_cards_by_boardId(boardId),
+                method: 'GET',
+                headers: api.headers(),
+                withCredentials: true
+            }).then(response => {
+                // console.log({response})
+                // dispatch(CardActions.fetch_cards_successfully(response.data))
+                return Promise.resolve(response.data)
+            }).catch(error => {
+                console.log("ERROR CANT FETCH CARDS")
+            })
+
+        }
+    }
+
+    static add_labels(labels) {
+        return {
+            type: '',
+            payload: labels
         }
     }
 }

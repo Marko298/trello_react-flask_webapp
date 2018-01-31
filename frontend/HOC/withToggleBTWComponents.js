@@ -29,7 +29,7 @@ export default function withToggleBTWComponents(Component) {
                 
                 return (
                     <Component {...this.props}>
-                        {({forFirst, forSecond}) => {
+                        {({forFirst, forSecond}={}) => {
                             return (
                                 showFirstOne && <FirstComponent 
                                     {...forFirst} 

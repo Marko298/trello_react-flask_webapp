@@ -1,13 +1,22 @@
 
 import {USER_REQUEST_FAILED, USER_REQUEST, USER_LOGIN_SUCCESS, USER_REQUEST_LOGOUT} from '../constants/UserConstants'
 
+let defaultLabels = [
+    {_id: "41335e0511994300a2845c20bf8fe57d", color: "#c62828", description: "red"},
+    {_id: "a5b54c2d0f184550aca154a05e39fd1b", color: "#eeff41", description: "yellow"},
+    {_id: "44d2a269dd374b87a3f3090f7c7cde8a", color: "#00e676", description: "green"},
+    {_id: "0063886c4eb04603b5b204620ca987de", color: "#42a5f5", description: "blue"},
+]
+
 const initialState = {
-    userId: "b2b63710b865419ba4db2e873baddf90",
+    userId: "ee7913cc4e8f4ffa927b7ab5f295c3b9",
     email: null,
     error: null,
     isLoading: false,
+    labels: defaultLabels || [],
     name: ''
 }
+
 
 const UserReducer = function (state = initialState, {type, payload}) {
     switch (type) {
@@ -24,7 +33,8 @@ const UserReducer = function (state = initialState, {type, payload}) {
                 isLoading: false,
                 email: payload.email,
                 userId : payload._id,
-                name: payload.name
+                name: payload.name,
+                labels: payload.labels
             }
         }
         case USER_REQUEST_FAILED: {

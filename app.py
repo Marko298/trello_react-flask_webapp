@@ -266,6 +266,7 @@ def create_card(listId):
         title = CONTENT.get('title')
         forList = CONTENT.get('forList') if CONTENT.get('forList') is not None else listId
         _id = CONTENT.get('_id') if CONTENT.get('_id') is not None else None
+        boardId = CONTENT.get('boardId')
 
         try:
             _, classList = List.get_list_by_id(listId)
@@ -275,20 +276,38 @@ def create_card(listId):
         cardId = Card(
             title=title,
             forList=forList,
-            _id=_id
+            _id=_id,
+            boardId=boardId
         ).save()
 
         classList.save_card_for_list(listId)
         _, cursorCard = Card.get_card_by_id(cardId)
         return  jsonify(cursorCard)
         
+@app.route('/card/update_card/<string:cardId>', methods=['POST'])
+def update_card(cardId):
+    if request.method == 'POST' and request.is_json:
+        CONTENT = request.get_json()
 
-# @app.route('/card/get_all_cards/<string:boardId>/<string:>')
-# def get_all_cards(boardId):
-#     # I can get the lists ids
-#     # and for each list I have to find releted cards
-#     # and return their inners
-#     pass
+        if len(CONTENT) is not 0:
+            classCard, _ = Card.get_card_by_id(cardId)
+
+            updatedFields = dict(filter(lambda pair: pair[0] is not'labels', CONTENT.items()))
+
+            if CONTENT.get('labels') is not None:
+                classCard.add_label(CONTENT.get('labels'))
+            else:
+                updatedCardId = classCard.update_card(updatedFields)
+                
+            _, updatedCardCursor = Card.get_card_by_id(cardId)
+
+            return jsonify(updatedCardCursor)
+
+
+@app.route('/card/get_all_cards/<string:boardId>')
+def get_all_cards(boardId):
+    cardsCursor =  Card.get_card_by_boardId(boardId)
+    return jsonify(cardsCursor)
 
 @app.route('/card/card_schema', methods=['GET'])
 def card_schema():

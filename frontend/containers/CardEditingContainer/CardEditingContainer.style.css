@@ -1,0 +1,15 @@
+.editing-container {
+    display: flex;
+}
+
+.editing-right {
+    padding: 10px;
+    width: 300px;
+    background-color: lightseagreen;
+}
+
+.editing-left {
+    padding: 10px;
+    flex-grow: 1;
+    background-color: lightblue;
+}

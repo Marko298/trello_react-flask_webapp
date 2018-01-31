@@ -86,6 +86,14 @@ class API {
     get get_card_schema() {
         return `${this.url}/card/card_schema`
     }
+
+    get_cards_by_boardId(boardId) {
+        return `${this.url}/card/get_all_cards/${boardId}`
+    }
+
+    update_card(cardId) {
+        return `${this.url}/card/update_card/${cardId}`
+    }
     
 
 }

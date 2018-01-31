@@ -2,12 +2,13 @@ import React from 'react'
 
 import PropTypes from 'prop-types'
 
-const Textarea = ({name, label, field, onChange}) => (
+const Textarea = ({name, label, field, onChange, children, ...props}) => (
     <div>
         <label htmlFor={name}>
             {label}
         </label>
         <textarea name={name} value={field} onChange={onChange}>
+            {children}
         </textarea>
     </div>
 )

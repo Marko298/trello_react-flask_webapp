@@ -3,13 +3,17 @@ import {
     LIST_REQUEST_GET_SUCCESS,
     LIST_REQUEST_POST_SUCCESS,
     LIST_GET_SCHEMA,
-    LIST_POST_REQUEST
+    LIST_POST_REQUEST,
+    PROJECT_IS_FETCHET_SUCCESSFULLY,
+    CLEAR_PROJECT_DATA,
+    LIST_POST_DESCRIPTION_SUCCESS
+
 } from '../constants/ListConstant'
 
 import {
     CARD_POST_REQUEST,
     CARD_REQUEST_POST_SUCCESS,
-    GET_SCHEMA_CARD
+    GET_SCHEMA_CARD    
 } from '../constants/CardConstant'
 
 
@@ -34,7 +38,7 @@ export default function ListReducer(state=initialState, {type, payload, ...actio
                 isLoading: true
             }
         }
-        case LIST_REQUEST_GET_SUCCESS: {
+        case PROJECT_IS_FETCHET_SUCCESSFULLY: {
             return {
                 ...state,
                 status: {
@@ -45,6 +49,15 @@ export default function ListReducer(state=initialState, {type, payload, ...actio
                     lists: [...payload]
                 }
                
+            }
+        }
+
+        case CLEAR_PROJECT_DATA: {
+            return {
+                ...state,
+                boardProject: {
+                    lists: []
+                }
             }
         }
 
@@ -158,6 +171,35 @@ export default function ListReducer(state=initialState, {type, payload, ...actio
                 }
             }
 
+        }
+
+        case LIST_POST_DESCRIPTION_SUCCESS: {
+            let {forList, _id} = payload
+
+            return {
+                ...state,
+                boardProject: {
+                    lists: state.boardProject.lists.map(list => {
+                        if(list._id === forList) {
+                            return {
+                                ...list,
+                                cards: list.cards.map(card => {
+                                    if(card._id === _id) {
+                                        return {
+                                            ...card,
+                                            ...payload
+                                        }
+                                    }
+                                    return {...card}
+                                })
+                            }
+                        }
+                        return {...list}
+                    })
+                }
+            }
+            // find this card inside list
+            // and rewrite the field with description for this card
         }
 
 

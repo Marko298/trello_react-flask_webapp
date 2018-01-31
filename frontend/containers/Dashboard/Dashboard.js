@@ -19,6 +19,10 @@ import AccountSettingsMenu from '../AccountSettingsMenu/AccountSettingsMenu'
 import EditFormOrganization from '../EditFormOrganization/EditFormOrganization'
 import EditFormProfile from '../EditFormProfile/EditFormProfile'
 import BoardPage from '../BoardPage/BoardPage'
+import CardEditingContainer from '../CardEditingContainer/CardEditingContainer'
+import ModalWindow from '../ModalWindow/ModalWindow'
+import LabelList from '../LabelList/LabelList'
+
 //components
 import Row from '../../components/Row/Row'
 import Wrapper from '../../components/Wrapper/Wrapper'
@@ -65,45 +69,6 @@ const RemoveBoard = (props) => (
 )
 
 
-
-const Modal = ({ match, history, ...props }) => {
-    console.log({modal: {props, match}})
-    const back = (e) => {
-      e.stopPropagation()
-      history.goBack()
-    }
-
-    return (
-        <div
-            onClick={back}
-            style={{
-            position: 'absolute',
-            top: 0,
-            left: 0,
-            bottom: 0,
-            right: 0,
-            background: 'rgba(0, 0, 0, 0.8)'
-            }}
-        >
-            <div className='modal' style={{
-                position: 'absolute',
-                background: '#fff',
-                top: 25,
-                left: '10%',
-                right: '10%',
-                padding: 15,
-                border: '2px solid #444'
-            }}>
-                <h1>'titlte'</h1>
-                {/* <Image color={image.color} /> */}
-                <button type='button' onClick={back}>
-                    Close
-                </button>
-            </div>
-        </div>
-    )
-}
-
 class Dashboard extends React.Component {
     static defaultProps = {
         boards: [],
@@ -134,18 +99,11 @@ class Dashboard extends React.Component {
             this.previouseLocation = this.props.location
         }
     }
-    
-    componentWillReceiveProps(nextProps) {
-        // console.log("------------------------------------------------")
-        // console.log("Dashboard componentWillReceiveProps", {nextProps})
-        // console.log("------------------------------------------------")
-    }
+
     componentDidCatch(err, info) {
         console.log("componentDidCatch", err, info)
     }
     componentDidMount() {
-
-        // console.log("this.props.important()", this.props.important)
 
 
         document.title = "Dashbaord | Trello" 
@@ -173,6 +131,7 @@ class Dashboard extends React.Component {
             isCreateTeamFormShow,
             isCreativeMenuShow,
             isAccountSettingsMenuShow,
+            isLabelListShow,
         }, sidebar: {backing, isPinned}, userId } = this.props
 
         const routes = [
@@ -180,7 +139,6 @@ class Dashboard extends React.Component {
             {path: '/members', title: "Members"},
             {path: '/settings', title: "settings"}
         ]
-
 
         const isModal = !!(
             location.state &&
@@ -217,19 +175,13 @@ class Dashboard extends React.Component {
                         <Switch location={isModal ? this.previouseLocation : location}>
                             <Route exact path={`${this.props.match.path}`} render={(props) => {
                                 return (
-                                    <Fragment>
-                                    
-                                        <Boards boards={this.props.boards} {...props}>
-                                            <Boards.Important title="Starred Boards"/>
-                                            <Boards.Private withButtonAddBoard title="Personal Boards"/>
-                                            <Boards.Comands withButtonAddBoard render={(getProps) => (
-                                                <TabRoutes {...getProps()} match={match} routers={routes} />
-                                            )} />
-                                        </Boards>
-
-                                       
-
-                                    </Fragment>
+                                    <Boards boards={this.props.boards} {...props}>
+                                        <Boards.Important title="Starred Boards"/>
+                                        <Boards.Private withButtonAddBoard title="Personal Boards"/>
+                                        <Boards.Comands withButtonAddBoard render={(getProps) => (
+                                            <TabRoutes {...getProps()} match={match} routers={routes} />
+                                        )} />
+                                    </Boards>
                                 )
                             }}/>
 
@@ -237,12 +189,10 @@ class Dashboard extends React.Component {
                                 const {teamId, boardId} = props.match.params
                                 const board = Utils.returnBoardFromTeam(boards, teamId, boardId)
 
-                                console.log({board})
-
                                 // <i>We are change location <strong> {board.boardName} </strong> </i>
                                 return (
                                     <div style={{position: 'relative', overflowY: 'auto', flexGrow: 1}}> 
-                                        <BoardPage board={board}/>
+                                        <BoardPage board={board} {...props}/>
                                     </div>
                                 )
                                 
@@ -253,8 +203,6 @@ class Dashboard extends React.Component {
                                 return <h1>profile {props.match.params.userId}</h1>
                             }}/> */}
 
-                            
-                            
 
                             <Route path={`${this.props.match.path}:teamId`} render={(props) => {
                                 let foundedTeam = Utils.returnGroupById(boards, props.match.params.teamId)[0]
@@ -281,9 +229,12 @@ class Dashboard extends React.Component {
                             }}/>
                         </Switch>
 
-                        {isModal ? <Route path={`/card/:cardId/:listTitle`} render={(props) => {
+                        {isModal ? <Route path={`/card/:cardId/:listId`} render={(props) => {
+                                   const {match} = props
                                    return createPortal(
-                                        <Modal {...props} />,
+                                        <ModalWindow {...props}>
+                                            {(rest) => <CardEditingContainer match={match} {...rest}/>}
+                                        </ModalWindow>,
                                         document.getElementById('portal')
                                     )
                         }}/> : null}
@@ -292,7 +243,7 @@ class Dashboard extends React.Component {
                     </Wrapper> 
 
                  <Wrapper className='pop-over'>
-                 <Popup>
+                    <Popup {...this.props}>
                         <Popup.Menu 
                             title="Create Board"
                             toShow={isCreateBoardFormShow}
@@ -317,6 +268,12 @@ class Dashboard extends React.Component {
                             title="Profile Pasha School"
                             toShow={isAccountSettingsMenuShow} 
                             component={AccountSettingsMenu} 
+                        />
+
+                        <Popup.Menu 
+                            title="Chose the label bro"
+                            toShow={isLabelListShow} 
+                            component={LabelList} 
                         />
                     </Popup>
                  </Wrapper>
@@ -354,4 +311,4 @@ const mapDispatchToProps = (dispatch) => ({
     }
 })
 
-export default withRouter(connect(mapStateToProps, mapDispatchToProps)(Dashboard))
+export default connect(mapStateToProps, mapDispatchToProps)(Dashboard)

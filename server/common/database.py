@@ -36,7 +36,6 @@ class Database(object):
     def delete_one_from_array(collection, query, data):
         Database.DATABASE[collection].update_one(query, {"$pull": data})
         
-        
     @staticmethod
     def update_push(collection, query, newData):
         Database.DATABASE[collection].update(query, {"$push": newData})

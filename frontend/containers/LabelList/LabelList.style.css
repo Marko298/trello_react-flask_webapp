@@ -1,0 +1,5 @@
+.label-list {
+    display: flex;
+    /* flex-flow: wrap row; */
+    flex-wrap: wrap;
+}
