@@ -7,12 +7,14 @@ import uuid
 from server.models.boards.board import Board
 
 class User(object):
-    def __init__(self, email, password, name, boards=None, _id=None):
+    def __init__(self, email, password, name, labels=None, comments=None, boards=None, photo=None ,_id=None):
         self.email = email
         self.password = password
         self.name = name
         self._id = uuid.uuid4().hex if _id is None else _id
         self.boards = boards if boards is not None else list()
+        self.comments = comments if comments is not None else list()
+        self.photo = photo if photo is not None else str()
         
     @property
     def labels(self):
@@ -29,6 +31,11 @@ class User(object):
     def get_user_by_id(cls, queryID):
         cursorUser = Database.find_one('users', {"_id": queryID})
         return cls(**cursorUser)
+
+    @classmethod
+    def get_user_by_id_cursor(cls, queryID):
+        cursorUser = Database.find_one('users', {"_id": queryID})
+        return cursorUser
 
     @staticmethod
     def get_user_by_email(email):
@@ -69,8 +76,14 @@ class User(object):
             "password" : self.password,
             "name" : self.name,
             "_id" : self._id,
-            "labels" : self.labels
+            "comments" : self.comments,
+            "labels" : self.labels,
+            "boards" : self.boards,
+            "photo" : self.photo
         }
+
+    def add_comment(self, commentId):
+        Database.update_push('users', {'_id' : self._id}, {'comments': commentId})
 
     def save(self):
         return Database.insert("users", self.json())
@@ -85,8 +98,6 @@ class User(object):
     @classmethod
     def get_own_boards(cls, authorEmail):
         user = cls.get_user_by_email(authorEmail)
-        print("user", user)
-        # classBoard, 
         cursorBoard = Board.get_boards_by_author(user['_id'])
         return cursorBoard
         

@@ -22,6 +22,14 @@ import server.models.lists.errors as ListErrors
 
 ## Card
 from server.models.cards.card import Card
+import server.models.cards.errors as CardError
+
+## Comment
+from server.models.comments.comment import Comment
+
+## CheckList
+from server.models.checklist.checklist import CheckList
+
 
 ############ FLask App  ############
 
@@ -62,6 +70,7 @@ def user_register():
             return jsonify(error=e.message)
 
     return "Registration form"
+
 
 
 @app.route("/users/login", methods=["POST", "GET"])
@@ -107,6 +116,19 @@ def toggle_board_settings(userId, boardId):
     
     return "Success GET"
 
+
+@app.route('/users/get_by_ids', methods=['GET', 'POST'])
+@user_dec.login_required 
+def get_user_by_ids():
+    if request.method == 'POST' and request.is_json:
+        CONTENT = request.get_json()
+
+        ids = CONTENT.get('user_ids')
+
+        users = [User.get_user_by_id_cursor(id) for id in ids]
+
+        return jsonify(users)
+        
 
 @app.route("/users/logout") 
 @user_dec.login_required   
@@ -283,7 +305,8 @@ def create_card(listId):
         classList.save_card_for_list(listId)
         _, cursorCard = Card.get_card_by_id(cardId)
         return  jsonify(cursorCard)
-        
+
+
 @app.route('/card/update_card/<string:cardId>', methods=['POST'])
 def update_card(cardId):
     if request.method == 'POST' and request.is_json:
@@ -292,7 +315,7 @@ def update_card(cardId):
         if len(CONTENT) is not 0:
             classCard, _ = Card.get_card_by_id(cardId)
 
-            updatedFields = dict(filter(lambda pair: pair[0] is not'labels', CONTENT.items()))
+            updatedFields = dict(filter(lambda pair: pair[0] is not 'labels', CONTENT.items()))
 
             if CONTENT.get('labels') is not None:
                 classCard.add_label(CONTENT.get('labels'))
@@ -304,15 +327,80 @@ def update_card(cardId):
             return jsonify(updatedCardCursor)
 
 
+
 @app.route('/card/get_all_cards/<string:boardId>')
 def get_all_cards(boardId):
     cardsCursor =  Card.get_card_by_boardId(boardId)
     return jsonify(cardsCursor)
 
+
 @app.route('/card/card_schema', methods=['GET'])
 def card_schema():
     cardSchema = Card.card_schema_for_client()
     return jsonify(cardSchema)
+
+##########################
+############### Comment API
+##########################
+@app.route("/comment/add_comment/<string:cardId>", methods=["POST", "GET"])
+@user_dec.login_required
+def add_comment_to_card(cardId):
+    if request.method == 'POST' and request.is_json:
+        CONTENT = request.get_json()
+
+        description = CONTENT.get("description")
+        user = User.get_user_by_email(session['email'])
+
+        commentId = Comment(
+            description=description,
+            authorId=user.get("_id"),
+            forCard=cardId
+        ).save()
+
+        cursorComment, _ = Comment.get_by_id(commentId)
+        classCard, _ = Card.get_card_by_id(cardId)
+        classCard.add_comment(cursorComment.get('_id'))
+        User(**user).add_comment(commentId)
+
+        return jsonify(cursorComment)
+
+
+@app.route("/comment/get_comments_for_card/<string:cardId>", methods=["GET"])
+@user_dec.login_required
+def get_comments_for_card(cardId):
+    try:
+        _, _ = Card.get_card_by_id(cardId)
+    except CardError.CardError as error:
+        jsonify(error=error.message)
+
+    commentsList = Comment.get_comments_for_card(cardId)
+
+    return jsonify(commentsList)
+
+
+@app.route('/comment/delete_comment/<string:commentId>', methods=["DELETE"])
+@user_dec.login_required
+def remove_comment(commentId):
+    _, classComment = Comment.get_by_id(commentId)
+    result = classComment.delete_comment(commentId)
+    if result:
+        return jsonify(result)
+
+    
+
+@app.route('/comment/edit_comment/<string:commentId>', methods=["POST"])
+@user_dec.login_required
+def edit_comment(commentId):
+    if request.method == 'POST' and request.is_json:
+        CONTENT = request.get_json()
+
+        description = CONTENT.get('description')
+        _ , commentClass = Comment.get_by_id(commentId)
+        updatedCursorComment = commentClass.update_comment(description)
+
+        return jsonify(updatedCursorComment)
+
+
 
 if __name__ == '__main__':
     app.run(port=4000, debug=True)

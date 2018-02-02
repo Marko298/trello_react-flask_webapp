@@ -67,7 +67,8 @@ const SecondForm = ({
     handleChange,
     handleClick,
     name,
-    ...props}) => {
+    ...props
+}) => {
     return ([ 
         <Textarea field={field} name={name} onChange={handleChange(name)} key='textarea'/>,
         <Button onClick={handleClick} key='firstBtn'>

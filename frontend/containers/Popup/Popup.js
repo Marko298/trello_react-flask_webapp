@@ -24,29 +24,52 @@ class Popup extends Component {
         allowStepBack: false
     }
 
-    static Menu = (props) => {
-
-        const PopupMenuComponent = () => (
-            <Fragment>
-                <Wrapper>
-                    <Row>
-                        {props.stepBack && props.stepBackWithAction && <GoBack onClick={(e) => {
-                            props.dispatch(props.stepBackWithAction())
-                        }}/>}
-                        <Title text={props.title} />
-                        <Button onClick={props.close}>
-                            X (close)
-                        </Button>
-                    </Row>
-                </Wrapper>
-                <section>
-                    <props.component />
-                </section>
-            </Fragment>
-        )
-
-        return props.toShow && <PopupMenuComponent /> 
+    static Menu = class extends Component {
+        render() {
+            return this.props.toShow && (
+                <Fragment>
+                    <Wrapper>
+                        <Row>
+                            {this.props.stepBack && this.props.stepBackWithAction && <GoBack onClick={(e) => {
+                                this.props.dispatch(this.props.stepBackWithAction())
+                            }}/>}
+                            <Title text={this.props.title} />
+                            <Button onClick={this.props.close}>
+                                X (close)
+                            </Button>
+                        </Row>
+                    </Wrapper>
+                    <section>
+                        <this.props.component />
+                    </section>
+                </Fragment>
+            )
+        }
     }
+    // static Menu = (props) => {
+
+    //     const PopupMenuComponent = () => (
+    //         <Fragment>
+    //             <Wrapper>
+    //                 <Row>
+    //                     {props.stepBack && props.stepBackWithAction && <GoBack onClick={(e) => {
+    //                         props.dispatch(props.stepBackWithAction())
+    //                     }}/>}
+    //                     <Title text={props.title} />
+    //                     <Button onClick={props.close}>
+    //                         X (close)
+    //                     </Button>
+    //                 </Row>
+    //             </Wrapper>
+    //             <section>
+    //                 <props.component />
+    //             </section>
+    //         </Fragment>
+    //     )
+
+    //     return props.toShow && <PopupMenuComponent /> 
+    // }
+   
 
     componentDidMount() {
         console.log("this.props", this.props)
@@ -136,10 +159,4 @@ const mapStateToProps = ({mode, mode: {menu}, organizations: {teams}}) => ({
     menu: {...menu}
 })
 
-// const mapDispatchToProps = (dispatch) => ({
-//     toggle() {
-//         dispatch(PopupActions.toggle_editMode())
-//     }
-// })
-
-export default connect(mapStateToProps, null)(Popup)
+export default withRouter(connect(mapStateToProps, null)(Popup))

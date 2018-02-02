@@ -2,7 +2,9 @@ import {
     CARD_POST_REQUEST,
     CARD_REQUEST_POST_SUCCESS,
     GET_SCHEMA_CARD,
-    CARD_GET_REQUEST_SUCCESSFULL
+    CARD_GET_REQUEST_SUCCESSFULL,
+    ADD_LABEL_REQUEST,
+    ADD_LABEL_REQUEST_SUCCESS
 } from '../constants/CardConstant'
 
 import axios from 'axios'
@@ -105,10 +107,43 @@ export default class CardActions {
         }
     }
 
-    static add_labels(labels) {
+    static add_labels(cardId, labels, forList) {
         return {
-            type: '',
-            payload: labels
+            type: ADD_LABEL_REQUEST,
+            payload: labels,
+            cardId,
+            forList
         }
     }
+
+    static add_labels_success(response) {
+        return {
+            type: ADD_LABEL_REQUEST_SUCCESS,
+            payload: response
+        }
+    }
+
+    static add_labels_request(cardId, labels, forList) {
+        return (dispatch) => {
+
+            let prepareRequest = {labels}
+
+            console.log({prepareRequest})
+
+            axios({
+                url: api.update_card(cardId),
+                method: "POST",
+                headers: api.headers(),
+                withCredentials: true,
+                data: JSON.stringify(prepareRequest)
+            }).then(response => {
+                let {data} = response
+                console.log(data)
+                dispatch( CardActions.add_labels_success(data) )
+            }).catch(error => {
+                console.log("cant save labels fro CARD")
+            })
+        }
+    }
+
 }

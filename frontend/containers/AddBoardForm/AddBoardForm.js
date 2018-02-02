@@ -126,7 +126,6 @@ const mapStateToProps = ({mode, organizations: {teams}}) => ({
 
 const mapDispatchToProps = (dispatch) => ({
     create_board(board, teamId) {
-        console.log({board, teamId})
         return dispatch(BoardActions.create_board(board, teamId))
     }
 })

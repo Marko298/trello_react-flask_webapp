@@ -123,8 +123,6 @@ export default class ListActions {
                 let lists = responseArray[0]
                 let cards = responseArray[1]
 
-                console.log({lists, cards})
-
                 let project = lists.map(list => {
 
                     let card = cards.filter(card => card.forList === list._id)

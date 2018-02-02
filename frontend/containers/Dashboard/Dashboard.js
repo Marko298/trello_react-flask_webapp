@@ -40,6 +40,8 @@ import Utils from '../../utils'
 import AddTeamForm from '../AddTeamForm/AddTeamForm';
 
 
+
+
 let Profile = ({match}) => (
     <div>
         <button>Profile</button>
@@ -243,7 +245,7 @@ class Dashboard extends React.Component {
                     </Wrapper> 
 
                  <Wrapper className='pop-over'>
-                    <Popup {...this.props}>
+                    <Popup>
                         <Popup.Menu 
                             title="Create Board"
                             toShow={isCreateBoardFormShow}
@@ -311,4 +313,4 @@ const mapDispatchToProps = (dispatch) => ({
     }
 })
 
-export default connect(mapStateToProps, mapDispatchToProps)(Dashboard)
+export default withRouter(connect(mapStateToProps, mapDispatchToProps)(Dashboard))

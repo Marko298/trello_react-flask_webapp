@@ -1,6 +1,5 @@
 import React, {Component} from 'react'
 import {connect} from 'react-redux'
-
 //styles
 import './LabelList.style.css'
 //components
@@ -9,64 +8,37 @@ import CardActions from '../../actions/CardAction';
 
 class LabelList extends Component {
 
-    state = {
-        selectedLabels: []
+    static defaultProps = {
+        card: {
+            labels: []
+        }
     }
-    
+
     handleClick = (label) => (e) => {
-
-        this.setState((state) => {
-            if(state.selectedLabels.length === 0) {
-                return {
-                    selectedLabels: [...state.selectedLabels, label]
-                }
-            }
-
-            let stateCopy = [...state.selectedLabels]
-            let forEach = Array.prototype.forEach
-
-            forEach.call(stateCopy, function(existingLabel, idx, thisArr) {
-
-                let theEndOfArray = idx === (thisArr.length - 1)
-                let isTheSameId = existingLabel._id === label._id
-                let isIdDifferent = existingLabel._id !== label._id
-
-                if( isTheSameId ) {
-                    stateCopy.splice(idx, 1)
-                }
-
-                if( isIdDifferent && theEndOfArray ) {
-                    stateCopy.push(label)
-                }
-            })
-
-            return {...state, selectedLabels: [...stateCopy]}
-        }, function() {
-            this.props.add_label()
-            console.log("added label ", this.state.selectedLabels, " for ", this.props.cardId)
-            // this.props.add_label()
-        })
+        const {card: {_id, forList}, add_label} = this.props
+        add_label(_id, label, forList)
 
     }
 
     renderChildren = () => {
 
-        const {labels} = this.props
-        const {handleClick} = this
-        const selectedId = this.state.selectedLabels.map(label => label._id)
+        let {labels, card} = this.props
+        let {handleClick} = this
+        let selectedId = Array.isArray(card.labels) ? card.labels.map(label => label._id) : []
 
         return labels.map(label => {
             return (
-                <LabelBox
-                    handleClick={handleClick} 
-                    key={label._id} 
-                    {...label} 
-                    selectedLabels={selectedId}
-                />
-            )
-        })
-
+                    <LabelBox
+                        handleClick={handleClick} 
+                        key={label._id} 
+                        {...label} 
+                        selectedLabels={selectedId}
+                    />
+                )
+            })
     }
+
+    
     render() {
         return (
             <div className="label-list">
@@ -75,9 +47,9 @@ class LabelList extends Component {
         )
     }
 
-    componentWillUnmount() {
-        if(this.state.selectedLabels.length > 0) {
-            console.log("ADDD THIS TO THE STATE")
+    componentDidUpdate(prev){
+        if(prev.isPopUpShow && !this.props.isPopUpShow && prev.isLabelListShow) {
+            prev.save_labels(prev.card._id, prev.card.labels, prev.card.forList)
         }
     }
 }
@@ -86,17 +58,32 @@ class LabelList extends Component {
 
 const mapStateToProps = ({
     user, 
-    mode: {selected}
+    mode: {selected, forms, menu},
+    lists: {boardProject}
 }) => ({
     labels: user.labels,
-    cardId: selected._id
+    card: boardProject.lists
+        .filter(list => list._id === selected.forList)
+        .map(list => {
+            return list.cards.filter(card => card._id === selected._id)[0]
+        })[0],
+    isPopUpShow: forms.isPopupShow,
+    isLabelListShow: menu.isLabelListShow
 })
 
+
 const mapDispatchToProps = (dispatch, ownProps) => ({
-    add_label() {
+    add_label(card_id, label, forList) {
+        dispatch(CardActions.add_labels(card_id, label, forList))
+    },
+    save_labels(card_id, label, forList) {
+        dispatch(CardActions.add_labels_request(card_id, label, forList))
         
-        // dispatch(CardActions.add_labels())
     }
 })
 
 export default connect(mapStateToProps, mapDispatchToProps)(LabelList)
+
+
+
+

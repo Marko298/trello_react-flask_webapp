@@ -139,6 +139,24 @@ var Utils = (function() {
     |--------------------------------------------------
     */
 
+
+    function partial(fn, ...presentedArgs) {
+        return function(...latesArgs) {
+            return fn(...presentedArgs, ...latesArgs)
+        }
+    }
+    
+    function collectUniq(arr, props) {
+        let uniq = []
+        arr.forEach(obj => {
+            if(uniq.includes(obj[props])) {
+                return
+            }
+            uniq.push(obj[props])
+        })
+        return [...uniq]
+    }
+
            
     return {
         boardsToArray: function(boards, userId) {
@@ -157,7 +175,9 @@ var Utils = (function() {
         compose,
         returnBoardFromTeam,
         returnGroupById,
-        flattObjectToArray
+        flattObjectToArray,
+        partial,
+        collectUniq
     }
 })()
 

@@ -23,6 +23,10 @@ class API {
     get logout_user() {
         return `${this.url}/users/logout`
     }
+    
+    get get_users() {
+        return `${this.url}/users/get_by_ids`
+    }
     /**
     |--------------------------------------------------
     | BOARDS ENDPOINTS
@@ -78,23 +82,45 @@ class API {
     | CARDS ENDPOINTS
     |--------------------------------------------------
     */
-
+    
     create_card(listId) {
         return `${this.url}/card/create_card_for_list/${listId}`
     }
-
+    
     get get_card_schema() {
         return `${this.url}/card/card_schema`
     }
-
+    
     get_cards_by_boardId(boardId) {
         return `${this.url}/card/get_all_cards/${boardId}`
     }
-
+    
     update_card(cardId) {
         return `${this.url}/card/update_card/${cardId}`
     }
+
+    /**
+    |--------------------------------------------------
+    | COMMENT ENDPOINTS
+    |--------------------------------------------------
+    */
     
+    create_comment(cardId) {
+       return `${this.url}/comment/add_comment/${cardId}`
+   }
+
+   get_comments_for_card(cardId) {
+       return `${this.url}/comment/get_comments_for_card/${cardId}`
+   }
+
+   edit_comment(commentId) {
+       return `${this.url}/comment/edit_comment/${commentId}`
+   }
+
+   remove_comment(commentId) {
+       return `${this.url}/comment/delete_comment/${commentId}`
+   }
+
 
 }
 

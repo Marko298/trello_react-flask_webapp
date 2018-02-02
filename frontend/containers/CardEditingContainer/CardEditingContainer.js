@@ -6,13 +6,18 @@ import './CardEditingContainer.style.css'
 import Title from '../../components/Title/Title'
 import Button from '../../components/Button/Button'
 import Textarea from '../../components/Textarea/Textarea'
+import Avatarka from '../../components/Avatarka/Avatarka'
 //HOC
 import withToggleBTWComponents from '../../HOC/withToggleBTWComponents'
 import withEditMode from '../../HOC/withEditMode'
 //containers
+import CommentBox from '../CommentBox/CommentBox'
 import AddDescriptionForm from '../../containers/AddDescriptionForm/AddDescriptionForm'
+import CommentList from '../CommentList/CommentList'
 //actions
 import PopupActions from '../../actions/EditModeAction';
+import CommentActions from '../../actions/CommentAction';
+
 
 
 const actionsForMenuListLabels = () => ({
@@ -24,12 +29,27 @@ let ToggleLabelListBtn = withEditMode(actionsForMenuListLabels)(Button)
 
 
 class CardEditingContainer extends Component {
-   
-    componentDidMount() {
-        console.log("componentDidMount CardEditingContainer", this.props)
+    state = {
+        comment: ''
     }
+
+    handleCreateCommentClick = (e) => {
+        const {comment} = this.state
+        this.props.create_comment(comment)
+    }
+
+    handleChange = (e) => {
+        let {name, value} = e.target
+        this.setState({[name]: value})
+    }
+
     render() {
+
         const {list, list: {cards}} = this.props
+        const {comment} = this.state
+        const {handleChange} = this
+
+
         return (
             <div>
                 <header>
@@ -42,9 +62,28 @@ class CardEditingContainer extends Component {
                             <AddDescriptionForm card={cards} description={cards.description}/>
                         </div>
                         <div>
+                            <Avatarka />
+                            <Textarea
+                                placeholder="Write a comment..." 
+                                field={comment} 
+                                name='comment' 
+                                onChange={handleChange}
+                                style={{
+                                    padding: '20px',
+                                    width: '400px',
+                                    fontSize: '24px',
+                                    height: '150px'
+                                }}
+                            />
+                            <Button onClick={this.handleCreateCommentClick}>
+                                Create Comment
+                            </Button>
                             Comments Component
                         </div>
                         <div>
+                            <CommentList>
+                                {(commentList) => commentList.map(c => <CommentBox key={c._id} {...c} />)}
+                            </CommentList>
                             Activity component
                         </div>
                     </div>
@@ -59,12 +98,19 @@ class CardEditingContainer extends Component {
     }
 }
 
+
+// function renderComments(comments) {
+//     return comments.map(comment => {
+//         return <CommentBox {...comment} />
+//     })
+// }
+
 const mapStateToProps = ({lists: {boardProject}}, ownProps) => ({
     list: boardProject.lists.map(list => {
 
         const currentCardId = ownProps.match.params.cardId
         const currentListId = ownProps.match.params.listId
-
+        
         if(list._id === currentListId) {
             return {
                 ...list,
@@ -74,10 +120,15 @@ const mapStateToProps = ({lists: {boardProject}}, ownProps) => ({
     }).filter(o => o)[0]
 })
 
-// const mapDispatchToProps = (dispatch) => ({
-//     toggle_labelList() {
-//         dispatch( PopupActions.() )
-//     }
-// })
+const mapDispatchToProps = (dispatch, ownProps) => ({
+    create_comment(description) {
 
-export default connect(mapStateToProps, null)(CardEditingContainer)
+        const {cardId} = ownProps.match.params
+        const body = { description }
+        
+        dispatch( CommentActions.create_comment(body, cardId) )
+    }
+})
+
+export default connect(mapStateToProps, mapDispatchToProps)(CardEditingContainer)
+

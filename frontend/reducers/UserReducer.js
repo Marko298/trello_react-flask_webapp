@@ -9,12 +9,13 @@ let defaultLabels = [
 ]
 
 const initialState = {
-    userId: "ee7913cc4e8f4ffa927b7ab5f295c3b9",
+    userId: "a8ea0247945a4718861760aedcdc117c",
     email: null,
     error: null,
     isLoading: false,
     labels: defaultLabels || [],
-    name: ''
+    name: '',
+    photo: ''
 }
 
 
@@ -34,7 +35,8 @@ const UserReducer = function (state = initialState, {type, payload}) {
                 email: payload.email,
                 userId : payload._id,
                 name: payload.name,
-                labels: payload.labels
+                labels: payload.labels,
+                photo: payload.photo
             }
         }
         case USER_REQUEST_FAILED: {
@@ -44,7 +46,8 @@ const UserReducer = function (state = initialState, {type, payload}) {
                 email: null,
                 error: payload,
                 isLoading: false,
-                name: null
+                name: null,
+                photo: null
             }
         }
         case USER_REQUEST_LOGOUT: {

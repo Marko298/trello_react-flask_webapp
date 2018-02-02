@@ -7,7 +7,6 @@ import PopupActions from '../../actions/EditModeAction'
 //components
 import Button from '../../components/Button/Button'
 import Row from '../../components/Row/Row'
-
 //HOC
 import withEditMode from '../../HOC/withEditMode'
 //containers

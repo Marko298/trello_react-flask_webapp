@@ -3,7 +3,13 @@ import React from 'react'
 import Title from '../Title/Title'
 import Button from '../Button/Button'
 
-export default function Inpormation({title, paragraph, handleCancleAction, buttonText, ...props}) {
+export default function Inpormation({
+    title, 
+    paragraph, 
+    handleCancleAction, 
+    buttonText, 
+    ...props
+}) {
     return (
         <div>
             <Title text={title} bold large>

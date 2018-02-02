@@ -30,7 +30,7 @@ class Database(object):
 
     @staticmethod
     def update_one(collection, query, newData):
-        Database.DATABASE[collection].update_one(query, {"$set": newData})
+        return Database.DATABASE[collection].update_one(query, {"$set": newData})
         
     @staticmethod
     def delete_one_from_array(collection, query, data):
@@ -39,3 +39,5 @@ class Database(object):
     @staticmethod
     def update_push(collection, query, newData):
         Database.DATABASE[collection].update(query, {"$push": newData})
+
+

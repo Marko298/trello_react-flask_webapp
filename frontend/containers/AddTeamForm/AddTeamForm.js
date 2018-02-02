@@ -34,22 +34,19 @@ class AddBoardTeam extends Component {
         this.setState( prevState => ({[name]: value}) )
     }
 
-
-
     handleClick = () => {
       const {title} = this.state
 
       const teamSchema = {
         teamName: title
       }
-
       this.props.create_team(teamSchema)
-
     }
 
     componentWillReceiveProps(nextProps) {
         console.log("AddBoardTeam componentWillReceiveProps", nextProps, this.props)
     }
+
 
     render() {
 

@@ -7,7 +7,7 @@ const Textarea = ({name, label, field, onChange, children, ...props}) => (
         <label htmlFor={name}>
             {label}
         </label>
-        <textarea name={name} value={field} onChange={onChange}>
+        <textarea name={name} value={field} onChange={onChange} {...props}>
             {children}
         </textarea>
     </div>
