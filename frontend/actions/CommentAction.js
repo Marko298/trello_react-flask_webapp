@@ -14,9 +14,6 @@ import Utils from '../utils'
 
 
 
-
-
-
 export default class CommentActions{
     static post_comment_request() {
         return {
@@ -72,10 +69,6 @@ export default class CommentActions{
             payload: response
         }
     }
-    // dispatch(CommentActions.fetch_authors(authorIdsOfComments))
-    // let {partial, collectUniq} = Utils
-    // let comments = partial(collectUniq, data)
-    // let authorIdsOfComments = comments("authorId")
     static fetch_comments(cardId) {
         return (dispatch) => {
 
@@ -172,7 +165,6 @@ export default class CommentActions{
 
                     dispatch(CommentActions.fetch_comments_for_card_success(newComments))
                 })
-            
         }
     }
 
@@ -217,6 +209,7 @@ export default class CommentActions{
             payload: deletedCommentId
         }
     }
+    
     static remove_comment(commentId){
 
         return dispatch => {

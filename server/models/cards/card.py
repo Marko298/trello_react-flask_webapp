@@ -1,10 +1,12 @@
 from server.common.database import Database
+
+from server.models.checklist.checklist import Checklist
 import server.models.cards.errors as err
 
 import uuid
 
 class Card(object):
-    def __init__(self, title, forList, boardId, _id=None, labels=None, comments=None, description=None):
+    def __init__(self, title, forList, boardId, _id=None, labels=None, comments=None, checklists=None, description=None):
         self.title = title
         self.forList = forList
         self.boardId = boardId
@@ -12,9 +14,24 @@ class Card(object):
         self.description = description if description is not None else str()
         self._id = uuid.uuid4().hex if _id is None else _id
         self.comments = comments if comments is not None else list()
+        self.checklists = checklists if checklists is not None else list()
     
     def __repr__(self):
         return '<Card with title — {}>'.format(self.title)
+
+    def add_checklist(self, newChecklist):
+        checklist = Checklist(**newChecklist).save()
+
+        updatedCardId = Database.update_push(
+            'cards',
+            {'_id': self._id},
+            {'checklists': checklist}
+        )
+
+        return checklist
+
+    def remove_checklist(self, checklistId):
+        Database.delete_one_from_array('cards', {'_id': self._id}, {'checklists': checklistId })
 
     def save(self):
         return Database.insert('cards', self.json())
@@ -59,7 +76,8 @@ class Card(object):
             "description": '',
             "boardId" : '',
             "labels" : '',
-            "comments" : ""
+            "comments" : "",
+            "checklists" : ""
         }
 
     def json(self):
@@ -70,5 +88,10 @@ class Card(object):
             "description" : self.description,
             "boardId" : self.boardId,
             "labels" : self.labels,
-            "comments" : self.comments
+            "comments" : self.comments,
+            "checklists" : self.checklists
         }
+
+
+
+

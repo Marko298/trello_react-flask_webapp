@@ -80,9 +80,8 @@ const SecondForm = ({
     ])
 }
 
-const mapDispatchToProps = (dispatch, ownProps) => ({
+const mapDispatchToProps = (dispatch, {forList, boardId}) => ({
     create_card(title) {
-        let {forList, boardId} = ownProps
         let data = {title, boardId}
         dispatch(CardActions.create_card_request(forList, data))
     }

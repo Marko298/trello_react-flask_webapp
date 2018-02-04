@@ -28,7 +28,7 @@ import server.models.cards.errors as CardError
 from server.models.comments.comment import Comment
 
 ## CheckList
-from server.models.checklist.checklist import CheckList
+from server.models.checklist.checklist import Checklist
 
 
 ############ FLask App  ############
@@ -315,7 +315,9 @@ def update_card(cardId):
         if len(CONTENT) is not 0:
             classCard, _ = Card.get_card_by_id(cardId)
 
-            updatedFields = dict(filter(lambda pair: pair[0] is not 'labels', CONTENT.items()))
+            updatedFields = dict(
+                filter(lambda pair: pair[0] is not 'labels', CONTENT.items())
+            )
 
             if CONTENT.get('labels') is not None:
                 classCard.add_label(CONTENT.get('labels'))
@@ -327,11 +329,107 @@ def update_card(cardId):
             return jsonify(updatedCardCursor)
 
 
+@app.route('/card/checklist/create/<string:cardId>', methods=['POST'])
+@user_dec.login_required
+def create_checklist(cardId):
+    if request.method == 'POST' and request.is_json:
+        CONTENT = request.get_json()
+
+        classCard, _ = Card.get_card_by_id(cardId)
+
+        updatedCard = classCard.add_checklist({
+            'authorId' : session['email'],
+            'cardId': cardId, 
+            **CONTENT.get('checklists')
+        })
+
+        return jsonify(CONTENT.get('checklists'))
+
+
+@app.route('/card/checklist/update/<string:checkListId>', methods=['POST'])
+@user_dec.login_required
+def update_checklist(checkListId):
+    if request.method == 'POST' and request.is_json:
+        CONTENT = request.get_json()
+
+        classCheckList = Checklist.get_by_id(checkListId)
+
+        if CONTENT.get('title') is not None:
+            isUpdated = classCheckList.set_new_title(CONTENT.get('title'))
+
+            return isUpdated
+
+
+@app.route('/card/checklist/remove/<string:checkListId>', methods=['DELETE'])
+@user_dec.login_required
+def remove_checklist(checkListId):
+    
+    classCheckList = Checklist.get_by_id(checkListId)
+    cardId = classCheckList.dict_from_class()['cardId']
+    classCard, _ = Card.get_card_by_id(cardId)
+
+    classCard.remove_checklist(checkListId)
+
+    return "all done"
+
+
+@app.route('/card/checklist/add_item/<string:checkListId>', methods=['POST'])
+def add_item_to_checklist(checkListId):
+    if request.method == 'POST' and request.is_json:
+        CONTENT = request.get_json()
+        classCheckList = Checklist.get_by_id(checkListId)
+
+        result = classCheckList.add_item(CONTENT)
+
+        return jsonify(result)
+        
+
+@app.route('/card/checklist/update_item/<string:checklistId>/<string:itemId>', methods=['POST'])
+def update_item(checklistId, itemId):
+    if request.method == 'POST' and request.is_json:
+        CONTENT = request.get_json()
+
+        classList = Checklist.get_by_id(checklistId)
+
+        if CONTENT.get('isCompleted') is not None:
+            updatedId = classList.toggle_item(itemId, CONTENT.get('isCompleted'))
+        
+        if CONTENT.get('title') is not None:
+            updatedId = classList.update_item(itemId, CONTENT.get('title'))
+        updated = Checklist.get_by_id(updatedId).dict_from_class()
+        return jsonify(updated)
+
+
+@app.route('/card/checklist/delete_item/<string:checklistId>/<string:itemId>', methods=['DELETE'])
+def remove_item(checklistId, itemId):
+    if request.method == 'DELETE':
+        classList = Checklist.get_by_id(checklistId)
+        result = classList.remove_item(itemId)
+
+        return jsonify(result)
 
 @app.route('/card/get_all_cards/<string:boardId>')
 def get_all_cards(boardId):
     cardsCursor =  Card.get_card_by_boardId(boardId)
-    return jsonify(cardsCursor)
+    rez = []
+    for card in cardsCursor:
+        if card['checklists'] is not None and len(card['checklists']) is not 0:
+            checkLists = []
+            for chId in card['checklists']:
+                chList = Checklist.get_by_id(chId).dict_from_class()
+                checkLists.append(chList)
+            rez.append({
+                **card,
+                'checklists': checkLists
+            })
+
+        rez.append({
+            **card,
+            'checklists': []
+        })
+
+        print(rez)
+    return jsonify(rez)
 
 
 @app.route('/card/card_schema', methods=['GET'])
