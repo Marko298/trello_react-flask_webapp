@@ -16,8 +16,9 @@ import AddTeamButton from '../ButtonAddTeam/ButtonAddTeam'
 class Boards extends Component {
 
     static Important = function(props) {
-       const ImportantGroupBoards = props.boards.filter( ({status}) => status === "__IMPORTANT__")     
-       return <BoardsList title={props.title} boardsGroup={ImportantGroupBoards} render={props.render}/>
+        let {important} = props
+         
+       return <BoardsList title={props.title} boardsGroup={[ important ? important : {} ]} render={props.render}/>
     }
 
     static Private = function(props) {
@@ -70,9 +71,9 @@ class Boards extends Component {
 
     }
     
-    renderChildren = (boards) => Children.map(
+    renderChildren = (boards, important) => Children.map(
             this.props.children,
-            child => cloneElement(child, {boards})
+            child => cloneElement(child, {boards, important})
         )
 
     render() {
@@ -80,13 +81,13 @@ class Boards extends Component {
             position: 'relative',
             overflowY: 'auto'
         }
-        const {boards} = this.props
+        const {boards, important} = this.props
 
         return (
             <div style={styles}>
                 {this.props.isLoading ? "Loading" : null}
                 <Fragment>
-                    {this.renderChildren(boards)}
+                    {this.renderChildren(boards, important)}
                 </Fragment>
 
                 <AddTeamButton>

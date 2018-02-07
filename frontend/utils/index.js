@@ -22,7 +22,8 @@ var Utils = (function() {
                         status: "__PRIVATE__",
                         title: teamName,
                         _id: userId,
-                        boards: [{...board}]
+                        boards: [{...board}],
+                        
                     }
                 } else {
                     acum["__PRIVATE__"].boards = [ ...acum["__PRIVATE__"].boards, {...board} ]
@@ -34,7 +35,8 @@ var Utils = (function() {
                     status: "__COMAND__",
                     title: teamName,
                     _id: teamId,
-                    boards: [{...board}]
+                    boards: [{...board}],
+                    photo: ""
                 }
             } else {
                 if( teamId !== userId ) {
@@ -46,6 +48,51 @@ var Utils = (function() {
         }, initialValue)
 
         return result
+    }
+
+
+    function splitBoardsToCommand(boards) {
+        return boards.reduce(function(memo, board){
+    
+            var teamId = board.reletedTo.teamId
+            var teamTitle = board.reletedTo.teamName
+            
+            if(memo[teamId]) {
+                memo[teamId] = {
+                    _id: teamId,
+                    title: teamTitle,
+                    boards: [...memo[teamId].boards, board]
+                }
+            }
+            
+            if(!memo[teamId]) {
+                memo[teamId] = {
+                    _id: teamId,
+                    title: teamTitle,
+                    boards: [{...board}]
+                }
+            }
+        
+            return memo
+        }, {})
+    }
+
+    function setMissedFieldsToBoardsFromTeams(boards, teams) {
+        return boards.map(board => {
+            var board_team_id = board._id
+            var copBoard = {...board}
+            teams.forEach(team => {
+                if(board_team_id = team._id) {
+                    copBoard = {
+                        ...copBoard,
+                        photo: team.photo
+                    }
+                   
+                }
+            })
+        
+            return {...copBoard}
+        })
     }
 
     var setBoardsToImportant = function(boards) {
@@ -91,10 +138,13 @@ var Utils = (function() {
         return box
     }
 
-    function flattObjectToArray(boardsObj) {
+    function flattObjectToArray(obj) {
         let arr = []
-        for (let key in boardsObj) {
-            arr.push(boardsObj[key])
+        if (!Object.keys(obj).length) {
+            return arr
+        }
+        for (let key in obj) {
+            arr.push(obj[key])
         }
         return arr
     }
@@ -103,6 +153,10 @@ var Utils = (function() {
         return function(value) {
             return fn2(fn1(value))
         }
+    }
+
+    function pipe(...fncs) {
+        return (arg) => fncs.reduce((memo, f) => f(memo), arg)
     }
 
     /**
@@ -145,7 +199,20 @@ var Utils = (function() {
             return fn(...presentedArgs, ...latesArgs)
         }
     }
-    
+
+    function partialReverse(fn, ...latersArgs) {
+        return function(...presentedArgs) {
+            return fn(...presentedArgs, ...latersArgs)
+        }
+    }
+
+    let composition = (data) => ({
+        map: (f) => composition(f(data)),
+        fold: (f) => f(data),
+        chain: (f) => f(data)
+    })
+
+
     function collectUniq(arr, props) {
         let uniq = []
         arr.forEach(obj => {
@@ -161,9 +228,10 @@ var Utils = (function() {
     return {
         boardsToArray: function(boards, userId) {
             const reducerBoards = reducerBoardsByUserId(userId)(boards)
-            const importantBoards = setBoardsToImportant(boards)
+            // const importantBoards = setBoardsToImportant(boards)
 
-            const boardReducer = {...reducerBoards, ...importantBoards}
+            // const boardReducer = {...reducerBoards, ...importantBoards}
+            const boardReducer = {...reducerBoards}
 
             const boardsInArray = flattObjectToArray(boardReducer)
             // const boardsInArray = flattObjectToArray(reducerBoards)
@@ -173,11 +241,16 @@ var Utils = (function() {
         flattToArray,
         setBoardsToImportant,
         compose,
+        pipe,
         returnBoardFromTeam,
         returnGroupById,
         flattObjectToArray,
         partial,
-        collectUniq
+        partialReverse,
+        collectUniq,
+        composition,
+        splitBoardsToCommand,
+        setMissedFieldsToBoardsFromTeams
     }
 })()
 

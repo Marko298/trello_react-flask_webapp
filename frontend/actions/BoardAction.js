@@ -12,7 +12,11 @@ import {
     CREATE_TEAM_REQUEST,
     CREATE_TEAM_SUCCESS,
     FETCH_TEAMS_SUCCESS,
-    BOARD_DELETE_REQUEST_SUCCESS
+    BOARD_DELETE_REQUEST_SUCCESS,
+    TEAM_UPLOAD_IMAGE_REQUEST,
+    TEAM_UPLOAD_IMAGE_SUCCESS,
+    TEAM_UPLOAD_IMAGE_FAILED,
+    TEAM_UPLOAD_IMAGE_PROGRESS,
 
 } from '../constants/BoardConstant'
 
@@ -56,8 +60,8 @@ export default class BoardActions {
                     "Access-Control-Allow-Headers": "*"
                 },
                 withCredentials: true
-            }).then(response => {
-                let all_boards = Utils.boardsToArray(response.data, userId)
+            }).then(({data}) => {
+                let all_boards = Utils.boardsToArray(data, userId)
                 let isHavePrivateFields = all_boards.filter(board => board._id === userId)
 
                 if (isHavePrivateFields.length === 0) {
@@ -69,8 +73,9 @@ export default class BoardActions {
                     })
                 }
 
-                dispatch(BoardActions.boardRequestGetSuccess(all_boards))
-                return Promise.resolve(all_boards)
+                // dispatch(BoardActions.boardRequestGetSuccess(all_boards))
+                // dispatch(BoardActions.boardRequestGetSuccess(all_boards))
+                return Promise.resolve(data)
 
             }).catch(({message}) => {
                 // BoardActions.boardRequestFailed(message)
@@ -162,8 +167,7 @@ export default class BoardActions {
                 method: "GET",
                 withCredentials: true,
                 headers: api.headers()
-            }).then(response => {
-                const {data} = response
+            }).then( ({data}) => {
                 dispatch(BoardActions.fetch_boards_success(data))
                 return Promise.resolve(data)
             }).catch(error => {
@@ -185,22 +189,30 @@ export default class BoardActions {
                dispatch(CardActions.get_schema_card_request())
             ]).then((responseArray) => {
 
-                let boards = [...responseArray[0]]
-                let teams = [...responseArray[1]]
-                let teamsWithoutBoards = teams.filter(team => team.boards.length === 0)
+                let boards = responseArray[0]
+                let teams = responseArray[1]
 
-                let updatedTeam = teamsWithoutBoards.map(board => {
-                    boards.push({
-                        status: "__COMAND__",
-                        title: board.teamName,
-                        _id: board._id,
-                        boards: [...board.boards]
-                    })
+                let withTeams = Utils.partialReverse(
+                    Utils.setMissedFieldsToBoardsFromTeams,
+                    teams
+                )
+
+                let boardsWithAllTeamField = Utils.pipe(
+                    Utils.splitBoardsToCommand,
+                    Utils.flattObjectToArray,
+                    withTeams
+                )(boards)
+
+                let teamsWithoutBoardsWithoutStatus = teams.filter(team => team.boards.length === 0)
+
+                teamsWithoutBoardsWithoutStatus.map( ({_id, title, photo, boards}) => {
+                    boardsWithAllTeamField.concat( [{ _id, title, photo, boards: boards || [] }] )
                 })
 
-                dispatch(BoardActions.boardRequestGetSuccess(boards))
+                dispatch(BoardActions.boardRequestGetSuccess(boardsWithAllTeamField))
 
                 return "I'm done"
+
             }).catch(error => {
                 console.log("> Can not fetch the data. ERROR")
             })
@@ -226,6 +238,59 @@ export default class BoardActions {
 
             }).catch(error => {
                 console.log("CANNOT DELETE THIS POSE", {error})
+            })
+        }
+    }
+
+    static upload_image_request() {
+        return {
+            type: TEAM_UPLOAD_IMAGE_REQUEST
+        }
+    }
+
+    static upload_image_success(image, teamId) {
+        return {
+            type: TEAM_UPLOAD_IMAGE_SUCCESS,
+            payload: image,
+            teamId
+        }
+    }
+
+    static upload_image_failed() {
+        return {
+            type: TEAM_UPLOAD_IMAGE_FAILED
+        }
+    }
+
+    static upload_image_progress(progress) {
+        return {
+            type: TEAM_UPLOAD_IMAGE_PROGRESS,
+            progress
+        }
+    }
+
+    static upload_image(teamId, image) {
+
+        return (dispatch) => {
+
+            dispatch( BoardActions.upload_image_request() )
+
+            axios({
+                url: api.set_image_for_team(teamId),
+                method: 'POST',
+                headers: api.headers(),
+                withCredentials: true,
+                data: image,
+                onUploadProgress: function(progressEvent) {
+                    let percentCompleted = Math.round( (progressEvent.loaded * 100) / progressEvent.total );
+
+                    dispatch(BoardActions.upload_image_progress(percentCompleted))
+                    
+                }
+            }).then(({data}) => {
+                dispatch(BoardActions.upload_image_success(data, teamId))
+            }).catch(error => {
+                dispatch(BoardActions.upload_image_failed())
             })
         }
     }

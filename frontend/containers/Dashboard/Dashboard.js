@@ -1,14 +1,10 @@
 import React, {Fragment} from 'react'
-
 import {createPortal} from 'react-dom'
-
 import {Switch, Route, Link, BrowserRouter as Router, withRouter } from 'react-router-dom'
-
 import {connect} from 'react-redux'
 //actions
 import BoardActions from '../../actions/BoardAction'
 import PopupActions from '../../actions/EditModeAction'
-
 //containers
 import ToolBar from '../ToolBar/ToolBar'
 import Boards from '../Boards/Boards'
@@ -22,7 +18,9 @@ import BoardPage from '../BoardPage/BoardPage'
 import CardEditingContainer from '../CardEditingContainer/CardEditingContainer'
 import ModalWindow from '../ModalWindow/ModalWindow'
 import LabelList from '../LabelList/LabelList'
-
+import CreateChecklistMenu from '../CreateChecklistMenu/CreateChecklistMenu'
+import CheckToRemoveForm from '../CheckToRemoveForm/CheckToRemoveForm'
+import AddTeamForm from '../AddTeamForm/AddTeamForm'
 //components
 import Row from '../../components/Row/Row'
 import Wrapper from '../../components/Wrapper/Wrapper'
@@ -31,13 +29,11 @@ import Button from '../../components/Button/Button'
 import CreativeMenu from '../../components/CreativeMenu/CreativeMenu'
 import FormForEditing from '../../components/FormForEditing/FormForEditing'
 import Information from '../../components/Information/Information'
-
 //HOC's
 import withToggleBTWComponents from '../../HOC/withToggleBTWComponents'
-
 //UTILS
 import Utils from '../../utils'
-import AddTeamForm from '../AddTeamForm/AddTeamForm';
+
 
 
 
@@ -134,7 +130,9 @@ class Dashboard extends React.Component {
             isCreativeMenuShow,
             isAccountSettingsMenuShow,
             isLabelListShow,
-        }, sidebar: {backing, isPinned}, userId } = this.props
+            isCreateChecklistMenuShow,
+            isAllowToRemove
+        }, sidebar: {backing, isPinned}, userId, user } = this.props
 
         const routes = [
             {path: '', title: "Boards"},
@@ -148,10 +146,12 @@ class Dashboard extends React.Component {
             this.previouseLocation !== location
         )
 
+        let notEmptyOrganization = this.props.boards.filter(team => team.boards.length > 0)
+
         return (
             <Fragment>
                 <SidebarBoards>
-                    <Boards boards={this.props.notEmptyBoards}>
+                    <Boards boards={notEmptyOrganization} important={this.props.important}>
                         <Boards.Important
                             title="Starred Boards" 
                             render={(getProps) => (
@@ -176,8 +176,9 @@ class Dashboard extends React.Component {
                         <ToolBar/>
                         <Switch location={isModal ? this.previouseLocation : location}>
                             <Route exact path={`${this.props.match.path}`} render={(props) => {
+                                const {boards, important} = this.props
                                 return (
-                                    <Boards boards={this.props.boards} {...props}>
+                                    <Boards boards={boards} important={important} {...props}>
                                         <Boards.Important title="Starred Boards"/>
                                         <Boards.Private withButtonAddBoard title="Personal Boards"/>
                                         <Boards.Comands withButtonAddBoard render={(getProps) => (
@@ -224,21 +225,21 @@ class Dashboard extends React.Component {
                                 
                                 return (
                                     isProfileEditings 
-                                    ? <ProfileEditing title={title} /> 
-                                    : <BoardEditing title={title}/>
+                                        ? <ProfileEditing title={title} {...user}/> 
+                                        : <BoardEditing title={title}/>
                                 )
 
                             }}/>
                         </Switch>
 
                         {isModal ? <Route path={`/card/:cardId/:listId`} render={(props) => {
-                                   const {match} = props
-                                   return createPortal(
-                                        <ModalWindow {...props}>
-                                            {(rest) => <CardEditingContainer match={match} {...rest}/>}
-                                        </ModalWindow>,
-                                        document.getElementById('portal')
-                                    )
+                            const {match} = props
+                            return createPortal(
+                                <ModalWindow {...props}>
+                                    {(rest) => <CardEditingContainer match={match} {...rest}/>}
+                                </ModalWindow>,
+                                document.getElementById('portal')
+                            )
                         }}/> : null}
 
 
@@ -277,6 +278,18 @@ class Dashboard extends React.Component {
                             toShow={isLabelListShow} 
                             component={LabelList} 
                         />
+
+                        <Popup.Menu 
+                            title="Create Checklist"
+                            toShow={isCreateChecklistMenuShow} 
+                            component={CreateChecklistMenu} 
+                        />
+
+                        <Popup.Menu 
+                            title="Do you really ant to remove it ?"
+                            toShow={isAllowToRemove} 
+                            component={CheckToRemoveForm} 
+                        />
                     </Popup>
                  </Wrapper>
             </Fragment>
@@ -287,26 +300,46 @@ class Dashboard extends React.Component {
 
 
 const mapStateToProps = ({
-    user,organizations: {teams},
+    user,
+    organizations: {teams},
     mode: {menu, sidebar}
 }) => ({
+    user,
     userId: user.userId,
-    boards: teams,
+    boards: teams.map(team => {
+        if(team._id === user.userId) {
+            return {
+                ...team,
+                status: "__PRIVATE__"
+            }
+        } else {
+            return {
+                ...team,
+                status: "__COMAND__"
+            }
+        }
+    }),
     menu: {...menu},
     sidebar: {
         backing: sidebar.backing,
         isPinned: sidebar.isPinned
     },
-    notEmptyBoards: teams.filter(team => team.boards.length > 0),
-    important: teams.map(team => {
-            if(team.status === "__IMPORTANT__") {
-                return
-            }
+    important: teams
+        .map(team => team.boards
+            .filter(board => board.isImportant))
+        .filter(b => b && b.hasOwnProperty('length') && b.length > 0)
+        .reduce((memo, team) => {
+            memo.boards = [...memo.boards ? memo.boards : [], ...team]
+            memo.status = '__PRIVATE__'
+            memo.title = null
+            memo._id = null
+            return memo
+        }, {})
+ 
+    })
+    
 
-            return team.boards.filter(board => board.isImportant)
-        }).filter(b => b && b.hasOwnProperty('length') && b.length > 0)
-})
-
+    
 const mapDispatchToProps = (dispatch) => ({
     fetchBoardsAndTeams() {
         return dispatch(BoardActions.fetchBoardsAndTeams())

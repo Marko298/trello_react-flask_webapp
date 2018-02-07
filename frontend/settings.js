@@ -27,6 +27,10 @@ class API {
     get get_users() {
         return `${this.url}/users/get_by_ids`
     }
+
+    get user_update_photo() {
+        return `${this.url}/user/update_photo`
+    }
     /**
     |--------------------------------------------------
     | BOARDS ENDPOINTS
@@ -57,6 +61,10 @@ class API {
 
     get get_teams() {
         return `${this.url}/teams`
+    }
+
+    set_image_for_team(teamId) {
+        return `${this.url}/team/upload_photo/${teamId}`
     }
 
      /**
@@ -120,6 +128,36 @@ class API {
    remove_comment(commentId) {
        return `${this.url}/comment/delete_comment/${commentId}`
    }
+
+    /**
+    |--------------------------------------------------
+    | CHECKLISTS ENDPOINTS
+    |--------------------------------------------------
+    */
+
+    create_checklist(cardId) {
+        return `${this.url}/card/checklist/create/${cardId}`
+    }
+
+    remove_checklist(checklistId) {
+        return `${this.url}/card/checklist/remove/${checklistId}`
+    }
+
+    add_item(checklistId) {
+        return `${this.url}/card/checklist/add_item/${checklistId}`
+    }
+
+    update_item(checklistId, itemId) {
+        return `${this.url}/card/checklist/update_item/${checklistId}/${itemId}`
+    }
+
+    update_checklist(checklistId) {
+        return `${this.url}/card/checklist/update/${checklistId}`
+    }
+
+    
+
+
 
 
 }

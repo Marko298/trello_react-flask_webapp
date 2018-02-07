@@ -1,5 +1,6 @@
 from passlib.hash import pbkdf2_sha512
 import re
+import codecs
 
 class Utils(object):
     @staticmethod
@@ -14,3 +15,10 @@ class Utils(object):
     @staticmethod
     def check_hashed_password(password, hashed_password):    
         return pbkdf2_sha512.verify(password, hashed_password)
+
+    @staticmethod
+    def prepareImage(fsClass):
+        base64_data = codecs.encode(fsClass.read(), 'base64')
+        image = base64_data.decode('utf-8')
+        img_str = "data:image/png;base64," + image
+        return img_str

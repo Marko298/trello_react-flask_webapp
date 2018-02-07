@@ -24,12 +24,13 @@ class Checklist(object):
         query = {'_id': self._id}
         update = {'title': title}
         Database.update_one(Checklist.collection, query, update)
+        updatedChecklist = Checklist.get_by_id(self._id).dict_from_class()
 
-        return 'Done'
+        return updatedChecklist
     
     def remove_self(self):
         Database.delete_one(Checklist.collection, {'_id': self._id})
-        return "Removed " + self._id
+        return self._id
 
     def add_item(self, item):
         itemDict = Item(**item).dict_from_class()

@@ -1,7 +1,10 @@
-from flask import Flask, render_template, request, session, json, jsonify
-
+from flask import Flask, render_template, request, session, jsonify
+from server.common.utils import Utils
+import json
+from bson import ObjectId
+import codecs
 ### Database
-from server.common.database import Database
+from server.common.database import Database, FS
 
 ### User
 from server.models.users.user import User
@@ -42,6 +45,12 @@ app.secret_key = 'A0Zr98j/3yX R~XHH!jmN]LWX/,?RT'
 from flask_cors import CORS
 CORS(app, supports_credentials=True)
 
+class JSONEncoder(json.JSONEncoder):
+    def default(self, o):
+        if isinstance(o, ObjectId):
+            return str(o)
+        return json.JSONEncoder.default(self, o)
+
 @app.before_first_request
 def init_db():
     Database.initialize()
@@ -80,19 +89,47 @@ def user_login():
 
         email = CONTENT['email']
         password = CONTENT['password']
-
+        
         try:
             if User.is_login_valid(email, password):
                 session['email'] = email
                 user = User.get_user_by_email(email)
-                print("/users/login session['email']", session['email'])
+
+                if isinstance(user['photo'], ObjectId):
+                    
+                    fsClass = FS.get(user['photo'])
+                    photo = Utils.prepareImage(fsClass)
+                    user['photo'] = photo
+
+                    return jsonify(user)
+
                 return jsonify(user)
+
         except UserErrors.UserError as e:
             return jsonify(error=e.message)
 
     return "login form"
     
-    
+
+@app.route("/user/update_photo", methods=["POST", "GET"])
+@user_dec.login_required 
+def update_user_photo():
+    if request.method == 'POST':
+
+        image_file = request.files['photo']
+
+        contentType = image_file.content_type
+        fileName = image_file.filename
+
+        user = User.get_user_by_email(session['email'])
+        classUser = User(**user)
+
+        isUploaded = classUser.upload_photo(image_file, contentType, fileName)
+        fsCLass = FS.get(isUploaded)
+
+        img_str = Utils.prepareImage(fsCLass)
+
+        return jsonify(img_str)
 
 
 @app.route('/user/<string:userId>/<string:boardId>/toggle_board_settings', methods=["GET", "POST"])
@@ -220,6 +257,24 @@ def create_team():
 
         return jsonify(team)
 
+@app.route('/team/upload_photo/<string:teamId>', methods=['POST'])
+def upload_photo_for_team(teamId):
+    image_file = request.files['photo']
+
+    contentType = image_file.content_type
+    fileName = image_file.filename
+
+    teamClass, _ = Team.get_team_by_id(teamId)
+
+    isUploaded = teamClass.upload_photo(image_file, contentType, fileName)
+    fsCLass = FS.get(isUploaded)
+
+    img_str = Utils.prepareImage(fsCLass)
+
+    return jsonify(img_str)
+
+    
+
 @app.route("/teams")
 @user_dec.login_required
 def get_all_teams():
@@ -337,13 +392,15 @@ def create_checklist(cardId):
 
         classCard, _ = Card.get_card_by_id(cardId)
 
-        updatedCard = classCard.add_checklist({
+        print(CONTENT)
+
+        justCreatedChecklist = classCard.add_checklist({
             'authorId' : session['email'],
             'cardId': cardId, 
             **CONTENT.get('checklists')
         })
 
-        return jsonify(CONTENT.get('checklists'))
+        return jsonify(justCreatedChecklist)
 
 
 @app.route('/card/checklist/update/<string:checkListId>', methods=['POST'])
@@ -357,7 +414,7 @@ def update_checklist(checkListId):
         if CONTENT.get('title') is not None:
             isUpdated = classCheckList.set_new_title(CONTENT.get('title'))
 
-            return isUpdated
+            return jsonify(isUpdated)
 
 
 @app.route('/card/checklist/remove/<string:checkListId>', methods=['DELETE'])
@@ -369,8 +426,11 @@ def remove_checklist(checkListId):
     classCard, _ = Card.get_card_by_id(cardId)
 
     classCard.remove_checklist(checkListId)
+    isRemoved = classCheckList.remove_self()
+    if isRemoved == checkListId:
+        return jsonify(isRemoved)
 
-    return "all done"
+    return "We dont remove this one "
 
 
 @app.route('/card/checklist/add_item/<string:checkListId>', methods=['POST'])
@@ -412,24 +472,24 @@ def remove_item(checklistId, itemId):
 def get_all_cards(boardId):
     cardsCursor =  Card.get_card_by_boardId(boardId)
     rez = []
+
     for card in cardsCursor:
         if card['checklists'] is not None and len(card['checklists']) is not 0:
             checkLists = []
             for chId in card['checklists']:
                 chList = Checklist.get_by_id(chId).dict_from_class()
                 checkLists.append(chList)
+
             rez.append({
                 **card,
                 'checklists': checkLists
-            })
+                })
+        else:
+            rez.append({**card})
 
-        rez.append({
-            **card,
-            'checklists': []
-        })
-
-        print(rez)
+        # print(rez)
     return jsonify(rez)
+    # return jsonify(cardsCursor)
 
 
 @app.route('/card/card_schema', methods=['GET'])

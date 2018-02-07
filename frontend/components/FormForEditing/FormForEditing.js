@@ -6,9 +6,16 @@ import Input from '../../containers/Input/Input'
 import Form from '../Form/Form'
 import Textarea from '../Textarea/Textarea'
 
-const FormForEditing = ({hanldeSubmit, handleCancleAction, inputs, toggle, ...props}) => {
+const FormForEditing = ({
+    hanldeSubmit, 
+    handleCancleAction, 
+    inputs, 
+    toggle, 
+    actionButtonText, 
+    ...props
+}) => {
     return (
-        <Form onSubmit={hanldeSubmit}>
+        <Form onSubmit={hanldeSubmit} method={props.method}>
 
             {inputs.map(({
                 component,
@@ -36,10 +43,10 @@ const FormForEditing = ({hanldeSubmit, handleCancleAction, inputs, toggle, ...pr
             })}
 
             <Button type='submit'>
-                Save
+                {actionButtonText}
             </Button>
             <Button type='button' onClick={(e) => {
-                toggle()
+                toggle() || props.close()
                 // console.log({toggle})
                 // EditFormOrganization()
             }}>
@@ -47,6 +54,10 @@ const FormForEditing = ({hanldeSubmit, handleCancleAction, inputs, toggle, ...pr
             </Button>
         </Form>
     )
+}
+
+FormForEditing.defaultProps = {
+    actionButtonText: 'Save'
 }
 
 FormForEditing.propTypes = {

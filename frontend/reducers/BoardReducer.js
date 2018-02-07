@@ -14,7 +14,11 @@ import {
     CREATE_TEAM_REQUEST,
     CREATE_TEAM_SUCCESS,
     FETCH_TEAMS_SUCCESS,
-    BOARD_DELETE_REQUEST_SUCCESS
+    BOARD_DELETE_REQUEST_SUCCESS,
+    TEAM_UPLOAD_IMAGE_REQUEST,
+    TEAM_UPLOAD_IMAGE_SUCCESS,
+    TEAM_UPLOAD_IMAGE_FAILED,
+    TEAM_UPLOAD_IMAGE_PROGRESS,
 } from '../constants/BoardConstant'
 
 import Utils from '../utils'
@@ -26,12 +30,16 @@ const innitialState = {
             boards: []
         }
     ],
+    image_proccess: {
+        isImageUploading: false,
+        uploadingProgress: 0
+    },
     isLoading: false,
     isTeamCreatingLoading: false
 }
 
 
-export default function BoardReducer(state=innitialState, {type, payload}) {
+export default function BoardReducer(state=innitialState, {type, payload, progress, ...action}) {
     switch(type) {
         case BOARD_REQUEST:
             return {...state, isLoading: true}
@@ -45,20 +53,26 @@ export default function BoardReducer(state=innitialState, {type, payload}) {
         case TOGGLE_IS_IMPORTANT_BOARD: {
             const { data: updatedBoard, data: {_id, reletedTo: {teamId} }} = payload
 
-            let comandsThatAreNotWasUpdated = state.teams.filter(c => c.status !=='__IMPORTANT__').filter(c => c._id !== teamId)
-
-            const group = Utils.returnGroupById(state.teams, teamId)[0]
-            let olderBoards = group.boards.filter(board => board._id !== _id )
-            let updateComand = [{...group, boards: [...olderBoards, updatedBoard] }]
-                        
-            let newState = [...updateComand, ...comandsThatAreNotWasUpdated ]
-
-            let boards = Utils.flattToArray(newState, "boards")
-            let assignToImportant = Utils.setBoardsToImportant(boards)
-            let wrappToArray = Utils.flattObjectToArray(assignToImportant)
-
-
-            return {...state, teams: [...wrappToArray, ...newState]}
+            return {
+                ...state,
+                teams: state.teams.map(team => {
+                    if(team._id === teamId) {
+                        return {
+                            ...team,
+                            boards: team.boards.map(board => {
+                                if(board._id === _id) {
+                                    return {
+                                        ...board,
+                                        ...updatedBoard
+                                    }
+                                }
+                                return {...board}
+                            })
+                        }
+                    }
+                    return {...team}
+                })
+            }
         }
            
            
@@ -115,8 +129,53 @@ export default function BoardReducer(state=innitialState, {type, payload}) {
 
         }
 
-            default:
-                return {...state}
+        case TEAM_UPLOAD_IMAGE_REQUEST: {
+            return {
+                ...state,
+                image_proccess: {
+                    ...state.image_proccess,
+                    isImageUploading: true
+                }
+            }
+        }
+        
+        case TEAM_UPLOAD_IMAGE_SUCCESS: {
+            return {
+                ...state,
+                image_proccess: {
+                    ...state.image_proccess,
+                    isImageUploading: false
+                },
+                teams: state.teams.map(team => {
+                    if(team._id === teamId) {
+                        return {
+                            ...team,
+                            photo: payload
+                        }
+                    }
+                    return {...team}
+                })
+            }
+        }
+
+        case TEAM_UPLOAD_IMAGE_FAILED: {
+            const {teamId} = action
+            return {
+                ...state
+            }
+        }
+        case TEAM_UPLOAD_IMAGE_PROGRESS: {
+            return {
+                ...state,
+                image_proccess: {
+                    ...state.image_proccess,
+                    uploadingProgress: progress
+                }
+            }
+        }
+
+        default:
+            return {...state}
         return state
     }
 }

@@ -14,7 +14,21 @@ import {
     CARD_REQUEST_POST_SUCCESS,
     GET_SCHEMA_CARD,
     ADD_LABEL_REQUEST,
-    ADD_LABEL_REQUEST_SUCCESS    
+    ADD_LABEL_REQUEST_SUCCESS,
+    CARD_CREATING_CHECKLIST_REQUEST,
+    CARD_CREATING_CHECKLIST_REQUEST_SUCCESS,
+    CARD_REMOVE_CHECKLIST_REQUEST,
+    CARD_REMOVE_CHECKLIST_REQUEST_FAILDED,
+    CARD_REMOVE_CHECKLIST_REQUEST_SUCCESS,
+    CARD_ADD_ITEM_TO_CHECKLIST,
+    CARD_ADD_ITEM_TO_CHECKLIST_SUCCESS,
+    CARD_ADD_ITEM_TO_CHECKLIST_FAILED,
+    CARD_CHENCGE_ITEM_FOR_CHECKLIST_REQUEST,
+    CARD_CHENCGE_ITEM_FOR_CHECKLIST_REQUEST_SUCCESS,
+    CARD_CHENCGE_ITEM_FOR_CHECKLIST_REQUEST_FAILED ,
+    CARD_UPDATE_CHECKLIST_REQUEST,
+    CARD_UPDATE_CHECKLIST_REQUEST_SUCCESS,
+    CARD_UPDATE_CHECKLIST_REQUEST_FIELD
 } from '../constants/CardConstant'
 
 import {
@@ -269,7 +283,6 @@ export default function ListReducer(state=initialState, {type, payload, ...actio
         }
         
         case POST_COMMENT_REQUEST: {
-            //is loading === true
             return {
                 ...state,
                 comments: {
@@ -337,6 +350,192 @@ export default function ListReducer(state=initialState, {type, payload, ...actio
                 }
             }
         }
+
+        case CARD_CREATING_CHECKLIST_REQUEST: {
+            return {...state}
+        }
+
+        case CARD_CREATING_CHECKLIST_REQUEST_SUCCESS: {
+            return {
+                ...state,
+                boardProject: {
+                    lists: state.boardProject.lists.map(list => {
+                        return {
+                            ...list,
+                            cards: list.cards.map(card => {
+                                if(card._id == payload.cardId) {
+                                    return {
+                                        ...card,
+                                        checklists: !card.checklists.length 
+                                            ? [{...payload}]
+                                            : [...card.checklists, {...payload}]
+                                    }
+                                }
+                                return {...card}
+                            })
+                        }
+                        return {...list}
+                    })
+                }
+
+            }
+        }
+
+        case CARD_REMOVE_CHECKLIST_REQUEST: {
+            return {
+                ...state
+            }
+        }
+
+        case CARD_REMOVE_CHECKLIST_REQUEST_SUCCESS: {
+            return {
+                ...state,
+                boardProject: {
+                    lists: state.boardProject.lists.map(list => {
+                        return {
+                            ...list,
+                            cards: list.cards.map(card => {
+                                return {
+                                    ...card,
+                                    checklists: card.checklists.filter(({_id}) => _id !== payload)
+                                }
+                            })
+                        }
+                    })
+                }
+            }
+        }
+
+        case CARD_REMOVE_CHECKLIST_REQUEST_FAILDED: {
+            return {
+                ...state
+            }
+        }
+
+        
+        case CARD_ADD_ITEM_TO_CHECKLIST: {
+            return {
+                ...state
+            }
+        }
+        case CARD_ADD_ITEM_TO_CHECKLIST_SUCCESS: {
+            return {
+                ...state,
+                boardProject: {
+                    lists: state.boardProject.lists.map(list => {
+                        return {
+                            ...list,
+                            cards: list.cards.map(card => {
+                                if(card._id === payload.cardId) {
+                                    return {
+                                        ...card,
+                                        checklists: card.checklists.map(chlist => {
+                                            if(chlist._id === payload._id) {
+                                                return {
+                                                    ...chlist,
+                                                    items: [...payload.items]
+                                                }
+                                            }
+                                            return {...chlist}
+                                        })
+                                    }
+                                }
+                                return {...card}
+                            })
+                        }
+                    })
+                }
+            }
+        }
+        case CARD_ADD_ITEM_TO_CHECKLIST_FAILED: {
+            return {
+                ...state
+            }
+        }
+
+
+        case CARD_CHENCGE_ITEM_FOR_CHECKLIST_REQUEST: {
+            return {
+                ...state
+            }
+        }
+        case CARD_CHENCGE_ITEM_FOR_CHECKLIST_REQUEST_SUCCESS: {
+            return {
+                ...state,
+                boardProject: {
+                    lists: state.boardProject.lists.map(list => {
+                        return {
+                            ...list,
+                            cards: list.cards.map(card => {
+                                if(card._id === payload.cardId) {
+                                    return {
+                                        ...card,
+                                        checklists: card.checklists.map(chlist => {
+                                            if(chlist._id === payload._id) {
+                                                return {
+                                                    ...chlist,
+                                                    items: [...payload.items]
+                                                }
+                                            }
+                                            return {...chlist}
+                                        })
+                                    }
+                                }
+                                return {...card}
+                            })
+                        }
+                    })
+                }
+            }
+        }
+        case CARD_CHENCGE_ITEM_FOR_CHECKLIST_REQUEST_FAILED: {
+            return {
+                ...state
+            }
+        }
+
+
+
+        case CARD_UPDATE_CHECKLIST_REQUEST: {
+            return {
+                ...state
+            }
+        }
+        case CARD_UPDATE_CHECKLIST_REQUEST_SUCCESS: {
+            return {
+                ...state,
+                boardProject: {
+                    lists: state.boardProject.lists.map(list => {
+                        return {
+                            ...list,
+                            cards: list.cards.map(card => {
+                                if(card._id === payload.cardId) {
+                                    return {
+                                        ...card,
+                                        checklists: card.checklists.map(chlist => {
+                                            if(chlist._id === payload._id) {
+                                                return {
+                                                    ...chlist,
+                                                    ...payload
+                                                }
+                                            }
+                                            return {...chlist}
+                                        })
+                                    }
+                                }
+                                return {...card}
+                            })
+                        }
+                    })
+                }
+            }
+        }
+        case CARD_UPDATE_CHECKLIST_REQUEST_FIELD: {
+            return {
+                ...state
+            }
+        }
+
       
         default: {
             return state

@@ -40,7 +40,7 @@ class Popup extends Component {
                         </Row>
                     </Wrapper>
                     <section>
-                        <this.props.component />
+                        <this.props.component close={this.props.close}/>
                     </section>
                 </Fragment>
             )
@@ -122,7 +122,9 @@ class Popup extends Component {
     }
 
     toggle = () => {
-        this.props.dispatch(PopupActions.toggle_editMode())
+      const {isPopupShow, dispatch} = this.props
+      
+      isPopupShow && dispatch(PopupActions.toggle_editMode())
     }
 
     renderChildren = () => {

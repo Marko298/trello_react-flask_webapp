@@ -10,7 +10,10 @@ import {
     TOGGLE_ACCOUNT_SETTINGS_MENU,
     TOGGLE_MENU_BOARD_PAGE,
     POPUP_MENU_CLOSE,
-    TOGGLE_LABEL_MENU
+    TOGGLE_LABEL_MENU,
+    TOGGLE_ADD_CHECKLIST_FORM,
+    TOGGLE_IS_ALLOW_TO_REMOVE
+
 
 } from '../constants/EditModeConstant'
 
@@ -23,7 +26,9 @@ const initialEditModeState = {
         isCreateTeamFormShow: false,
         isCreativeMenuShow: false,
         isAccountSettingsMenuShow: false,
-        isLabelListShow: false
+        isLabelListShow: false,
+        isCreateChecklistMenuShow: false,
+        isAllowToRemove: false
     },
    
     sidebar: {
@@ -175,6 +180,26 @@ export default function EditModeReducer(
                 menu: {
                     ...initialEditModeState.menu,
                     isLabelListShow: true
+                }
+            }
+        }
+
+        case TOGGLE_ADD_CHECKLIST_FORM: {
+            return {
+                ...state,
+                menu: {
+                    ...initialEditModeState.menu,
+                    isCreateChecklistMenuShow: true
+                }
+            }
+        }
+
+        case TOGGLE_IS_ALLOW_TO_REMOVE: {
+            return {
+                ...state,
+                menu: {
+                    ...initialEditModeState.menu,
+                    isAllowToRemove: true
                 }
             }
         }

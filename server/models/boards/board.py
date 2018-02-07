@@ -8,7 +8,7 @@ class Board(object):
                 boardName, 
                 authorId, 
                 isImportant=False,  
-                _id=None, 
+                _id=None,
                 reletedTo={"teamId": None, "teamName": None},
                 styleSettings=None,
                 timeCreated=None,

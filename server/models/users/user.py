@@ -1,4 +1,4 @@
-from server.common.database import Database
+from server.common.database import Database, FS
 from server.models.labels.label import Label
 from server.common.utils import Utils
 import server.models.users.errors as err
@@ -36,6 +36,13 @@ class User(object):
     def get_user_by_id_cursor(cls, queryID):
         cursorUser = Database.find_one('users', {"_id": queryID})
         return cursorUser
+
+    def upload_photo(self, file, content_type, file_name):
+        imageId = FS.put(file, content_type, file_name)
+
+        Database.update_one('users', {'_id': self._id}, {'photo': imageId})
+
+        return imageId
 
     @staticmethod
     def get_user_by_email(email):

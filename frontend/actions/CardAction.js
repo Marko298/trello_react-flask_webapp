@@ -4,7 +4,21 @@ import {
     GET_SCHEMA_CARD,
     CARD_GET_REQUEST_SUCCESSFULL,
     ADD_LABEL_REQUEST,
-    ADD_LABEL_REQUEST_SUCCESS
+    ADD_LABEL_REQUEST_SUCCESS,
+    CARD_CREATING_CHECKLIST_REQUEST,
+    CARD_CREATING_CHECKLIST_REQUEST_SUCCESS,
+    CARD_REMOVE_CHECKLIST_REQUEST,
+    CARD_REMOVE_CHECKLIST_REQUEST_FAILDED,
+    CARD_REMOVE_CHECKLIST_REQUEST_SUCCESS,
+    CARD_ADD_ITEM_TO_CHECKLIST,
+    CARD_ADD_ITEM_TO_CHECKLIST_SUCCESS,
+    CARD_ADD_ITEM_TO_CHECKLIST_FAILED,
+    CARD_CHENCGE_ITEM_FOR_CHECKLIST_REQUEST,
+    CARD_CHENCGE_ITEM_FOR_CHECKLIST_REQUEST_SUCCESS,
+    CARD_CHENCGE_ITEM_FOR_CHECKLIST_REQUEST_FAILED,
+    CARD_UPDATE_CHECKLIST_REQUEST,
+    CARD_UPDATE_CHECKLIST_REQUEST_SUCCESS,
+    CARD_UPDATE_CHECKLIST_REQUEST_FIELD
 } from '../constants/CardConstant'
 
 import axios from 'axios'
@@ -142,6 +156,214 @@ export default class CardActions {
                 dispatch( CardActions.add_labels_success(data) )
             }).catch(error => {
                 console.log("cant save labels fro CARD")
+            })
+        }
+    }
+    
+    
+    static creating_checkList_request() {
+        return {type: CARD_CREATING_CHECKLIST_REQUEST}
+    }
+
+    static checklist_created(response) {
+        return {
+            type: CARD_CREATING_CHECKLIST_REQUEST_SUCCESS,
+            payload: response
+        }
+    }
+
+    static create_checklist(cardId, title) {
+
+        return (dispatch) => {
+
+            const prepareRequest = {
+                checklists: { title }
+            }
+
+            dispatch(
+                CardActions.creating_checkList_request()
+            )
+
+            axios({
+                url: api.create_checklist(cardId),
+                method: 'POST',
+                headers: api.headers(),
+                withCredentials: true,
+                data: JSON.stringify(prepareRequest)
+            }).then(({data}) => {
+                console.log("CHECKLIST IS CREATD ", data)
+                dispatch(CardActions.checklist_created(data))
+            }).catch(error => {
+                console.log('CANNOT CREATE CHECKLIST')
+            })
+
+
+        }
+    }
+
+    static remove_checklist_request(checklistId) {
+        return {
+            type: CARD_REMOVE_CHECKLIST_REQUEST,
+            checklistId
+        }
+    }
+
+    static remove_checklist_success(response) {
+        return {
+            type: CARD_REMOVE_CHECKLIST_REQUEST_SUCCESS,
+            payload: response
+        }
+    }
+
+    static remove_checklist(checklistId) {
+
+        return (dispatch) => {
+
+            dispatch(
+                CardActions.remove_checklist_request(checklistId)
+            )
+
+            return axios({
+                url: api.remove_checklist(checklistId),
+                method: 'DELETE',
+                headers: api.headers(),
+                withCredentials: true,
+            }).then( ({data}) => {
+                console.log("DELETED SUCCESSFULL", {data})
+                dispatch(
+                    CardActions.remove_checklist_success(data)
+                )
+
+                return Promise.resolve(data)
+
+            }).catch(error => {
+                console.log("ERROR")
+            })
+        }
+    }
+
+    static add_item_request() {
+        return {type: CARD_ADD_ITEM_TO_CHECKLIST}
+    }
+
+    static add_item_success(response) {
+        return {
+            type: CARD_ADD_ITEM_TO_CHECKLIST_SUCCESS,
+            payload: response
+        }
+    
+    }
+    static add_item_failed(response) {
+        return {
+            type: CARD_ADD_ITEM_TO_CHECKLIST_FAILED,
+            payload: response
+        }
+    }
+
+    static add_item(checklistId, title) {
+        return (dispatch) => {
+
+            const prepareRequest = {title}
+
+            axios({
+                url: api.add_item(checklistId),
+                method: 'POST',
+                withCredentials: true,
+                headers: api.headers(),
+                data: JSON.stringify(prepareRequest)
+            }).then(({data}) => {
+
+                console.log("ITEM WAS ADDED")
+                dispatch(
+                    CardActions.add_item_success(data)
+                )
+            }).catch(error => {
+                console.log("CANNOT ADD THIS ITEM", title)
+            })
+        }
+    }
+
+   
+    static update_item_request() {
+        return {type: CARD_CHENCGE_ITEM_FOR_CHECKLIST_REQUEST}
+    }
+
+    static update_item_success(response) {
+        return {
+            type: CARD_CHENCGE_ITEM_FOR_CHECKLIST_REQUEST_SUCCESS,
+            payload: response
+        }
+    }
+    // static update_item_failed() {
+    //     return {type: CARD_CHENCGE_ITEM_FOR_CHECKLIST_REQUEST_FAILED}
+    // }
+
+    static update_item(checklistId, itemId, upToDate) {
+        return (dispatch) => {
+
+            dispatch( 
+                CardActions.update_item_request()
+            )
+
+            const preparedRequest = {...upToDate}
+            
+            axios({
+                url: api.update_item(checklistId, itemId),
+                headers: api.headers(),
+                method: 'POST',
+                withCredentials: true,
+                data: JSON.stringify(preparedRequest)
+            }).then(({data}) => {
+                console.log("Ther item is changed", {data})
+                dispatch( 
+                    CardActions.update_item_success(data)
+                )
+
+            }).catch(err => {
+                console.log("The error was occured, Cannot change item")
+            })
+        }
+    }
+
+
+    static update_checklist_request() {
+        return {type: CARD_UPDATE_CHECKLIST_REQUEST}
+    }
+
+    static update_checklist_success(response) {
+        return {
+            type: CARD_UPDATE_CHECKLIST_REQUEST_SUCCESS,
+            payload: response
+        }
+    }
+    // static update_checklist_success() {
+    //     return {type: CARD_UPDATE_CHECKLIST_REQUEST_FIELD}
+    // }
+
+    static update_checklist(checkListId, upToDate) {
+
+        return (dispatch) => {
+            dispatch(
+                CardActions.update_checklist_request()
+            )
+
+            const preparedRequest = {...upToDate}
+
+            axios({
+                url: api.update_checklist(checkListId),
+                method: "POST",
+                headers: api.headers(),
+                withCredentials: true,
+                data: JSON.stringify(preparedRequest)
+            }).then(({data}) => {
+
+                console.log("UP{DATED SUCCESSC", {data})
+                dispatch(
+                    CardActions.update_checklist_success(data)
+                )
+
+            }).catch(error => {
+                console.log("CANNOT UPDATE CURRENT CHECKLIST ")
             })
         }
     }

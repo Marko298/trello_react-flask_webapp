@@ -10,7 +10,9 @@ import {
     TOGGLE_ACCOUNT_SETTINGS_MENU,
     TOGGLE_MENU_BOARD_PAGE,
     POPUP_MENU_CLOSE,
-    TOGGLE_LABEL_MENU
+    TOGGLE_LABEL_MENU,
+    TOGGLE_ADD_CHECKLIST_FORM,
+    TOGGLE_IS_ALLOW_TO_REMOVE
 } from '../constants/EditModeConstant'
 
 export default class PopupActions {
@@ -58,5 +60,11 @@ export default class PopupActions {
 
     static toggle_menu_labelList() {
         return {type: TOGGLE_LABEL_MENU}
+    }
+    static toggle_checklist_menu() {
+        return {type: TOGGLE_ADD_CHECKLIST_FORM}
+    }
+    static toggle_allow_remove() {
+        return {type: TOGGLE_IS_ALLOW_TO_REMOVE}
     }
 }

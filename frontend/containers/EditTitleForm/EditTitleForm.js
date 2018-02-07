@@ -2,76 +2,67 @@ import React, {Component, Children, Fragment} from 'react'
 import {connect} from 'react-redux'
 import {func} from 'prop-types'
 //HOC
-import withToggleBTWComponents from '../../HOC/withToggleBTWComponents.js'
+import withToggleBTWComponents from '../../HOC/withToggleBTWComponents'
+
 //components
 import Button from '../../components/Button/Button'
 import Textarea from '../../components/Textarea/Textarea'
-import { prototype } from 'events';
 
-//actions
-import ListActions from '../../actions/ListAction';
+class EditTitleForm extends Component {
 
-class AddDescriptionForm extends Component {
-    static propTypes = {
-        children: func.isRequired,
-    }
+    state = { title: this.props.title }
 
     static defaultProps = {
-        description: ''
+        title: '',
+        presetedTextBtn: ''
     }
 
-    state = {
-        description: this.props.description || ''
+    static propTypes = {
+        children: func.isRequired
     }
 
-    // componentDidMount() {
-    //     if(this.props.description.length > 0) {
-    //         this.setState(prevState => {
-    //             return {
-    //                 ...prevState,
-    //                 description: this.props.description
-    //             }
-    //         })
-    //     }
-    // }
-
-    handleChange = (e) => {
-        let {name, value} = e.target
-        this.setState({[name] : value})
+    handleChange = ({ target: {name, value} }) => {
+        this.setState(state => ({
+            [name] : value
+        }))
     }
 
     handleClick = (e) => {
-        this.props.add_description(this.state.description)
+        const {save_changes} = this.props
+
+        save_changes(this.state.title)
     }
 
     render() {
-        const {children, description} = this.props
-        let titleForDescription = description ? "Edit description" : "Add description"
+
+        const textForFirstButton = this.props.presetedTextBtn ? this.props.presetedTextBtn : this.state.title
 
         const childProps = {
             forFirst: {
-                btnText: titleForDescription,
+                btnText: textForFirstButton,
             },
             forSecond: {
-                name: 'description',
+                name: 'title',
                 handleChange: this.handleChange,
-                field: this.state.description,
+                field: this.state.title,
                 btnText: "Add",
                 btnTextSecond: 'X',
                 handleClick: this.handleClick
             }
         }
+
+        const {children} = this.props
+
         return Children.only(children(childProps))
     }
 }
-
 
 
 const FirstComponent = ({
     toggle,
     btnText,
 }) => {
-    return (
+return (
         <Button onClick={(e) => toggle()}>
             {btnText}
         </Button>
@@ -105,17 +96,11 @@ const SecondComponent = ({
                 {btnTextSecond}
             </Button>
         </Fragment>
-    )
+    )   
 }
 
-const mapDispatchToProps = (dispatch, ownProps) => ({
-    add_description(description) {
-        let data = {description}
-        let {_id: cardId} = ownProps.card
-        dispatch(ListActions.add_description(cardId, data))
-    }
-})
-export default connect(null, mapDispatchToProps)(withToggleBTWComponents(AddDescriptionForm)({
+
+export default withToggleBTWComponents(EditTitleForm)({
     FirstComponent,
     SecondComponent
-}))
+})

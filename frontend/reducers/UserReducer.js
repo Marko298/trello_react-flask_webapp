@@ -1,5 +1,14 @@
 
-import {USER_REQUEST_FAILED, USER_REQUEST, USER_LOGIN_SUCCESS, USER_REQUEST_LOGOUT} from '../constants/UserConstants'
+import {
+    USER_REQUEST_FAILED, 
+    USER_REQUEST, 
+    USER_LOGIN_SUCCESS, 
+    USER_REQUEST_LOGOUT,
+    USER_UPLOAD_IMAGE_REQUEST,
+    USER_UPLOAD_IMAGE_PROGRESS,
+    USER_UPLOAD_IMAGE__SUCCESS,
+    USER_UPLOAD_IMAGE__FAILED
+} from '../constants/UserConstants'
 
 let defaultLabels = [
     {_id: "41335e0511994300a2845c20bf8fe57d", color: "#c62828", description: "red"},
@@ -9,17 +18,20 @@ let defaultLabels = [
 ]
 
 const initialState = {
-    userId: "a8ea0247945a4718861760aedcdc117c",
+    userId: "69724898c4ec4ef2b106965297c4043b",
+    // userId: null,
     email: null,
     error: null,
     isLoading: false,
     labels: defaultLabels || [],
-    name: '',
-    photo: ''
+    name: null,
+    photo: null,
+    isPhotoUploading: false,
+    progree_photo_upload: 0
 }
 
 
-const UserReducer = function (state = initialState, {type, payload}) {
+const UserReducer = function (state = initialState, {type, payload, progress}) {
     switch (type) {
         case USER_REQUEST: {
             return {
@@ -56,6 +68,32 @@ const UserReducer = function (state = initialState, {type, payload}) {
                 userId: null
             }
         }
+       
+        case USER_UPLOAD_IMAGE_REQUEST: {
+            return {
+                ...state,
+                isPhotoUploading: true
+            }
+        }
+        case USER_UPLOAD_IMAGE__SUCCESS: {
+            return {
+                ...state,
+                isPhotoUploading: false,
+                photo: payload
+            }
+        }
+        case USER_UPLOAD_IMAGE_PROGRESS: {
+            return {
+                ...state,
+                progree_photo_upload: progress
+            }
+        }
+        case USER_UPLOAD_IMAGE__FAILED: {
+            return {
+                ...state,
+                isPhotoUploading: false,
+            }
+        }
         
         // case USER_SIGNIN_SUCCESS:
         //     return {
@@ -90,4 +128,4 @@ const UserReducer = function (state = initialState, {type, payload}) {
 
 export default UserReducer
 
-        
+

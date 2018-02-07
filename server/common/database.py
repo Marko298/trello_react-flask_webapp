@@ -1,4 +1,5 @@
-import pymongo
+from pymongo import MongoClient
+from gridfs import GridFS
 
 class Database(object):
     URI = 'mongodb://127.0.0.1:27017'
@@ -6,8 +7,10 @@ class Database(object):
 
     @staticmethod
     def initialize():
-        client = pymongo.MongoClient(Database.URI)
+        client = MongoClient(Database.URI)
         Database.DATABASE = client['trello']
+        FS.DATABASE = GridFS(Database.DATABASE)
+        
 
     @staticmethod
     def insert(collection, data):
@@ -42,3 +45,13 @@ class Database(object):
 
 
 
+class FS(object):
+    DATABASE = None
+
+    @staticmethod
+    def put(file, content_type, file_name):
+        return FS.DATABASE.put(file, content_type=content_type, filename=file_name)
+    
+    @staticmethod
+    def get(fileId):
+        return FS.DATABASE.get(fileId)

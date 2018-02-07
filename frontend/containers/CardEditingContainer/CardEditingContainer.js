@@ -3,10 +3,12 @@ import {connect} from 'react-redux'
 //styles
 import './CardEditingContainer.style.css'
 //components
+import Input from '../Input/Input'
 import Title from '../../components/Title/Title'
 import Button from '../../components/Button/Button'
 import Textarea from '../../components/Textarea/Textarea'
 import Avatarka from '../../components/Avatarka/Avatarka'
+import FormForEditing from '../../components/FormForEditing/FormForEditing'
 //HOC
 import withToggleBTWComponents from '../../HOC/withToggleBTWComponents'
 import withEditMode from '../../HOC/withEditMode'
@@ -14,6 +16,7 @@ import withEditMode from '../../HOC/withEditMode'
 import CommentBox from '../CommentBox/CommentBox'
 import AddDescriptionForm from '../../containers/AddDescriptionForm/AddDescriptionForm'
 import CommentList from '../CommentList/CommentList'
+import CheckList from '../CheckList/CheckList'
 //actions
 import PopupActions from '../../actions/EditModeAction';
 import CommentActions from '../../actions/CommentAction';
@@ -25,6 +28,15 @@ const actionsForMenuListLabels = () => ({
     menu: PopupActions.toggle_menu_labelList
 })
 let ToggleLabelListBtn = withEditMode(actionsForMenuListLabels)(Button)
+
+
+const actionForToggleChecklistMenu = () => ({
+    toggle: PopupActions.toggle_editMode,
+    menu: PopupActions.toggle_checklist_menu
+})
+let ToggleCheckListMenu = withEditMode(actionForToggleChecklistMenu)(Button)
+
+
 
 
 
@@ -42,6 +54,7 @@ class CardEditingContainer extends Component {
         let {name, value} = e.target
         this.setState({[name]: value})
     }
+
 
     render() {
 
@@ -68,13 +81,17 @@ class CardEditingContainer extends Component {
                                 field={comment} 
                                 name='comment' 
                                 onChange={handleChange}
-                                style={{
-                                    padding: '20px',
-                                    width: '400px',
-                                    fontSize: '24px',
-                                    height: '150px'
-                                }}
+                              
                             />
+                            <div>
+                                <div>
+                                    {cards.checklists.map(checklist => {
+                                        return <CheckList key={checklist._id} {...checklist}/>
+                                    })}
+                                </div>
+                            </div>
+
+
                             <Button onClick={this.handleCreateCommentClick}>
                                 Create Comment
                             </Button>
@@ -87,11 +104,18 @@ class CardEditingContainer extends Component {
                             Activity component
                         </div>
                     </div>
+
                     <div className='editing-right'>
                         <ToggleLabelListBtn selected={cards}>
                             Add labels
                         </ToggleLabelListBtn>
+                        <ToggleCheckListMenu selected={cards}>
+                            Add checklist
+                        </ToggleCheckListMenu>
+                       
+                        {/* <Input type='file' name='attachment' handleChange={this.handle_Test}/> */}
                     </div>
+
                 </section>
             </div>
         )

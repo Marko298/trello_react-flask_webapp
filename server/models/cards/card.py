@@ -20,15 +20,17 @@ class Card(object):
         return '<Card with title — {}>'.format(self.title)
 
     def add_checklist(self, newChecklist):
-        checklist = Checklist(**newChecklist).save()
+        checklistId = Checklist(**newChecklist).save()
 
         updatedCardId = Database.update_push(
             'cards',
             {'_id': self._id},
-            {'checklists': checklist}
+            {'checklists': checklistId}
         )
 
-        return checklist
+        justCreatedCheckList = Checklist.get_by_id(checklistId).dict_from_class()
+
+        return justCreatedCheckList
 
     def remove_checklist(self, checklistId):
         Database.delete_one_from_array('cards', {'_id': self._id}, {'checklists': checklistId })
