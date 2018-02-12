@@ -4,6 +4,7 @@ import datetime
 import uuid
 
 class Board(object):
+    collection = 'boards'
     def __init__(self, 
                 boardName, 
                 authorId, 
@@ -42,6 +43,15 @@ class Board(object):
             return cls(**cursorBoard), cursorBoard
         else:
             raise error.BoardIsNotExistInDatabase("The board with this Id is not exist in Database")
+
+    def update(self, updates):
+        isUpdatedResult = Database.update_one(Board.collection, {'_id': self._id}, {**updates})
+
+        if isUpdatedResult.raw_result['nModified']  == 1:
+            return {'_id': self._id, **updates, 'reletedTo': self.reletedTo}
+
+        return "Nothink to update"
+
 
     @classmethod
     def get_boards_by_author(cls, authorId):

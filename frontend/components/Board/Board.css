@@ -1,0 +1,47 @@
+.single-board {
+    width: 290px;
+    height: 95px;
+
+    border-radius: 3px;
+    margin: 6px;
+    padding: 10px;
+
+    display: flex;
+
+    & :first-child {
+        flex-grow: 1;
+    }
+}
+.title-for-single-board {
+    color: #ffffff;
+    text-shadow: 0 0 1px #000000;
+}
+.is-important {
+}
+
+.button-board {
+    padding: 0;
+    background-color: rgba(0, 0, 0, 0.1);
+
+    & :hover {
+        background-color: rgba(0, 0, 0, 0.11);
+    }
+
+    & :hover div button {
+        color: #ffffff !important;
+    }
+
+    & div {
+        height: 100%;
+
+        display: flex;
+        justify-content: center;
+        align-items: center;
+
+        & button {
+            font-size: 0.9rem;
+            height: 100%;
+            outline-style: none;
+        }
+    }
+}

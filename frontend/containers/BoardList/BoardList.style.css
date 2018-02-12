@@ -1,0 +1,21 @@
+.container-boardlist {
+    display: flex;
+    flex-flow: wrap row;
+}
+
+.title-dashboard-boardlist {
+    align-items: center;
+
+    & .image-organization-wrapper {
+        margin: 0 10px;
+    }
+}
+
+.image-organization-wrapper > svg {
+    color: rgba(158, 158, 158, 0.6)
+}
+
+.board-list-container {
+    margin: 40px 0;
+    padding: 0 20px;
+}

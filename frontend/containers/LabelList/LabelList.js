@@ -3,7 +3,7 @@ import {connect} from 'react-redux'
 //styles
 import './LabelList.style.css'
 //components
-import LabelBox from '../../components/LabelBox/LabelBox'
+import ColorBox from '../../components/ColorBox/ColorBox'
 import CardActions from '../../actions/CardAction';
 
 class LabelList extends Component {
@@ -28,7 +28,7 @@ class LabelList extends Component {
 
         return labels.map(label => {
             return (
-                    <LabelBox
+                    <ColorBox
                         handleClick={handleClick} 
                         key={label._id} 
                         {...label} 

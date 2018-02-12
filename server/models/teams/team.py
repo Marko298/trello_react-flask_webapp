@@ -4,9 +4,11 @@ import uuid
 
 class Team(object):
     collection = 'teams'
-    def __init__(self, teamName, authorId, photo=None, _id=None, boards=None):
+    def __init__(self, teamName, authorId, photo=None, website=None, descrition=None, _id=None, boards=None):
         self.teamName = teamName
         self.authorId = authorId
+        self.website = website if website is not None else str()
+        self.descrition = descrition if descrition is not None else str()
         self.photo = photo if photo is not None else str()
         self._id = uuid.uuid4().hex if _id is None else _id
         self.boards = boards if boards is not None else list()
@@ -18,6 +20,14 @@ class Team(object):
         imageId = FS.put(file, content_type, file_name)
         Database.update_one(Team.collection, {'_id': self._id}, {'photo': imageId})
         return imageId
+
+    def update_team(self, updates):
+        updatedClass = Database.update_one(Team.collection, {'_id': self._id}, {**updates})
+
+        if updatedClass.raw_result['nModified']  == 1:
+            return {**updates, '_id' : self._id}
+
+        return "THERE IS NOTHINK TO UPDATE"
 
     def create_team(self):
         teamNameFromDb = Database.find_one("teams", {"teamName": self.teamName})
@@ -64,7 +74,9 @@ class Team(object):
             "teamName" : self.teamName,
             "authorId" : self.authorId,
             "boards" : self.boards,
-            "photo" : self.photo
+            "photo" : self.photo,
+            "website": self.website,
+            "descrition" : self.descrition
         }
 
     def save(self):

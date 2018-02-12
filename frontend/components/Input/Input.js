@@ -5,7 +5,7 @@ import "./Input.css"
 
 function Input({children, onChange, type, name, _id, ...props}){
     return (
-        <label htmlFor={props.name}> {children}
+        <label htmlFor={props.name} className={props.className}> {children}
             <input 
                 {...props}
                 onChange={onChange} 
@@ -17,7 +17,8 @@ function Input({children, onChange, type, name, _id, ...props}){
 }
 
 Input.defaultProps = {
-    type: "text"
+    type: "text",
+    className: ''
 }
 
 Input.propTypes = {

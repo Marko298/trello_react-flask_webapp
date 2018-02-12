@@ -12,7 +12,9 @@ import {
     POPUP_MENU_CLOSE,
     TOGGLE_LABEL_MENU,
     TOGGLE_ADD_CHECKLIST_FORM,
-    TOGGLE_IS_ALLOW_TO_REMOVE
+    TOGGLE_IS_ALLOW_TO_REMOVE,
+    TOGGLE_OVERLAY,
+    TOGGLE_UPDATE_BOARDNAME_MENU
 
 
 } from '../constants/EditModeConstant'
@@ -28,9 +30,10 @@ const initialEditModeState = {
         isAccountSettingsMenuShow: false,
         isLabelListShow: false,
         isCreateChecklistMenuShow: false,
-        isAllowToRemove: false
+        isAllowToRemove: false,
+        isUpdateBoardNameMenuShow: false
     },
-   
+    withOverlayScene: false,
     sidebar: {
         isPinned: false,
         isFixed: false,
@@ -54,6 +57,7 @@ export default function EditModeReducer(
                 return {
                     ...state,
                     selected: {},
+                    menu: {...initialEditModeState.menu},
                     forms: {
                         isPopupShow: !state.forms.isPopupShow
                     }
@@ -200,6 +204,23 @@ export default function EditModeReducer(
                 menu: {
                     ...initialEditModeState.menu,
                     isAllowToRemove: true
+                }
+            }
+        }
+
+        case TOGGLE_OVERLAY: {
+            return {
+                ...state,
+                withOverlayScene: !state.withOverlayScene
+            }
+        }
+
+        case TOGGLE_UPDATE_BOARDNAME_MENU: {
+            return {
+                ...state,
+                menu: {
+                    ...initialEditModeState.menu,
+                    isUpdateBoardNameMenuShow: true
                 }
             }
         }

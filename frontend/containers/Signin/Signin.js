@@ -77,29 +77,31 @@ class Signin extends Component {
         const {password} = fields[2]
   
         return (
-            <FormWithValidation
-                method="post" 
-                submit={this.onSubmit}
-                renderHeader={this.header}
-                renderFooter={this.footer}>
-                 <Input
-                    handleChange={this.handleChange}
-                    name="name"
-                    field={name}
-                    label='Name'/>
-                <Input
-                    handleChange={this.handleChange}
-                    name="email"
-                    field={email}
-                    label='Email'/>
-                <Input
-                    handleChange={this.handleChange}
-                    name="password"
-                    field={password}
-                    label='Password'
-                    type='password'/>
-                <Button type='submit'>Sign in</Button>
-            </FormWithValidation>
+            <div>
+                <FormWithValidation
+                    method="post" 
+                    submit={this.onSubmit}
+                    renderHeader={this.header}
+                    renderFooter={this.footer}>
+                    <Input
+                        handleChange={this.handleChange}
+                        name="name"
+                        field={name}
+                        label='Name'/>
+                    <Input
+                        handleChange={this.handleChange}
+                        name="email"
+                        field={email}
+                        label='Email'/>
+                    <Input
+                        handleChange={this.handleChange}
+                        name="password"
+                        field={password}
+                        label='Password'
+                        type='password'/>
+                    <Button type='submit' primary>Sign in</Button>
+                </FormWithValidation>
+            </div>
         )
     }
     componentDidMount() {

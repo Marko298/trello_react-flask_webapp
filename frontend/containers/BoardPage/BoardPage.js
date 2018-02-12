@@ -4,8 +4,8 @@ import {connect} from 'react-redux'
 //components
 import Button from '../../components/Button/Button'
 import Title from '../../components/Title/Title'
-import Input from '../Input/Input'
-
+// import Input from '../Input/Input'
+import Input from '../../components/Input/Input'
 //containers
 import AddListForm from '../AddListForm/AddListForm'
 import ListsContainer from '../ListsContainer/ListsContainer'
@@ -15,6 +15,15 @@ import PopupActions from '../../actions/EditModeAction'
 import ListActions from '../../actions/ListAction'
 //styles
 import './BoardPage.style.css'
+//HOC
+import withEditMode from '../../HOC/withEditMode'
+
+
+const actionForShowFormThatUpdateNameBoard = () => ({
+    toggle: PopupActions.toggle_editMode,
+    menu: PopupActions.toggle_update_boardname
+})
+let ChangeBoardNameBtn = withEditMode(actionForShowFormThatUpdateNameBoard)(Button)
 
 
 class BoardPage extends Component {
@@ -23,17 +32,44 @@ class BoardPage extends Component {
         lists: [],
         isPostRequstPending: false,
     }
-
+   
     handleClickMenuToggle = (e) => {
         this.props.toggle_menu()
     }
     componentDidMount() {
-        console.log("componentDidMount", this.props)
         this.props.fetch_list(this.props.match.params.boardId)
+    }
+
+    _boundElement = (element) => {
+        if (this.offsetTop) return
+        this.offsetTop = element.getBoundingClientRect().bottom
     }
 
     componentWillUnmount() {
         // this.props.clear_project_data()
+    }
+    _header = (boardName, isImportant, reletedTo) => {
+        return (
+            <header style={{display: 'flex'}} ref={this._boundElement}>
+                <ChangeBoardNameBtn customTop={this.offsetTop} selected={{
+                    _id: this.props.board._id,
+                    boardName
+                }}>
+                    <Title text={boardName} large bold/>
+                </ChangeBoardNameBtn>
+                <span>
+                    <Input 
+                        type='checkbox' 
+                        name='isImportant' 
+                        checked={isImportant}
+                    />
+                </span>
+                <Title text={reletedTo.teamName} large bold/>
+                <button onClick={this.handleClickMenuToggle}>
+                    Show Menu
+                </button>
+            </header>
+        )
     }
 
     render() {
@@ -46,21 +82,7 @@ class BoardPage extends Component {
         return (
             <div className='board-wrapper'>
                 <div className='board-content'>
-                    <header style={{display: 'flex'}}>
-                        <Title text={boardName} large bold/>
-                        <span>
-                            <Input 
-                                type='checkbox' 
-                                name='isImportant' 
-                                checked={isImportant}
-                            />
-                        </span>
-                        <Title text={reletedTo.teamName} large bold/>
-                        <button onClick={this.handleClickMenuToggle}>
-                            Show Menu
-                        </button>
-                    </header>
-
+                    {this._header(boardName, isImportant, reletedTo)}
                     <div className='board-canvas'>
                         <section className='list-container'>
                             {this.props.lists.map(list => {

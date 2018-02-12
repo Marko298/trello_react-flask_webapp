@@ -1,8 +1,15 @@
 import React, {Component} from 'react'
 import PropTypes from 'prop-types'
 
+import {Color} from '../../__asssets/color'
+
 import './Input.style.css'
 
+const {red} = Color
+
+const styles = (isError) => ({
+    border: isError && `2px solid ${red}` || "none"
+})
 
 function Input(props) {
     const {label, field, name, type, handleChange, children, onFocus, onBlur, errors, onChange} = props
@@ -11,6 +18,7 @@ function Input(props) {
         <div className='wrapper'>
             {label && <label htmlFor={name}>{label}</label>}
             <input
+                style={styles(errors.length)}
                 value={field}
                 onFocus={onFocus}
                 onBlur={onBlur}
@@ -22,7 +30,7 @@ function Input(props) {
                 onChange={handleChange(name)}
                 {...props}
             />
-                {errors.length > 0 && <span>{errors}</span>}
+                {errors.length > 0 && <span style={{color: red, lineHeight: 1.5}}>{errors}</span>}
         </div>
     )
 }

@@ -14,16 +14,20 @@ const actionsForBoard = () => ({
 
 
 let ButtonAddTeam = withEditMode(actionsForTeam, {usePreviousePosition: true})(Button)
-let ButtonAddBoard = withEditMode(actionsForBoard, {usePreviousePosition: true})(Button)
+let ButtonAddBoard = withEditMode(actionsForBoard)(Button)
 
 
 export default function CreativeMenu() {
     return (
         <div className="CreativeMenu">
-            <ButtonAddBoard>
+            <ButtonAddBoard 
+                customWidth={415}
+                customTop={50} 
+                justifyContanteCenter={true} 
+            >
                 Add Board
             </ButtonAddBoard>
-            <ButtonAddTeam>
+            <ButtonAddTeam >
                 Add Team
             </ButtonAddTeam>
         </div>

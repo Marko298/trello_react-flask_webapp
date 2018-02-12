@@ -7,7 +7,8 @@ import uuid
 from server.models.boards.board import Board
 
 class User(object):
-    def __init__(self, email, password, name, labels=None, comments=None, boards=None, photo=None ,_id=None):
+    collection = 'users'
+    def __init__(self, email, password, name, bio=None, initials=None, labels=None, comments=None, boards=None, photo=None ,_id=None):
         self.email = email
         self.password = password
         self.name = name
@@ -15,10 +16,16 @@ class User(object):
         self.boards = boards if boards is not None else list()
         self.comments = comments if comments is not None else list()
         self.photo = photo if photo is not None else str()
+        self.bio = bio if bio is not None else str()
+        self.initials = initials if initials is not None else self.generate_default_initials(name)
         
     @property
     def labels(self):
         return Label.default_labels()
+
+    
+    def generate_default_initials(self, initials):
+        return initials[:2].upper()
 
     def __repr__(self):
         return "<User {}>".format(self.email)
@@ -86,7 +93,9 @@ class User(object):
             "comments" : self.comments,
             "labels" : self.labels,
             "boards" : self.boards,
-            "photo" : self.photo
+            "photo" : self.photo,
+            "bio" : self.bio,
+            "initials" : self.initials
         }
 
     def add_comment(self, commentId):
@@ -108,6 +117,15 @@ class User(object):
         cursorBoard = Board.get_boards_by_author(user['_id'])
         return cursorBoard
         
+    def update_user_info(self, updates):
+        updatedClass = Database.update_one(User.collection, {'_id': self._id}, {**updates})
+
+        if updatedClass.raw_result['nModified']  == 1:
+            return {**updates, '_id' : self._id}
+
+        # userWutkUpdatedData = User.get_user_by_id_cursor(self._id)
+
+        return "We dont uppdate actualy nothink"
 
 
 

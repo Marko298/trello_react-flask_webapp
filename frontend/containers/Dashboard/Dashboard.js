@@ -21,6 +21,8 @@ import LabelList from '../LabelList/LabelList'
 import CreateChecklistMenu from '../CreateChecklistMenu/CreateChecklistMenu'
 import CheckToRemoveForm from '../CheckToRemoveForm/CheckToRemoveForm'
 import AddTeamForm from '../AddTeamForm/AddTeamForm'
+import ProgressBar from '../ProgressBar/ProgressBar'
+import UpdateBoardNameForm from '../UpdateBoardNameForm/UpdateBoardNameForm'
 //components
 import Row from '../../components/Row/Row'
 import Wrapper from '../../components/Wrapper/Wrapper'
@@ -62,7 +64,7 @@ const ToggleListButton = (props) => (
 
 const RemoveBoard = (props) => (
     <Button onClick={(e) => props.removeBoard(props._id)}>
-        X
+        <i className="fas fa-times" />
     </Button>
 )
 
@@ -131,13 +133,15 @@ class Dashboard extends React.Component {
             isAccountSettingsMenuShow,
             isLabelListShow,
             isCreateChecklistMenuShow,
-            isAllowToRemove
-        }, sidebar: {backing, isPinned}, userId, user } = this.props
+            isAllowToRemove,
+            isUpdateBoardNameMenuShow
+        }, sidebar: {backing, isPinned}, 
+        userId, user, withOverlayScene, progress, isFileUploaded} = this.props
 
         const routes = [
-            {path: '', title: "Boards"},
-            {path: '/members', title: "Members"},
-            {path: '/settings', title: "settings"}
+            {path: '', title: "Boards", icon: "fab fa-flipboard"},
+            {path: '/members', title: "Members", icon: "fas fa-users"},
+            {path: '/settings', title: "settings", icon: "fas fa-cogs"}
         ]
 
         const isModal = !!(
@@ -147,11 +151,33 @@ class Dashboard extends React.Component {
         )
 
         let notEmptyOrganization = this.props.boards.filter(team => team.boards.length > 0)
-
+        const ThemeSidebar = {
+            titleWrapper: "title-dashboard-boardlist sidebar",
+            title: {
+                medium: true
+            },
+            // BoardsLine: "container-boardlist",
+            // RoutesLine: {
+            //     button: "route-button",
+            //     container: 'route-container'
+            // },
+            // BoardList: 'board-list-container',
+            SingleBoard: {
+                container: 'single-board sidebar-board',
+                // title: 'title-for-single-board',
+                // isImortant: 'is-important',
+                SettingBoard: "board-input-container"
+            }
+        }
         return (
             <Fragment>
                 <SidebarBoards>
-                    <Boards boards={notEmptyOrganization} important={this.props.important}>
+                    <Boards 
+                        withAddTeamButton={false} 
+                        boards={notEmptyOrganization} 
+                        important={this.props.important} 
+                        Theme={ThemeSidebar}
+                    >
                         <Boards.Important
                             title="Starred Boards" 
                             render={(getProps) => (
@@ -174,15 +200,30 @@ class Dashboard extends React.Component {
                 </SidebarBoards>
                     <Wrapper style={Dashboard.styles({isPinned, backing})}> 
                         <ToolBar/>
+                       <ProgressBar progress={progress} isLoaded={isFileUploaded}/>
                         <Switch location={isModal ? this.previouseLocation : location}>
                             <Route exact path={`${this.props.match.path}`} render={(props) => {
+                                const Theme = {
+                                    titleWrapper: "title-dashboard-boardlist",
+                                    BoardsLine: "container-boardlist",
+                                    RoutesLine: {
+                                        button: "route-button",
+                                        container: 'route-container'
+                                    },
+                                    BoardList: 'board-list-container',
+                                    SingleBoard: {
+                                        container: 'single-board',
+                                        title: 'title-for-single-board',
+                                        isImortant: 'is-important',
+                                    }
+                                }
                                 const {boards, important} = this.props
                                 return (
-                                    <Boards boards={boards} important={important} {...props}>
+                                    <Boards boards={boards} important={important} {...props} Theme={Theme}>
                                         <Boards.Important title="Starred Boards"/>
                                         <Boards.Private withButtonAddBoard title="Personal Boards"/>
                                         <Boards.Comands withButtonAddBoard render={(getProps) => (
-                                            <TabRoutes {...getProps()} match={match} routers={routes} />
+                                            <TabRoutes {...getProps()} match={match} routers={routes} Theme={Theme.RoutesLine}/>
                                         )} />
                                     </Boards>
                                 )
@@ -209,24 +250,27 @@ class Dashboard extends React.Component {
 
                             <Route path={`${this.props.match.path}:teamId`} render={(props) => {
                                 let foundedTeam = Utils.returnGroupById(boards, props.match.params.teamId)[0]
-                                let isProfileEditings = userId === foundedTeam._id
+                                console.log({foundedTeam}, this.props.user)
+                                let isProfileEditings = userId === (foundedTeam ? foundedTeam._id : userId)
 
                                 let BoardEditing = withToggleBTWComponents(EditFormOrganization)({
                                     FirstComponent: FormForEditing,
                                     SecondComponent: Information
                                 })
+                                
 
                                 let ProfileEditing = withToggleBTWComponents(EditFormProfile)({
                                     FirstComponent: FormForEditing,
                                     SecondComponent: Information
                                 })
 
-                                let {title}  = foundedTeam
+
+                                let title  = foundedTeam ? foundedTeam.title : this.props.user.name
                                 
                                 return (
                                     isProfileEditings 
                                         ? <ProfileEditing title={title} {...user}/> 
-                                        : <BoardEditing title={title}/>
+                                        : <BoardEditing title={title} {...foundedTeam}/>
                                 )
 
                             }}/>
@@ -245,13 +289,14 @@ class Dashboard extends React.Component {
 
                     </Wrapper> 
 
-                 <Wrapper className='pop-over'>
+                 <Wrapper className={withOverlayScene ? 'pop-over overlay' : 'pop-over' }>
                     <Popup>
-                        <Popup.Menu 
+                        <Popup.Menu
+                            withHeader={false}
+                            withOverlay
                             title="Create Board"
                             toShow={isCreateBoardFormShow}
                             component={AddBoardForm} 
-                            stepBackWithAction={PopupActions.toggle_creative_menu} 
                         />
 
                         <Popup.Menu 
@@ -290,6 +335,12 @@ class Dashboard extends React.Component {
                             toShow={isAllowToRemove} 
                             component={CheckToRemoveForm} 
                         />
+
+                        <Popup.Menu 
+                            title="Change board name"
+                            toShow={isUpdateBoardNameMenuShow} 
+                            component={UpdateBoardNameForm} 
+                        />
                     </Popup>
                  </Wrapper>
             </Fragment>
@@ -300,10 +351,13 @@ class Dashboard extends React.Component {
 
 
 const mapStateToProps = ({
+    tools,
     user,
     organizations: {teams},
-    mode: {menu, sidebar}
+    mode: {menu, sidebar, withOverlayScene}
 }) => ({
+    progress: tools.uploadingProgress,
+    isFileUploaded: tools.isFileStartUpload,
     user,
     userId: user.userId,
     boards: teams.map(team => {
@@ -324,13 +378,14 @@ const mapStateToProps = ({
         backing: sidebar.backing,
         isPinned: sidebar.isPinned
     },
+    withOverlayScene: withOverlayScene,
     important: teams
         .map(team => team.boards
             .filter(board => board.isImportant))
         .filter(b => b && b.hasOwnProperty('length') && b.length > 0)
         .reduce((memo, team) => {
             memo.boards = [...memo.boards ? memo.boards : [], ...team]
-            memo.status = '__PRIVATE__'
+            memo.status = '__IMPORTANT__'
             memo.title = null
             memo._id = null
             return memo
@@ -346,4 +401,5 @@ const mapDispatchToProps = (dispatch) => ({
     }
 })
 
+// export default connect(mapStateToProps, mapDispatchToProps)(Dashboard)
 export default withRouter(connect(mapStateToProps, mapDispatchToProps)(Dashboard))

@@ -1,18 +1,17 @@
 .button {
     border: none;
     cursor: pointer;
-    /* line-height: 2.5; */
-    /* padding: 0 12px; */
+    padding: 5px 15px;
+    margin: 1px;
+    font-size: 1.5rem;
     text-align: center;
-    font-weight: bolder;
     border-radius: 5px;
-    /* margin: 15px 0; */
-    font-size: 20px;
-    background-color: #ffffff;
-    color: #757575;
 }
 
 .button.button-primary {
     background-color: #90caf9;
-    color: #ffffff;
+}
+
+.button:disabled {
+    cursor: not-allowed;   
 }

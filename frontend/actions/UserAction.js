@@ -8,10 +8,15 @@ import {
     USER_UPLOAD_IMAGE_PROGRESS,
     USER_UPLOAD_IMAGE__SUCCESS,
     USER_UPLOAD_IMAGE__FAILED,
+    USER_UPDATE_DATA_REQUEST,
+    USER_UPDATE_DATA_REQUEST_SUCCESS,
+    USER_UPDATE_DATA_REQUEST_FAILED
 } from '../constants/UserConstants'
 
 import api from '../settings'
 import axios from 'axios'
+
+import ToolsActions from './ToolsAction'
 
 
 export default class UserActions {
@@ -44,7 +49,6 @@ export default class UserActions {
                 data: JSON.stringify(data),
                 withCredentials: true
             }).then(({data}) => {
-
 
                 dispatch(UserActions.userRequestLogined(data))
                 return Promise.resolve(data)
@@ -127,7 +131,7 @@ export default class UserActions {
 
         return dispatch => {
             dispatch(
-                UserActions.user_upload_image_request()
+                ToolsActions.is_file_start_upload()
             )
             axios({
                 url: api.user_update_photo,
@@ -135,25 +139,63 @@ export default class UserActions {
                 withCredentials: true,
                 headers: api.headers(),
                 data: image,
-                onUploadProgress: function(progressEvent) {
-                    let percentCompleted = Math.round( (progressEvent.loaded * 100) / progressEvent.total );
+                onUploadProgress: function({loaded, total}) {
+                    let percentCompleted = Math.round( (parseInt(loaded, 10) * 100) / parseInt(total, 10) );
 
                     dispatch(
-                        UserActions.user_upload_image_progress(percentCompleted)
+                        ToolsActions.file_upload_progress(percentCompleted)
                     )
 
-                    // console.log("Progress:-"+percentCompleted);
                 }
             }).then(({data}) => {
 
-                dispatch(
-                    UserActions.user_uplod_image_success(data)
-                )
-
+                dispatch( ToolsActions.is_file_uploaded() )
+                dispatch( UserActions.user_uplod_image_success(data) )
+                
             }).catch(error => {
-
+                
+                dispatch( ToolsActions.is_file_uploaded() )
                 dispatch(
                     UserActions.user_update_image_failed()
+                )
+            })
+        }
+    }
+
+    static update_user_request() {
+        return {type: USER_UPDATE_DATA_REQUEST}
+    }
+
+    static update_user_success(newData) {
+        return {
+            type: USER_UPDATE_DATA_REQUEST_SUCCESS,
+            payload: newData
+        }
+    }
+
+    static update_user_failed() {
+        return { type: USER_UPDATE_DATA_REQUEST_FAILED }
+    }
+
+    static update_user(updates) {
+        return dispatch => {
+            dispatch(
+                UserActions.update_user_request()
+            )
+            axios({
+                url: api.user_update,
+                method: "POST",
+                headers: api.headers(),
+                withCredentials: true,
+                data: JSON.stringify(updates)
+            }).then(({data}) => {
+                console.log("SUCCESS", {data})
+                dispatch(
+                    UserActions.update_user_success(data)
+                )
+            }).catch(error => {
+                dispatch(
+                    UserActions.update_user_failed()
                 )
             })
         }

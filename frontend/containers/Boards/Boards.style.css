@@ -1,0 +1,7 @@
+.boards-container {
+    position: relative;
+    overflow-y: auto;
+
+    // padding: 20px;
+}
+

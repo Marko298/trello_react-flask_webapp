@@ -10,19 +10,19 @@ export function withValidationFields(Component) {
 
         _isEmpty = (field) => {
             if(field.length == 0) {
-                throw new Error(`isRequired fields ${field}`)
+                throw new Error(`*This field is required`)
             }
-            if(field.length > 1) {
+            if(field.length > 2) {
                 return true
             } else {
-                throw new Error(`мало букв`)
+                throw new Error(`*Should be more then 2 character`)
             }
         }
     
         _isValidEmail = (email) => {
             let re = /^[\w-]+(\.[\w-]+)*@([a-z0-9-]+(\.[a-z0-9-]+)*?\.[a-z]{2,6}|(\d{1,3}\.){3}\d{1,3})(:\d{4})?$/;
             if( !re.test(email.toLowerCase()) ) {
-                throw new Error(`invalid email`)
+                throw new Error(`*Invalid email`)
             } else {
                 return true
             }
@@ -114,6 +114,12 @@ export function withValidationFields(Component) {
             }
 
             return Children.map(props.children, child => {
+
+                if(child.props.type === 'submit') {
+                    if(Object.keys(this.state.errors).length !== 0) {
+                        return cloneElement(child, {primary: false, error: true})
+                    }
+                }
                 
                 if(child.props.field !== undefined) {
                     if(child.props.name in state.errors) {

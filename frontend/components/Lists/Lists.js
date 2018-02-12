@@ -7,12 +7,12 @@ import './List.css'
 
 function List({...props}) {
 
-    const className = props.className &&
-            isObject && props.className
-            ? "list ".concat( props.className.join(" "))
-            : 'list'
+    // const className = props.className &&
+    //         isObject && props.className
+    //         ? "list ".concat( props.className.join(" "))
+    //         : 'list'
     return (
-        <ul className={className} {...props}>
+        <ul className={props.className} {...props}>
             {props.children}
         </ul>
     )

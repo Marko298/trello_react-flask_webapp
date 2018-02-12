@@ -1,15 +1,100 @@
+:root {
+    --sweet_font: 'Gloria Hallelujah', cursive;
+    --blue: #2979ff;
+    --tool_bar_height: 40px;
+}
+
 .tool-bar {
-    display: block;
-    padding: 20px 0;
-    /* display: flex;
-    db */
-    /* justify-content: space-around; */
-    /* justify-content: flex-end; */
-    /* top: 0;
-    left: 0; */
+    height: var(--tool_bar_height);
     width: 100%;
-    /* position: fixed; */
-    background-color: #6c6da8 ;
+    background-color: #026aa7;
     position: relative;
+    flex: none;
     
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.left-toolbar-side,
+.middle-toolbar-side,
+.right-toolbar-side{
+    display: flex;
+    align-items: center;
+}
+
+.left-toolbar-side{
+    height: var(--tool_bar_height);
+    padding: 0 10px;
+}
+
+.left-toolbar-side div:first-child {
+    margin-right: 5px;
+
+    & button {
+        font-size: 0.9rem;
+        background-color: rgba(255, 255, 255, .3) !important;
+        color: white !important;
+        padding: 5px 10px;
+        border-radius: 3px;
+        font-weight: 600;
+
+        & svg {
+            margin: 0 10px 0 5px;
+        }
+    }
+}
+.left-toolbar-side div:last-child {
+    margin: 0;
+    & input {
+        padding: 0;
+        line-height: 26px;
+        background-color: rgba(255, 255, 255, .3) !important;
+        color: #ffffff;
+        border-radius: 3px;
+        padding: 0 10px;
+
+        font-size: 0.9rem;
+    }
+}
+
+.middle-toolbar-side {
+    height: var(--tool_bar_height);
+
+    position: absolute;
+    left: 50%;
+    bottom: 0;
+
+    margin-left: -60px;
+    padding: 0 15px;
+
+
+    & a {
+        font-family: var(--sweet_font);
+        color: #ffffff;
+        font-size: 1.4rem;
+        font-weight: 800;
+        line-height: 1.4;
+    }
+}
+
+.right-toolbar-side {
+    height: var(--tool_bar_height);
+
+    & div {
+        & button {
+            padding: 6px 10px !important;
+            background-color: rgba(255, 255, 255, .3) !important;
+            padding: 0;
+            color: #ffffff !important;
+            margin-right: 8px;
+
+            font-size: 0.9rem;
+            outline-style: none;
+        }
+    }
+
+    & button.avatarka-wrapper-button {
+        background-color: transparent !important;
+    }
 }

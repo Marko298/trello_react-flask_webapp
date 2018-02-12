@@ -21,7 +21,8 @@ import UserActions from '../../actions/UserAction'
 const FormWithValidation = withValidationFields(Form)
 
 class Login extends Component{
-           
+   
+ 
     componentDidMount() {
         document.title = "Log in | Trello"
     }
@@ -49,11 +50,11 @@ class Login extends Component{
         })
 
     }
-    header = () => (
-        <Title>Welcome back to Trello :D</Title>
-    )
+    header = () => {}
     footer = () => (
-        <Link to='/signin'>Do you want to create new account ?</Link>
+        <div style={{textAlign: 'center', padding: '10px'}}>
+            <Link to='/signin' style={{textDecoration: 'underline'}}>Do you want to create new account ?</Link>
+        </div>
     )
     change = (e) => {
         this.setState({
@@ -63,9 +64,14 @@ class Login extends Component{
 
     render() {
         const { email, password } = this.state
+        const allowUserSubmitButton = this.props.isUserLoading 
+            ? {primary: false, disabled: true} 
+            : {primary: true, disabled: false}
+
         return (
-            <div>
+            <div {...this.props}>
                 <FormWithValidation
+                    {...this.props.custom_style}
                     submit={this.onSubmit}
                     renderHeader={this.header}
                     renderFooter={this.footer}>
@@ -85,7 +91,7 @@ class Login extends Component{
                         name="password"
                         label='Password'
                     />
-                    <Button type='submit' >Login</Button>
+                    <Button type='submit' {...allowUserSubmitButton}>Login</Button>
                 </FormWithValidation>
             </div>
         )
@@ -105,5 +111,9 @@ const mapDispatchToProps = (dispatch) => ({
     }
 })
 
+const mapStateToProps = ({user}) => ({
+    isUserLoading: user.isLoading
+})
 
-export default connect(null, mapDispatchToProps)(Login)
+
+export default connect(mapStateToProps, mapDispatchToProps)(Login)

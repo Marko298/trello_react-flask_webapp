@@ -6,11 +6,12 @@ import {Link} from 'react-router-dom'
 import PopupActions from '../../actions/EditModeAction'
 //components
 import Button from '../../components/Button/Button'
-import Row from '../../components/Row/Row'
+import Avatarka from '../../components/Avatarka/Avatarka'
 //HOC
 import withEditMode from '../../HOC/withEditMode'
 //containers
 import Popup from '../Popup/Popup'
+import Input from '../Input/Input'
 //styles
 import './ToolBar.style.css'
 
@@ -60,44 +61,88 @@ class ToolBar extends Component {
     }
 
     render() {
-        const {isPinned} = this.props
+        const {isPinned, user: {photo, name}} = this.props
         const {boundElement} = this
         const {offsetTopAccountSettingsMenu, offsetTopCreativeMenu} = this.state
 
         return (
             <div className="tool-bar">
-                <Row>
+                <div className='left-toolbar-side'>
                     {!isPinned && 
                         <Button onClick={this.props.toggleSidebar}>
-                            BOARDS
+                            <i className="fas fa-clipboard" />
+                                Boards
                         </Button> 
                     }
-                    <input />   
-                    <Link to='/'>HOME</Link>
+                    <Input 
+                        name='search' 
+                        placeholder="Search..."
+                        value="Comming soon"
+                        />   
+                </div>
+                
+                <div className='middle-toolbar-side'>
+                    <Spinner />
+                    <Link to='/'>Trello</Link>
+                </div>  
+
+                <div className='right-toolbar-side'>
                     <CreativeMenuButton 
                         ref={boundElement('CreativeMenuButton')} 
                         customTop={offsetTopCreativeMenu}
-                    >
-                        ICON[+]
+                        >
+                        <i className="fas fa-plus" />
                     </CreativeMenuButton>
+                    <div>
+                        <Button>
+                            <i className="far fa-bell" />
+                        </Button>
+                    </div>
                     
                     <AccountSettings
+                        className='avatarka-wrapper-button'
                         customTop={offsetTopAccountSettingsMenu} 
                         ref={boundElement('AccountSettings')}
-                    >
-                        Account Settings
+                        >
+                        <Avatarka src={photo} alt={name} small/> 
                     </AccountSettings>
-                </Row>
-
-
+                </div>
             </div>
         )
     }
 }
 
-const mapStatToProps = ({mode: {sidebar, menu} }) => ({
+function Circle() {
+    return (
+        <div style={{
+            width: '30px',
+            height: '30px',
+            borderRadius: '50%',
+            backgroundColor: '#cccccc'
+        }} />
+    )
+   
+   
+}
+
+function Spinner() {
+    return (
+        <div style={{
+            width: '30px',
+            height: '30px',
+            borderRadius: '50%',
+            backgroundColor: '#cccccc'
+        }} />
+    )
+}
+
+const mapStatToProps = ({mode: {sidebar, menu}, user }) => ({
     isPinned: sidebar.isPinned,
-    menu: {...menu}
+    menu: {...menu},
+    user: {
+        photo: user.photo,
+        name: user.name
+    }
 
 })
 

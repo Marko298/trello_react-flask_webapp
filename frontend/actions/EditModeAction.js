@@ -12,7 +12,9 @@ import {
     POPUP_MENU_CLOSE,
     TOGGLE_LABEL_MENU,
     TOGGLE_ADD_CHECKLIST_FORM,
-    TOGGLE_IS_ALLOW_TO_REMOVE
+    TOGGLE_IS_ALLOW_TO_REMOVE,
+    TOGGLE_OVERLAY,
+    TOGGLE_UPDATE_BOARDNAME_MENU
 } from '../constants/EditModeConstant'
 
 export default class PopupActions {
@@ -66,5 +68,11 @@ export default class PopupActions {
     }
     static toggle_allow_remove() {
         return {type: TOGGLE_IS_ALLOW_TO_REMOVE}
+    }
+    static toggle_overlay() {
+        return {type: TOGGLE_OVERLAY}
+    }
+    static toggle_update_boardname() {
+        return {type: TOGGLE_UPDATE_BOARDNAME_MENU}
     }
 }

@@ -7,8 +7,8 @@ import PopupActions from '../../actions/EditModeAction'
 //components
 import Button from '../../components/Button/Button'
 import Title from '../../components/Title/Title'
+import Board from '../../components/Board/Board'
 //containers
-import BoardList from '../BoardList/BoardList'
 import ButtonAddBoard from '../ButtonAddBoard/ButtonAddBoard'
 //HOC
 import withTheme from '../../HOC/withTheme.js'
@@ -35,8 +35,13 @@ class SidebarBoards extends React.Component {
         return {
             display: isFixed ? 'block' : 'none',
             height: isPinned ? window.innerHeight + 'px' : '600px',
-            top: isPinned ? '0px' : '63px'
+            top: isPinned ? '0px' : '41px'
         }
+    }
+
+    state = {
+        search: '',
+        foundedBoards: []
     }
 
     getElement = (element) => {
@@ -47,38 +52,68 @@ class SidebarBoards extends React.Component {
         const {width} = this.Sidebar.getBoundingClientRect()
         this.props.fix_sidebar(width)
     }
+    handleChange = ({target}) => {
+        let {name, value} = target
+
+        let founded = this.props._boards.filter(board => {
+            if( board.boardName.match(this.state.search) ) {
+                return board
+            }
+        })
+
+        this.setState(state => {
+            return {
+                ...state,
+               [name] : value,
+               foundedBoards: founded
+            }
+        })
+
+    }
     render() {
+
         const { Theme: {boardList}, isPinned, unfix_sidebar } = this.props
         const {fix_sidebar} = this
+        const {search, foundedBoards} = this.state
 
+        let SingleBoard = {
+            container: 'single-board sidebar-board',
+            SettingBoard: "board-input-container"
+        }
 
         return (    
             <div className="sidebar sidebar-fixed" ref={this.getElement} style={SidebarBoards.styles(this.props)}>
                 <div>
                     {isPinned && <Title text="Board" large bold />}
                    
-                    <div>
-                        <label htmlFor='search'> Search: </label>
-                        <input type='text' name='search'/>
+                    <div className="sidebar-search">
+                        <input
+                            value={search}
+                            onChange={this.handleChange} 
+                            type='text' 
+                            name='search' 
+                            placeholder='Search board...'
+                        />
                     </div>
 
-                    {this.props.children}
-                    <div>
+                    {search.length ? this.state.foundedBoards.map(board => {
+                        return <Board key={board._id} {...board} Theme={SingleBoard}/>
+                    }) : this.props.children}
+
+                    <div className='sidebar-footer'>
+
+                        <ButtonAddBoard customTop={50} justifyContanteCenter={true} customWidth={415}>
+                            {search.length ? `Create board — "${search}"` : `Create new board`}
+                        </ButtonAddBoard>
+
                         {!isPinned 
                             ? <Button onClick={fix_sidebar}>
-                                — fix board —
+                               Always keep this menu open
                             </Button>
                             : <Button onClick={unfix_sidebar}>
-                                — Un fix board —
+                               Don't keep this menu open
                             </Button>
                         }
-
-                        <Button onClick={() => {}}>
-                            — Create new Board —
-                        </Button>
-                        <ButtonAddBoard>
-                            Add board
-                        </ButtonAddBoard>
 
                     </div>
                 </div>
@@ -100,7 +135,8 @@ class SidebarBoards extends React.Component {
 const mapStateToProps = ({mode: {sidebar}, organizations: {teams}})  => ({
     isPinned: sidebar.isPinned,
     isFixed: sidebar.isFixed,
-    boards: teams
+    boards: teams,
+    _boards: teams.map(team => team.boards).reduce((memo, boards) => memo.concat(boards), [])
 })
 
 const mapDispatchToProps = (dispatch) => ({

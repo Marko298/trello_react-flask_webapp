@@ -7,7 +7,11 @@ import {
     USER_UPLOAD_IMAGE_REQUEST,
     USER_UPLOAD_IMAGE_PROGRESS,
     USER_UPLOAD_IMAGE__SUCCESS,
-    USER_UPLOAD_IMAGE__FAILED
+    USER_UPLOAD_IMAGE__FAILED,
+    USER_UPDATE_DATA_REQUEST,
+    USER_UPDATE_DATA_REQUEST_SUCCESS,
+    USER_UPDATE_DATA_REQUEST_FAILED,
+    USER_SIGNIN_SUCCESS
 } from '../constants/UserConstants'
 
 let defaultLabels = [
@@ -18,7 +22,7 @@ let defaultLabels = [
 ]
 
 const initialState = {
-    userId: "69724898c4ec4ef2b106965297c4043b",
+    userId: "3aa620bb18354ed2884e5c8ebd2351d2",
     // userId: null,
     email: null,
     error: null,
@@ -27,7 +31,10 @@ const initialState = {
     name: null,
     photo: null,
     isPhotoUploading: false,
-    progree_photo_upload: 0
+    progree_photo_upload: 0,
+    initials: null,
+    bio: null,
+    isDataUpdateRequest: false
 }
 
 
@@ -48,7 +55,9 @@ const UserReducer = function (state = initialState, {type, payload, progress}) {
                 userId : payload._id,
                 name: payload.name,
                 labels: payload.labels,
-                photo: payload.photo
+                photo: payload.photo,
+                bio: payload.bio,
+                initials: payload.initials
             }
         }
         case USER_REQUEST_FAILED: {
@@ -59,7 +68,9 @@ const UserReducer = function (state = initialState, {type, payload, progress}) {
                 error: payload,
                 isLoading: false,
                 name: null,
-                photo: null
+                photo: null,
+                bio: null,
+                initials: null
             }
         }
         case USER_REQUEST_LOGOUT: {
@@ -94,13 +105,34 @@ const UserReducer = function (state = initialState, {type, payload, progress}) {
                 isPhotoUploading: false,
             }
         }
+
+        case USER_UPDATE_DATA_REQUEST: {
+            return {
+                ...state,
+                isDataUpdateRequest: true
+            }
+        }
+        case USER_UPDATE_DATA_REQUEST_SUCCESS: {
+            return {
+                ...state,
+                isDataUpdateRequest: false,
+                ...payload
+            }
+        }
+        case USER_UPDATE_DATA_REQUEST: {
+            return {
+                ...state,
+                isDataUpdateRequest: false
+            }
+        }
+
         
-        // case USER_SIGNIN_SUCCESS:
-        //     return {
-        //         ...state,
-        //         error: null,
-        //         userId: payload
-        //     }
+        case USER_SIGNIN_SUCCESS:
+            return {
+                ...state,
+                error: null,
+                isLoading: false
+            }
         // case USER_LOGIN_SUCCESS:
         //     return {
         //         ...state,

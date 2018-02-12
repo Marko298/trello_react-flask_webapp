@@ -1,0 +1,40 @@
+@import url('https://fonts.googleapis.com/css?family=Mukta+Mahee:300,500,700');
+@import url('https://fonts.googleapis.com/css?family=Gloria+Hallelujah|Mukta+Mahee:300,500,700');
+
+:root {
+     --grey: #9e9e9e;
+    --dark_grey: #212121;
+    --green: #81c784;
+    --dark_green: #1b5e20;
+    --lightblue: #e1f5fe;
+    --white: #ffffff;
+    --sweet_font: 'Gloria Hallelujah', cursive;
+    --normal_font: 'Mukta Mahee', sans-serif;
+}
+a {
+    text-decoration: none;
+}
+
+html, body {
+    font-family: var(--normal_font);
+    line-height: 1;
+}
+
+.bg-lightblue {
+    background-color: var(--lightblue);
+}
+.bg-white {
+    background-color: var(--white);
+}
+
+.align-middle {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.in_column {
+    flex-direction: column;
+    flex-wrap: wrap;
+}
+

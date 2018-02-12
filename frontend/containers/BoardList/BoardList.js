@@ -1,14 +1,19 @@
-import React, {Fragment} from 'react'
+import React, {Fragment, Children, cloneElement} from 'react'
 import {withRouter} from 'react-router-dom'
 import {connect} from 'react-redux'
-
+//styles
+import './BoardList.style.css'
 //compoenents
 import List from '../../components/Lists/Lists'
 import Board from '../../components/Board/Board'
 import Wrapper from '../../components/Wrapper/Wrapper'
 import Row from '../../components/Row/Row'
 import Title from '../../components/Title/Title'
+import Avatarka from '../../components/Avatarka/Avatarka'
+//action
 import BoardActions from '../../actions/BoardAction';
+
+
 
 
 class BoardsList extends React.Component {
@@ -22,10 +27,11 @@ class BoardsList extends React.Component {
                 boards: []
             }
         ],
-        render: () => <span>this.props.render</span>,
-        renderChildrenForBoard: () =>  <span>this.props.renderChildrenForBoard</span>,
+        render: () => {},
+        renderChildrenForBoard: () =>  {},
         Theme:  {
-            titleWrapper: ''
+            titleWrapper: '',
+            Board: {}
         },
         title: ''
     }
@@ -46,40 +52,52 @@ class BoardsList extends React.Component {
         const boards = this.props.boards.filter(board => {
             if(board._id === teamId) return board
         })
-        return React.Children.map(this.props.children, child => {
-            return React.cloneElement(child, {selected: boards[0]})
+        return Children.map(this.props.children, child => {
+            return cloneElement(child, {selected: boards[0]})
         })
     }
 
     render() {
         const {isShow} = this.state
-        const {Theme: {titleWrapper}, title} = this.props
+        const {Theme:{ 
+            titleWrapper,
+            BoardsLine,
+            SingleBoard,
+            BoardList,
+            title: headerTitle}, 
+            title, status} = this.props
         return (
             <div>
                 {this.props.boardsGroup.map((team, idx) =>  {
                     let temId_from_Wrapper = team._id ? team._id : idx
-    
                     return (
-                        <Wrapper key={`${team._id ? team._id : idx}`}>
-                            <Row spaceBetween className={titleWrapper}>
-                                <Title text={title ? title : team.title} tiny large />
+                        <Wrapper key={idx} className={BoardList}>
+                            <Row className={titleWrapper}>
+                                <div className='image-organization-wrapper'>
+                                    {team.photo ? <Avatarka src={team.photo} small ractangle /> : "Some nice SVG"}  
+                                </div>
+                                <Title text={title ? title : team.title} tiny large {...headerTitle}/>
                                 {this.props.render(this.propsCollection( team._id ))}
                             </Row>
-                            <List style={{display: isShow ? 'block' : 'none'}}>
-                                <Fragment>
-                                    {team['boards'] instanceof Array 
-                                        ? team.boards.map( (board, idx) => (
-                                            <Board
-                                                {...board} 
-                                                key={`${board._id}_${idx}`}
-                                            >
-                                                {this.props.renderChildrenForBoard(this.propsCollection(board._id))}
-                                            </Board>
-                                        ))
-                                        : null}
-                                </Fragment>
-                                {this.props.children && <li>{this.renderChildren(team._id)}</li> }
-                            </List>
+                            <div style={{display: isShow ? 'block' : 'none'}}>
+                                <List  className={BoardsLine}>
+                                    <Fragment>
+                                        {team['boards'] instanceof Array 
+                                            ? team.boards.map( (board, idx) => (
+                                                <Board
+                                                    status={status}
+                                                    Theme={SingleBoard}
+                                                    {...board} 
+                                                    key={`${board._id}_${idx}`}
+                                                >
+                                                    {this.props.renderChildrenForBoard(this.propsCollection(board._id))}
+                                                </Board>
+                                            ))
+                                            : null}
+                                    </Fragment>
+                                    {this.props.children && <li className='single-board button-board'>{this.renderChildren(team._id)}</li> }
+                                </List>
+                            </div>
                         </Wrapper>
                     )
                 })}
@@ -98,3 +116,4 @@ const mapDispatchToProps = (dispatch) => ({
 })
 
 export default withRouter(connect(mapStateToProps, mapDispatchToProps)(BoardsList))
+// export default connect(mapStateToProps, mapDispatchToProps)(BoardsList)

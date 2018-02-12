@@ -50,6 +50,21 @@ class JSONEncoder(json.JSONEncoder):
         if isinstance(o, ObjectId):
             return str(o)
         return json.JSONEncoder.default(self, o)
+# JSONEncoder().encode(updatedUser)
+def loop_over(data):
+    newDict = dict()
+    for k, v in data.items():
+        if v is not None:
+            newDict[k] = v
+    
+    return newDict
+
+def isHaveImage(team):
+    if isinstance(team['photo'], ObjectId):
+        fsClass = FS.get(team['photo'])
+        photo = Utils.prepareImage(fsClass)
+        return {**team, 'photo': photo}
+    return team
 
 @app.before_first_request
 def init_db():
@@ -173,6 +188,24 @@ def user_logout():
     session['email'] = None
     return jsonify(data={'user': "success logout"})
 
+
+@app.route('/users/update', methods=['POST'])
+@user_dec.login_required
+def update_user():
+    if request.method == 'POST' and request.is_json:
+        CONTENT = request.get_json()
+
+        userEmail = session['email']
+        userCursor = User.get_user_by_email(userEmail)
+
+        newData = loop_over(CONTENT)
+        userClass = User(**userCursor)
+        
+        updatesForUser = userClass.update_user_info(newData)
+
+        return jsonify(updatesForUser)
+
+
 ##########################
 ############### BOARDS API
 ##########################
@@ -199,7 +232,10 @@ def assign_board_to_team(teamId):
         authorId = user.get("_id")
         userName = user.get("name")
 
+        
+
         boardName = CONTENT['boardName']
+        styleSettings = CONTENT['styleSettings']
 
 
         if teamId == authorId:
@@ -207,8 +243,9 @@ def assign_board_to_team(teamId):
                 "teamId" : authorId,
                 "teamName": userName
             }
+
             user = User.get_user_by_id(authorId)
-            boardId = Board(boardName=boardName, authorId=authorId, reletedTo=reletedTo).save()
+            boardId = Board(boardName=boardName, authorId=authorId, reletedTo=reletedTo, styleSettings=styleSettings).save()
             user.assign_board(boardId)
 
         else:
@@ -217,7 +254,7 @@ def assign_board_to_team(teamId):
                 "teamId" : teamId,
                 "teamName": teamCursor.get("teamName")
             }
-            boardId = Board(boardName=boardName, authorId=authorId, reletedTo=reletedTo).save()
+            boardId = Board(boardName=boardName, authorId=authorId, reletedTo=reletedTo, styleSettings=styleSettings).save()
             teamClass.assign_board(boardId)
 
         _, board = Board.get_board(boardId)
@@ -237,7 +274,20 @@ def remove_board(boardId):
         except BoardError.BoardError as error:
             return jsonify(error=error.message)
         return "Done"
-    
+
+@app.route('/boards/update/<string:boardId>', methods=['POST'])
+def update_board_data(boardId):
+    if request.is_json:
+        CONTENT = request.get_json()
+
+        existingData = loop_over(CONTENT)
+        try:
+            classBoard, _ = Board.get_board(boardId)
+            updates = classBoard.update(existingData)
+            return jsonify(updates)
+        except:
+            return jsonify(error="Something go wrong")
+
 ##########################
 ############### Teams API
 ##########################
@@ -275,16 +325,36 @@ def upload_photo_for_team(teamId):
 
     
 
+@app.route('/team/update/<string:teamId>', methods=['POST'])
+def update_team(teamId):
+    if request.method == 'POST' and request.is_json:
+        CONTENT = request.get_json()
+        teamClass, _ = Team.get_team_by_id(teamId)
+        
+        newUpdates = loop_over(CONTENT)
+
+        updates = teamClass.update_team(newUpdates)
+
+        return jsonify(updates)
+    
+
+
+
 @app.route("/teams")
 @user_dec.login_required
 def get_all_teams():
     authorId = User.get_user_by_email(session['email']).get("_id")
     try:
         teams = Team.get_tems_by_author(authorId)
-        return jsonify(teams)
+   
+        data = list(map(isHaveImage, teams))
+        return jsonify(data)
+
     except TeamError.TeamError as e:
         return jsonify(error=e)
         
+
+
 
 ##########################
 ############### Lists API

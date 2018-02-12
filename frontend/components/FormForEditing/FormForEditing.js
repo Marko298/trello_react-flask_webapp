@@ -11,6 +11,7 @@ const FormForEditing = ({
     handleCancleAction, 
     inputs, 
     toggle, 
+    buttonSettings,
     actionButtonText, 
     ...props
 }) => {
@@ -41,23 +42,28 @@ const FormForEditing = ({
                     />
                 ) 
             })}
-
-            <Button type='submit'>
-                {actionButtonText}
-            </Button>
-            <Button type='button' onClick={(e) => {
-                toggle() || props.close()
-                // console.log({toggle})
-                // EditFormOrganization()
-            }}>
-                Cancle
-            </Button>
+            <div className='button-group-editing'>
+                <Button type='submit' success={buttonSettings.success} disabled={buttonSettings.disabled}>
+                    {actionButtonText}
+                </Button>
+                <Button type='button' onClick={(e) => {
+                    toggle() || props.close()
+                    // console.log({toggle})
+                    // EditFormOrganization()
+                }}>
+                    Cancle
+                </Button>
+            </div>
         </Form>
     )
 }
 
 FormForEditing.defaultProps = {
-    actionButtonText: 'Save'
+    actionButtonText: 'Save',
+    buttonSettings: {
+        success: true,
+        disabled: false
+    }
 }
 
 FormForEditing.propTypes = {

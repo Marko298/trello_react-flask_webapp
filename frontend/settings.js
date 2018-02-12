@@ -31,6 +31,10 @@ class API {
     get user_update_photo() {
         return `${this.url}/user/update_photo`
     }
+
+    get user_update() {
+        return `${this.url}/users/update`
+    }
     /**
     |--------------------------------------------------
     | BOARDS ENDPOINTS
@@ -50,6 +54,10 @@ class API {
         return `${this.url}/boards/remove_board/${boardId}`
     }
 
+    update_board_data(boardId) {
+        return `${this.url}/boards/update/${boardId}`
+    }
+
     /**
     |--------------------------------------------------
     | TEAMS ENDPOINTS
@@ -65,6 +73,10 @@ class API {
 
     set_image_for_team(teamId) {
         return `${this.url}/team/upload_photo/${teamId}`
+    }
+
+    update_team(teamId) {
+        return `${this.url}/team/update/${teamId}`
     }
 
      /**

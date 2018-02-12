@@ -19,6 +19,12 @@ import {
     TEAM_UPLOAD_IMAGE_SUCCESS,
     TEAM_UPLOAD_IMAGE_FAILED,
     TEAM_UPLOAD_IMAGE_PROGRESS,
+    TEAM_UPDATE_REQUEST,
+    TEAM_UPDATE_REQUEST_SUCCESS,
+    TEAM_UPDATE_REQUEST_FAILED,
+    BOARD_UPDATE_REQUEST,
+    BOARD_UPDATE_SUCCESS,
+    BOARD_UPDATE_FAILED,
 } from '../constants/BoardConstant'
 
 import Utils from '../utils'
@@ -35,7 +41,9 @@ const innitialState = {
         uploadingProgress: 0
     },
     isLoading: false,
-    isTeamCreatingLoading: false
+    isTeamCreatingLoading: false,
+    isTeamEditingRequestDone: false,
+    isBoardUpdating: false
 }
 
 
@@ -147,7 +155,7 @@ export default function BoardReducer(state=innitialState, {type, payload, progre
                     isImageUploading: false
                 },
                 teams: state.teams.map(team => {
-                    if(team._id === teamId) {
+                    if(team._id === action.teamId) {
                         return {
                             ...team,
                             photo: payload
@@ -164,16 +172,75 @@ export default function BoardReducer(state=innitialState, {type, payload, progre
                 ...state
             }
         }
-        case TEAM_UPLOAD_IMAGE_PROGRESS: {
+       
+        case TEAM_UPDATE_REQUEST: {
             return {
                 ...state,
-                image_proccess: {
-                    ...state.image_proccess,
-                    uploadingProgress: progress
-                }
+                isTeamEditingRequestDone: true
+            }
+        }
+        case TEAM_UPDATE_REQUEST_SUCCESS: {
+            return {
+                ...state,
+                isTeamEditingRequestDone: false,
+                teams: state.teams.map(team => {
+                    if (team._id === payload._id) {
+                        return {
+                            ...team,
+                            title: payload.teamName,
+                            ...payload
+                        }
+                    }
+                    return {...team}
+                })
+
+            }
+        }
+        case TEAM_UPDATE_REQUEST_SUCCESS: {
+            return {
+                ...state,
+                isTeamEditingRequestDone: false
             }
         }
 
+        case BOARD_UPDATE_REQUEST: {
+            return {
+                ...state,
+                isBoardUpdating: true
+            }
+        }
+        case BOARD_UPDATE_SUCCESS: {
+            const {reletedTo: {teamId}, _id: justUpdatedBoardId} = payload
+            return {
+                ...state,
+                isBoardUpdating: false,
+                teams: state.teams.map(team => {
+                    if(team._id === teamId) {
+                        return {
+                            ...team,
+                            boards: team.boards.map(board => {
+                                if(board._id === justUpdatedBoardId) {
+                                    return {
+                                        ...board,
+                                        ...payload
+                                    }
+                                }
+                                return {...board}
+                            })
+                        }
+                    }   
+                    return {...team}
+                })
+            }
+        }
+        case BOARD_UPDATE_FAILED: {
+            return {
+                ...state,
+                isBoardUpdating: false
+            }
+        }
+
+      
         default:
             return {...state}
         return state

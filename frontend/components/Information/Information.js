@@ -18,12 +18,15 @@ export default function Inpormation({
                 </p>
             </Title>
             
-            <Button onClick={(e) => {
-                props.toggle();
-                handleCancleAction()
-            }}>
-                {buttonText ? buttonText : 'edit'}
-            </Button>
+            <div className="button-group-editing ">
+                <Button type='button' onClick={(e) => {
+                    props.toggle();
+                    handleCancleAction()
+                }}>
+                    <i className="fas fa-pencil-alt" />
+                    {buttonText ? buttonText : 'edit'}
+                </Button>
+            </div>
         </div>
     )
 }

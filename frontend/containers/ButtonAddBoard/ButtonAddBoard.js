@@ -8,10 +8,10 @@ import Button from '../../components/Button/Button'
 import Popup from '../../actions/EditModeAction'
 
 
-const ButtonAddBoard = (props) => {
+const ButtonAddBoard = ({children}) => {
     return (
-        <Button>
-            Add board
+        <Button >
+            {children ? children : ` Add board`}
         </Button>
     )
 

@@ -1,0 +1,39 @@
+.container {
+    padding: 60px 80px;
+}
+
+.home-container {
+    width: 50%;
+    max-width: 600px;
+    min-width: 315px;
+}
+:root {
+    --sweet_font: 'Gloria Hallelujah', cursive
+}
+
+.first-text {
+    display: block;
+    font-family: var(--sweet_font);
+    text-align: right;
+}
+.second-text {
+     display: block;
+    font-family: var(--sweet_font);
+    line-height: 2;
+    text-align: center;
+}
+.custom-font-splitter {
+    display: block;
+    text-align: right;
+    color:  #90caf9;
+    font-size: 72px;
+    font-family: var(--sweet_font);
+
+    & .span {
+        font-family: var(--sweet_font);
+        font-size: 72px;
+        font-weight: 700;
+        font-style: normal;
+        color: #2979ff
+    }
+}

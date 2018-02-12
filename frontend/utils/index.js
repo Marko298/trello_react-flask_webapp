@@ -82,15 +82,15 @@ var Utils = (function() {
             var board_team_id = board._id
             var copBoard = {...board}
             teams.forEach(team => {
-                if(board_team_id = team._id) {
+                if(board_team_id === team._id) {
                     copBoard = {
                         ...copBoard,
-                        photo: team.photo
+                        photo: team.photo,
+                        website: team.website,
+                        descrition: team.descrition
                     }
-                   
                 }
             })
-        
             return {...copBoard}
         })
     }

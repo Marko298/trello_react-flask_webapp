@@ -1,11 +1,14 @@
 import React, {Component, Children} from 'react'
 import {withRouter, Route, Switch} from 'react-router-dom'
+import {connect} from 'react-redux'
 import PropTypes from 'prop-types'
 
 //components
 // import FormForEditing from '../../components/FormForEditing/FormForEditing'
 import Avatarka from '../../components/Avatarka/Avatarka'
 import TabRoutes from '../../components/TabRoutes/TabRoutes'
+import BoardActions from '../../actions/BoardAction';
+import UploadImageForm from '../../components/UploadImageForm/UploadImageForm'
 
 
 
@@ -17,9 +20,10 @@ class EditFormOrganization extends Component {
     ]
 
     state = {
-        name: this.props.title,
-        website: '',
-        description: ''
+        teamName: this.props.title,
+        website: this.props.website,
+        descrition: this.props.descrition,
+        image: this.props.photo || ''
     }
 
     handleChange = (name) => (e) => {
@@ -34,10 +38,10 @@ class EditFormOrganization extends Component {
         return [
             {
                 component: 'input',
-                name: "name",
-                field: this.state.name,
+                name: "teamName",
+                field: this.state.teamName,
                 onChange: this.handleChange,
-                label: "Team name"
+                label: "Team teamName"
             },
             {
                 component: 'input',
@@ -48,28 +52,50 @@ class EditFormOrganization extends Component {
             },
             {
                 component: 'textarea',
-                name: "description",
-                field: this.state.description,
+                name: "descrition",
+                field: this.state.descrition,
                 onChange: this.handleChange,
                 label: 'Description'
             }
         ]
     }
 
-    componentDidMount() {
-        console.log("componentDidMount", this.props)
-    }
+   _handleSubmit = (e) => {
+        e.preventDefault()
+
+        this.props.update_team({
+            teamName: this.state.teamName,
+            website: this.state.website,
+            descrition: this.state.descrition
+        })
+   }
+
+   handleChangeImage = (e) => {
+       e.preventDefault()
+
+       let image = e.target.files[0]
+
+        this.setState(state => ({image}), function() {
+            console.log("WE ARE TRY TO UPLOAD")
+            let data = new FormData(this.form[0])
+            data.append('photo', this.state.image)
+            this.props.upload_photo(data)
+
+        })
+   }
 
     render() {
         const {InputsSchema, handleChange} = this
-        const {children, title} = this.props
-
-        console.log("this.props", this.props)
+        const {children, title, photo, isTeamEditingRequestDone} = this.props
 
         const propsForChildren = {
             forFirst: {
                 inputs: InputsSchema,
-                hanldeSubmit: () => {},
+                buttonSettings: {
+                    disabled: isTeamEditingRequestDone,
+                    success: !isTeamEditingRequestDone
+                },
+                hanldeSubmit: this._handleSubmit,
                 handleCancleAction: () => {}
             },
             forSecond: {
@@ -81,13 +107,38 @@ class EditFormOrganization extends Component {
         }
 
         const {match, match: {params}} = this.props
-
+        const Theme = {
+            container: 'tab-routes-edit',
+            button: 'tab-routes-edit__button'
+        }
         return (
-            <div>
-                <Avatarka/>
-                 {Children.only(children(propsForChildren))}
+            <div style={{position: 'relative', overflowY: 'auto', flexGrow: 1}}>
+                <div className="edit-form-wrapper">
+                    <div className='edit-form-container'>
+                        <div className='left-column'>
+
+                            <Avatarka src={photo} alt={title} medium className='edit-avatar-image'> 
+                                <UploadImageForm
+                                    handleChangeImage={this.handleChangeImage}
+                                    innerRef={n => this.form = n}
+                                />
+                            </Avatarka>
+
+                            {this.props.isTeamEditingRequestDone && "Loading..."}
+                        </div>
+                        <div className='right-column'>
+                            {Children.only(children(propsForChildren))}
+                        </div>
+                    </div>
+                </div>
                  <div>
-                    <TabRoutes match={match} routers={EditFormOrganization.routes} >
+                    <TabRoutes 
+                        Theme={Theme} 
+                        exact
+                        active='selected-tab-link' 
+                        match={match} 
+                        routers={EditFormOrganization.routes} 
+                    >
                         <Switch>
 
                             <Route path={`/${params.teamId}/members`} render={(props) => {
@@ -117,4 +168,24 @@ class EditFormOrganization extends Component {
     }
 }
 
-export default withRouter(EditFormOrganization)
+const mapDispatchToProps = (dispatch, props) => ({
+    update_team(updates) {
+        const {_id} = props
+        dispatch(
+            BoardActions.update_team(_id, updates)
+        )
+    },
+    upload_photo(photo) {
+        const {_id} = props
+
+        dispatch(
+            BoardActions.upload_image(_id, photo)
+        )
+    }
+})
+
+const mapStateToProps = ({organizations}) => ({
+    isTeamEditingRequestDone: organizations.isTeamEditingRequestDone
+})
+
+export default connect(mapStateToProps, mapDispatchToProps)(withRouter(EditFormOrganization))

@@ -14,12 +14,14 @@ import Input from '../../components/Input/Input'
 import Title from '../../components/Title/Title'
 import Wrapper from '../../components/Wrapper/Wrapper'
 import Row from '../../components/Row/Row'
+import ColorBox from '../../components/ColorBox/ColorBox'
 
 //actions
 import BoardActions from '../../actions/BoardAction';
 
 //containers
 import Popup from '../Popup/Popup'
+import PopupActions from '../../actions/EditModeAction';
 
 class AddBoardForm extends Component {
     static defaultProps = {
@@ -34,24 +36,30 @@ class AddBoardForm extends Component {
             _id: ''
         }
     }
+
     state = {
         title: '',
-        selected: ''
+        selected: '',
+        bacground: '#e91e63'
     }
+
    
 
     handleChange = (e) => {
         let { name, value } = e.target
-        this.setState( prevState => ({[name]: value}) )
+        this.setState( prevState => ({...prevState, [name]: value}) )
     }
 
 
 
     handleClick = () => {
-        const {selected, title} = this.state
+        const {selected, title, bacground} = this.state
         const {create_board, toggle} = this.props
         const boardSchema = {
             boardName: title,
+            styleSettings: {
+                backgroundColor: bacground
+            }
         }
 
         create_board(boardSchema, selected).then(resp => {
@@ -71,48 +79,101 @@ class AddBoardForm extends Component {
 
     componentWillReceiveProps(nextProps) {
         if(!this.props.selected._id && nextProps.selected._id) {
-            this.setState(prevState => ({selected: nextProps.selected._id}))
+            this.setState(prevState => ({...prevState, selected: nextProps.selected._id}))
         }
     }
     componentDidMount() {
         if(this.props.selected._id && !this.state.selected) {
-            this.setState(prevState => ({selected: this.props.selected._id}))
+            this.setState(prevState => ({...prevState, selected: this.props.selected._id}))
         }
+    }
+
+    handleChangeColor = ({color}) => (e) => {
+
+        this.setState((state) => {
+            return {
+                ...state,
+                bacground: color
+            }
+        })
+    }
+
+    _close_menu = (e) => {
+        const {isPopupShow, withOverlayScene} = this.props
+        isPopupShow && this.props.close_menu()
+        withOverlayScene &&  this.props.close_overlay()
     }
 
     render() {
 
-        console.log(this.props)
+        const backgrounds = [
+            '#e91e63',
+            '#4a148c',
+            '#5e35b1',
+            '#448aff',
+            '#03a9f4',
+            '#0097a7',
+            '#4db6ac',
+            '#2e7d32',
+        ]
         
-        const {selected, title} = this.state
+        const {selected, title, bacground} = this.state
         const {teams} = this.props
-        // const styles = {width, top, left, display: isEditBoardShow ? 'block' : 'none'}
 
         return (
-            <Form method='post'>
+            <div className='add-board-container '>
+                <div className='add-board-form'>
+                    <Form method='post'>
+                        <div className="form-input-board" style={{backgroundColor: bacground || 'none'}}>
 
-                <Input name="title" value={title} onChange={this.handleChange}>
-                    Title: 
-                </Input>
-        
-                <select name="selected" onChange={this.handleChange} >
-                    { teams.map(team => {
+                            <div className='form-fieldset'>
+                                <Input
+                                    autocomplete='off' 
+                                    name="title" 
+                                    value={title} 
+                                    onChange={this.handleChange} 
+                                    className='add-board-label'
+                                    placeholder="Title for board ..."
+                                />
+
+
+                                <Button onClick={this._close_menu}>
+                                    <i className='fas fa-times'/>
+                                </Button>
+                            </div>
+
+                            <div className='form-fieldset '>
+                                <select name="selected" onChange={this.handleChange} className="select-drop-down" >
+                                    { teams.map(team => {
+                                        return (
+                                            <option key={team._id} value={team._id} selected={
+                                                selected === team._id ? team.title : ''
+                                            }>{team.title}</option>
+                                        )
+                                    }) }
+                                </select>
+                            </div>
+                        </div>
+                        <div className='form-fieldset '>
+                            <Button onClick={this.handleClick} disabled={!title.length} success={!!title.length}>
+                                create
+                            </Button>
+                        </div>
+                    </Form>
+                </div>
+                <div className='background-list'>
+                    {backgrounds.map((color, idx) => {
                         return (
-                            <option key={team._id} value={team._id} selected={
-                                selected === team._id ? team.title : ''
-                            }>{team.title}</option>
+                            <ColorBox key={idx} selectedLabels={bacground} color={color} className="small" handleClick={this.handleChangeColor}/>
                         )
-                    }) }
-                </select>
-
-                <Button onClick={this.handleClick}>
-                    create
-                </Button>
-
-            </Form>
+                    })}
+                    <div className='small-button'>
+                        <i className='fas fa-ellipsis-h' />
+                    </div>
+                </div>
+            </div>
         )
     }
-
 }
 
 const mapStateToProps = ({mode, organizations: {teams}}) => ({
@@ -121,12 +182,20 @@ const mapStateToProps = ({mode, organizations: {teams}}) => ({
             return {title: group.title, _id: group._id}
         }
     }).filter(b => b),
-    selected: mode.selected
+    selected: mode.selected,
+    withOverlayScene: mode.withOverlayScene,
+    isPopupShow: mode.forms.isPopupShow
 })
 
 const mapDispatchToProps = (dispatch) => ({
     create_board(board, teamId) {
         return dispatch(BoardActions.create_board(board, teamId))
+    },
+    close_menu() {
+        dispatch(PopupActions.toggle_editMode())
+    },
+    close_overlay() {
+        dispatch(PopupActions.toggle_overlay())
     }
 })
 

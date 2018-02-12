@@ -1,0 +1,150 @@
+:root {
+    --grey: #9e9e9e;
+   --dark_grey: #212121;
+   --green: #81c784;
+   --dark_green: #1b5e20;
+   --lightblue: #e1f5fe;
+   --white: #ffffff;
+   --sweet_font: 'Gloria Hallelujah', cursive;
+   --normal_font: 'Mukta Mahee', sans-serif;
+}
+
+.edit-form-wrapper {
+    background-color: color(var(--grey) alpha(20%));
+    padding: 10px;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+}
+.edit-form-container {
+    max-width: 650px;
+
+    padding: 32px;
+    
+    flex-grow: 1;
+    display: flex;
+
+}
+
+.left-column {
+    width: 120px;
+    flex-grow: 1;
+    padding: 10px;
+}
+
+.right-column {
+    width: 100%;
+
+}
+
+.right-column form.form {
+    
+    & label {
+        font-weight: 800;
+        font-size: 1rem;
+        line-height: 1;
+        color: var(--dark_grey);
+    }
+    & .wrapper input {
+        border: 1px solid color(var(--grey) alpha(20%)) !important;
+        font-size: 1rem;
+        background-color: color(var(--grey) alpha(20%));
+
+        max-width: 250px;
+        outline-style: none;
+    }
+
+    & div textarea {
+        display: block;
+        width: 100%;
+        border: 1px solid color(var(--grey) alpha(20%)) !important;
+        background-color: color(var(--grey) alpha(20%));
+        padding: 7px;
+        height: 52px;
+        border-radius: 3px;
+    }
+
+    & div {
+        margin-top: 15px !important;
+    }
+
+}
+
+.button-group-editing {
+    display: flex;
+    & div {
+        margin-right: 10px;
+    }
+    & button {
+        font-size: 1.2rem;
+        outline-style: none;
+    }
+}
+
+.button-group-editing button[type='button'] {
+    background-color: var(--grey) !important;
+    color: #ffffff !important;
+
+    & svg {
+        margin: 0 10px 0 5px;
+    }
+}
+
+
+.tab-routes-edit {
+    width: 100%;
+
+    display: flex;
+    justify-content: center;
+
+    background-color: color(var(--grey) alpha(20%));
+    border-bottom: 1px solid color(var(--grey) alpha(80%));
+
+    padding: 5px 0;
+}
+
+.tab-routes-edit__button {
+    & span {
+        padding: 5px 10px;
+        line-height: 17px;
+        font-size: 17px;
+    }
+}
+
+
+.selected-tab-link {
+    background-color: #ffffff;
+    border: 1px solid color(var(--grey) alpha(80%));
+    border-bottom: none;
+}
+
+
+.input-file {
+    display: none;
+}
+.edit-avatar-image:hover .input-file__label {
+    display: block;
+    cursor: pointer;
+}
+.input-file__label {
+    font-size: 1.2rem;
+    line-height: 1.2rem;
+    font-weight: 300;
+    color: #ffffff;
+    text-shadow: 0 0 1px var(--grey);
+
+    margin: 0;
+
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100px;
+    height: 50px;
+
+    text-align: center;
+    background-color: rgba(0, 0, 0, .5);
+    
+    display: none;
+}

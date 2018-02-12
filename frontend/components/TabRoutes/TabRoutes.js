@@ -1,25 +1,44 @@
 import React from 'react'
-import {Link, withRouter} from 'react-router-dom'
+import {withRouter, NavLink} from 'react-router-dom'
 
 //styles
-import './TabRoutes.css'
+import './TabRoutes.style.css'
 
-function TabRoutes({children, routers, match, _id}) {
+function TabRoutes({children, routers, match, _id, Theme, exact, active}) {
     return (
         <div>
-            <span>
-                TabRoutes
-            </span>
-            {routers.map((route, idx) => (
-                <Link key={idx} to={`${match.url}${_id}${route.path}`}>{route.title}</Link>
-            ))}
-            {children}
+            <div className={Theme.container}>
+                {routers.map((route, idx) => (
+                    <div className={Theme.button}>
+
+                        <NavLink
+                            exact={exact} 
+                            key={idx} 
+                            to={`${match.url}${_id}${route.path}`} 
+                            activeClassName={active}
+                        >
+                            <span>{route.title}</span>
+                            {route.icon && <i className={route.icon}/>}
+                        </NavLink>
+
+                    </div>
+                ))}
+            </div>
+            <div>
+              {children}
+            </div>
         </div>
     )
 }
 
 TabRoutes.defaultProps = {
-    _id: ''
+    _id: '',
+    Theme: {
+        container: '',
+        button: ''
+    },
+    exact: false,
+    active: ""
 }
 
 export default TabRoutes

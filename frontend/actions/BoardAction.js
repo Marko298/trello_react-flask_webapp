@@ -17,6 +17,12 @@ import {
     TEAM_UPLOAD_IMAGE_SUCCESS,
     TEAM_UPLOAD_IMAGE_FAILED,
     TEAM_UPLOAD_IMAGE_PROGRESS,
+    TEAM_UPDATE_REQUEST,
+    TEAM_UPDATE_REQUEST_SUCCESS,
+    TEAM_UPDATE_REQUEST_FAILED,
+    BOARD_UPDATE_REQUEST,
+    BOARD_UPDATE_SUCCESS,
+    BOARD_UPDATE_FAILED,
 
 } from '../constants/BoardConstant'
 
@@ -25,6 +31,7 @@ import Utils from '../utils'
 import UserActions from './UserAction';
 import ListActions from './ListAction'
 import CardActions from './CardAction'
+import ToolsActions from './ToolsAction'
 
 export default class BoardActions {
     static boardRequest() {
@@ -205,11 +212,11 @@ export default class BoardActions {
 
                 let teamsWithoutBoardsWithoutStatus = teams.filter(team => team.boards.length === 0)
 
-                teamsWithoutBoardsWithoutStatus.map( ({_id, title, photo, boards}) => {
-                    boardsWithAllTeamField.concat( [{ _id, title, photo, boards: boards || [] }] )
-                })
+                let teamsWithoutBoardsWithoutStatusMaps = teamsWithoutBoardsWithoutStatus.map( (team) => {
+                    return boardsWithAllTeamField.concat( [{...team, title: team.teamName}] )
+                })[0]
 
-                dispatch(BoardActions.boardRequestGetSuccess(boardsWithAllTeamField))
+                dispatch(BoardActions.boardRequestGetSuccess(teamsWithoutBoardsWithoutStatusMaps))
 
                 return "I'm done"
 
@@ -270,10 +277,8 @@ export default class BoardActions {
     }
 
     static upload_image(teamId, image) {
-
         return (dispatch) => {
-
-            dispatch( BoardActions.upload_image_request() )
+            dispatch( ToolsActions.is_file_start_upload()  )
 
             axios({
                 url: api.set_image_for_team(teamId),
@@ -283,14 +288,91 @@ export default class BoardActions {
                 data: image,
                 onUploadProgress: function(progressEvent) {
                     let percentCompleted = Math.round( (progressEvent.loaded * 100) / progressEvent.total );
-
-                    dispatch(BoardActions.upload_image_progress(percentCompleted))
+                    dispatch(ToolsActions.file_upload_progress(percentCompleted))
                     
                 }
             }).then(({data}) => {
+                console.log("SUCCESS")
+                dispatch(ToolsActions.is_file_uploaded())
                 dispatch(BoardActions.upload_image_success(data, teamId))
             }).catch(error => {
+                console.log("ERROR", {error})
+                dispatch(ToolsActions.is_file_uploaded())
                 dispatch(BoardActions.upload_image_failed())
+            })
+        }
+    }
+
+    static team_update_request() {
+        return {type: TEAM_UPDATE_REQUEST}
+    }
+    static team_update_success(response) {
+        return {
+            type: TEAM_UPDATE_REQUEST_SUCCESS,
+            payload: response
+        }
+    }
+    static team_update_failed() {
+        return {type: TEAM_UPDATE_REQUEST_FAILED}
+    }
+
+
+    static update_team(teamId, updates) {
+        return dispatch => {
+
+            dispatch(
+                BoardActions.team_update_request()
+            )
+
+            axios({
+                url: api.update_team(teamId),
+                headers: api.headers(),
+                method: "POST",
+                withCredentials: true,
+                data: JSON.stringify(updates)
+            }).then(({data}) => {
+
+                dispatch(
+                    BoardActions.team_update_success(data)
+                )
+            }).catch(error => {
+                dispatch(
+                    BoardActions.team_update_failed()
+                )
+            })
+        }
+    }
+
+    static board_update_request() {
+        return {type: BOARD_UPDATE_REQUEST}
+    }
+    static board_update_success(response) {
+        return {
+            type: BOARD_UPDATE_SUCCESS,
+            payload: response
+        }
+    }
+    static board_update_failed() {
+        return {type: BOARD_UPDATE_FAILED}
+    }
+
+
+    static update_board(boardId, updates) {
+        return (dispatch) => {
+
+            dispatch( BoardActions.board_update_request())
+            
+            axios({
+                url: api.update_board_data(boardId),
+                method: 'POST',
+                withCredentials: true,
+                headers: api.headers(),
+                data: JSON.stringify(updates)
+            }).then(({data}) => {
+                dispatch( BoardActions.board_update_success(data) )
+            }).catch(error => {
+
+                dispatch( BoardActions.board_update_failed() )
             })
         }
     }

@@ -12,10 +12,14 @@ import Title from '../../components/Title/Title'
 import AddBoardForm from '../AddBoardForm/AddBoardForm'
 import AddTeamForm from '../AddTeamForm/AddTeamForm'
 
+import './Popup.style.css'
+
 
 const GoBack = (props) => {
     return (
-        <button onClick={props.onClick}>back</button>
+        <Button onClick={props.onClick}>
+            <i className="fas fa-arrow-left" />
+        </Button>
     )
 }
 
@@ -24,58 +28,57 @@ class Popup extends Component {
         allowStepBack: false
     }
 
+   
+
     static Menu = class extends Component {
+
+        static defaultProps = {
+            withHeader: true
+        }
+
+        componentWillReceiveProps(next) {
+            if( next.withOverlay && next.toShow ) {
+                let {props} = this
+                console.log("componentWillReceiveProps", {props}, {next})
+            }
+            if ( next.withOverlay && next.toShow ) {
+                if( !this.props.toShow && !next.withOverlayReducer ) {
+                    this.props.dispatch ( PopupActions.toggle_overlay() )
+                }
+            }
+        }
+
+     
         render() {
             return this.props.toShow && (
                 <Fragment>
-                    <Wrapper>
-                        <Row>
-                            {this.props.stepBack && this.props.stepBackWithAction && <GoBack onClick={(e) => {
-                                this.props.dispatch(this.props.stepBackWithAction())
-                            }}/>}
-                            <Title text={this.props.title} />
-                            <Button onClick={this.props.close}>
-                                X (close)
-                            </Button>
-                        </Row>
-                    </Wrapper>
-                    <section>
-                        <this.props.component close={this.props.close}/>
-                    </section>
+                    <div className={this.props.withHeader ? 'pop-up-bg' : ''}>
+                        {this.props.withHeader &&
+                        <Wrapper>
+                            <div className="pop-up__header">
+                                {this.props.stepBack && this.props.stepBackWithAction && <GoBack onClick={(e) => {
+                                    this.props.dispatch(this.props.stepBackWithAction())
+                                }}/>}
+
+                                <div className='pop-up__inner'>
+                                    <Title text={this.props.title} medium tiny className='pop-up__title'/>
+                                    <Button onClick={this.props.close} >
+                                        <i className="fas fa-times" />
+                                    </Button>
+                                </div>
+                            </div>
+                        </Wrapper>}
+                        <section>
+                            <this.props.component close={this.props.close}/>
+                        </section>
+                    </div>
                 </Fragment>
             )
         }
     }
-    // static Menu = (props) => {
-
-    //     const PopupMenuComponent = () => (
-    //         <Fragment>
-    //             <Wrapper>
-    //                 <Row>
-    //                     {props.stepBack && props.stepBackWithAction && <GoBack onClick={(e) => {
-    //                         props.dispatch(props.stepBackWithAction())
-    //                     }}/>}
-    //                     <Title text={props.title} />
-    //                     <Button onClick={props.close}>
-    //                         X (close)
-    //                     </Button>
-    //                 </Row>
-    //             </Wrapper>
-    //             <section>
-    //                 <props.component />
-    //             </section>
-    //         </Fragment>
-    //     )
-
-    //     return props.toShow && <PopupMenuComponent /> 
-    // }
    
-
-    componentDidMount() {
-        console.log("this.props", this.props)
-    }
-
     componentWillReceiveProps(nextProps) {
+        
         if(this.props.menu.isCreativeMenuShow 
             && (nextProps.menu.isCreateTeamFormShow || nextProps.menu.isCreateBoardFormShow)
             && !this.state.allowStepBack) {
@@ -95,12 +98,15 @@ class Popup extends Component {
         this.props.isPopupShow && this.toggle()
     }
 
+  
+
 
     componentDidUpdate(prevProps, prevState) {
         if(!this.props.isPopupShow && this.state.allowStepBack) {
-            this.setState({
+            this.setState(state => ({
+                ...state,
                 allowStepBack: false
-            })
+            }))
         }
 
         // if( prevProps.menu.isCreativeMenuShow && this.props.allowStepBack) {
@@ -122,18 +128,21 @@ class Popup extends Component {
     }
 
     toggle = () => {
-      const {isPopupShow, dispatch} = this.props
-      
+      const {isPopupShow, dispatch, reducerOverlay} = this.props
       isPopupShow && dispatch(PopupActions.toggle_editMode())
+      reducerOverlay && dispatch(PopupActions.toggle_overlay())
+    
     }
 
+   
     renderChildren = () => {
 
-        const {children} = this.props
+        const {children, reducerOverlay} = this.props
 
         return Children.map(children, child => {
             let updatedChild = cloneElement(child, {
                 close: this.toggle,
+                withOverlayReducer: reducerOverlay,
                 stepBack: this.state.allowStepBack,
                 ...this.props} )
             return updatedChild
@@ -146,19 +155,20 @@ class Popup extends Component {
         const styles = {width, top, left, display: isPopupShow ? 'block' : 'none'}
 
         return (
-            <div className='test-box' style={{...styles}} >
+            <div className='pop-up' style={{...styles}}>
                 {this.renderChildren()}
             </div>
         )
     }
 }
 
-const mapStateToProps = ({mode, mode: {menu}, organizations: {teams}}) => ({
+const mapStateToProps = ({mode, mode: {menu, withOverlayScene}, organizations: {teams}}) => ({
     top: mode.top,
     left: mode.left,
     width: mode.width,
     isPopupShow: mode.forms.isPopupShow,
-    menu: {...menu}
+    menu: {...menu},
+    reducerOverlay: withOverlayScene
 })
 
 export default withRouter(connect(mapStateToProps, null)(Popup))

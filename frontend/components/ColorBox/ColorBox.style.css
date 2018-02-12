@@ -9,6 +9,17 @@
     border: 5px solid #000;
 }
 
+.label-box.small {
+    width: 30px;
+    height: 30px;
+
+    border-radius: 3px;
+}
+
+.label-box.small:hover {
+    cursor: pointer
+} 
+
 /* .label-box.large {
     p
 } */

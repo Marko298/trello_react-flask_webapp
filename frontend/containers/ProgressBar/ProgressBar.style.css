@@ -1,0 +1,28 @@
+.ProgressBar_container {
+    position: absolute;
+    top: 75px;
+    right: 40px;
+    padding: 5px;
+    width: 120px;
+    height: 50;
+    
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    
+    background-color: #4caf50;
+    border-radius: 3px;
+    box-shadow: 0 0 20px rgba(0,0,0,.3);
+}
+
+.ProgressBar_text,
+.ProgressBar_procent{
+    display: block;
+    line-height: 1.3;
+    font-size: 1rem;
+    color: #ffffff;
+}
+/* .ProgressBar_procent{
+    display: block;
+
+} */

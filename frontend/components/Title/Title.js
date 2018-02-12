@@ -6,11 +6,12 @@ import './Title.css'
 import {Color} from '../../__asssets/color'
 
 
-const styles = function({bold, tiny, color, lower, medium, large}) {
+const styles = function({bold, tiny, color, lower, medium, underline, large, biggest}) {
     return {
+        textDecoration: underline && 'underline' || 'none',
         fontWeight : bold && '700'|| tiny && '300' || '500',
         color: color ? color : Color.niceBlack,
-        fontSize: lower && '14px' || medium && '16px' || large && '24px' || '10px'
+        fontSize: lower && '14px' || medium && '16px' || large && '24px' || biggest && '72px' || '10px'
     }
 }
 
@@ -38,7 +39,8 @@ Title.defaultProps = {
     lower: false,
     medium: false,
     large: false,
-    color: ''
+    color: '',
+    underline: false
 }
 
 Title.propTypes = {
