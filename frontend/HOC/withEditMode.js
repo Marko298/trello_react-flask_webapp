@@ -21,8 +21,13 @@ const withEditMode = (action, addonsSettings={}) => (Component) => {
             bodyScrollWidth: document.body.scrollWidth
         }
 
+
         getCordinates = () => {
             let settings = {}
+
+            if(this.props.selected) {
+                this.props.set_selected(this.props.selected)
+            }
 
             if(addonsSettings.usePreviousePosition) {
                 if(this.props.justifyContanteCenter) {
@@ -33,7 +38,6 @@ const withEditMode = (action, addonsSettings={}) => (Component) => {
                         
                     }
 
-                    settings.selected = this.props.selected
                     this.props.get_cordinates(settings)
                     return
 
@@ -67,10 +71,7 @@ const withEditMode = (action, addonsSettings={}) => (Component) => {
                 }
             }
 
-            settings.selected = this.props.selected
             this.props.get_cordinates(settings)
-
-            
         }
         
         getElement = (element) => {
@@ -100,6 +101,7 @@ const withEditMode = (action, addonsSettings={}) => (Component) => {
                 get_cordinates
             } = this.props
 
+
             let isBodyWidthDifferentFromWindow = document.body.scrollHeight !== window.innerHeight
             let isBodyHeightDifferentFromWindow = document.body.scrollWidth !== window.innerWidth
 
@@ -109,7 +111,7 @@ const withEditMode = (action, addonsSettings={}) => (Component) => {
             if(this.props.isPopupShow) {
                 if( isAppBodyHeightNotEqualToBody || isAppBodyWidthNotEqualToBody ) {
                     if( isBodyWidthDifferentFromWindow || isBodyHeightDifferentFromWindow ) {
-    
+                        
                         let getWidthDifferent = document.body.scrollWidth - window.innerWidth
                         let getHeightDifferent = document.body.scrollHeight - window.innerHeight
     
@@ -132,12 +134,10 @@ const withEditMode = (action, addonsSettings={}) => (Component) => {
                             let updatesCordinates = {
                                 top: this._calculateCodsWithMetrics(_top),
                                 left: this._calculateCodsWithMetrics(_left),
-                                width,
-                                selected
+                                width
                             }
-    
-                            get_cordinates(updatesCordinates)
-    
+                         
+                            this.props.get_cordinates(updatesCordinates)
                         })
                     }
                 }
@@ -172,11 +172,14 @@ const withEditMode = (action, addonsSettings={}) => (Component) => {
         menuToShow() {
             dispatch(action().menu())
         },
-        get_cordinates: (cods) => {
-            dispatch(PopupActions.get_cordinates(cods))
+        get_cordinates(cords) {
+            dispatch(PopupActions.get_cordinates(cords))
         },
         clear_cordinates() {
             dispatch(PopupActions.clear_cordinates())
+        },
+        set_selected(selectd) {
+            dispatch ( PopupActions.set_selected(selectd) )
         }
     })
 

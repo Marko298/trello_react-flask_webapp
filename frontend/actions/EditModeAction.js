@@ -15,6 +15,7 @@ import {
     TOGGLE_IS_ALLOW_TO_REMOVE,
     TOGGLE_OVERLAY,
     TOGGLE_UPDATE_BOARDNAME_MENU,
+    SET_SELECTED_ITEM
    
 } from '../constants/EditModeConstant'
 
@@ -27,6 +28,10 @@ export default class PopupActions {
     }
     static get_cordinates(settings) {
         return {type: SETUP_CORDINATES, settings}
+    }
+
+    static set_selected(selected) {
+        return {type: SET_SELECTED_ITEM, selected}
     }
 
     static toggle_create_board_form() {

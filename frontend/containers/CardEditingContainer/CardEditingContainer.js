@@ -71,6 +71,8 @@ class CardEditingContainer extends Component {
         const {list, list: {cards}, userPhoto, userName} = this.props
         const {comment} = this.state
 
+        console.log({cards})
+
         const Theme = {
             Description: {
                 first_button: 'add-description__first-btn',

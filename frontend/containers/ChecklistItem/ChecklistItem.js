@@ -12,28 +12,32 @@ import './ChecklistItem.style.css'
 {/* <EditTitleForm title={title} save_changes={handleClickSaveChanges}/> */}
 class ChecklistItem extends Component {
     state = {
-        isCompleted: false
+        isCompleted: this.props.isCompleted,
+        isItemLoading: false
     }
 
-    componentDidMount() {
-        this.setState(state => ({isCompleted: this.props.isCompleted}))
-    }
 
     handleChange = (name) => (e) => {
 
         this.setState(state => {
             return {
                 ...state,
-                isCompleted: !state.isCompleted
+                isCompleted: !state.isCompleted,
+                isItemLoading: true
             }
         }, function() {
-            this.props.toggle_completed(this.state.isCompleted)
+            this.props.toggle_completed(this.state.isCompleted).then(data => {
+                this.setState( (state) => ({...state, isItemLoading: false }) )
+            })
         })
 
     }
     handleClickUpdateTitle = (newTitle) => {
         if(this.props.title !== newTitle && newTitle.length > 0) {
-            this.props.update_title(newTitle)
+            this.setState( (state) => ({...state, isItemLoading: true }) )
+            this.props.update_title(newTitle).then(data => {
+                this.setState( (state) => ({...state, isItemLoading: false }) )
+            })
         }
     }
 
@@ -41,17 +45,32 @@ class ChecklistItem extends Component {
 
         const {title} = this.props
         const {handleChange, handleClickUpdateTitle} = this
-        const {isCompleted} = this.state
+        const {isCompleted, isItemLoading} = this.state
+
+        const Theme = {
+            firstButton: 'add-description__first-btn',
+            textarea: 'edit-checklist__textarea',
+            buttonGroup: 'edit-checklist__btn-group',
+        }
 
         return (
             <div className='checklist-item'>
                 <Input
+                    disabled={isItemLoading}
+                    readOnly={isItemLoading}
                     type="checkbox"
                     checked={isCompleted}
                     name="isCompleted"
                     handleChange={handleChange}
                 />
-                <EditTitleForm title={title} save_changes={handleClickUpdateTitle}/>
+                <div className='checklist-item__title'>
+                    <EditTitleForm
+                        btnText="Change title in checklist"
+                        Theme={Theme} 
+                        isLoading={isItemLoading}
+                        title={title} save_changes={handleClickUpdateTitle}
+                    />
+                </div>
             </div>
         )
     }
@@ -59,14 +78,12 @@ class ChecklistItem extends Component {
 
 const mapDispatchToProps = (dispatch, {_id, checkListId}) => ({
     toggle_completed(isCompleted) {
-        dispatch(
+        return dispatch(
             CardActions.update_item(checkListId, _id, {isCompleted})
         )
     },
     update_title(title) {
-        dispatch(
-            CardActions.update_item(checkListId, _id, {title})
-        )
+        return dispatch( CardActions.update_item(checkListId, _id, {title}) )
     }
 })
 

@@ -347,17 +347,16 @@ export default class CardActions {
 
             const preparedRequest = {...upToDate}
             
-            axios({
+            return axios({
                 url: api.update_item(checklistId, itemId),
                 headers: api.headers(),
                 method: 'POST',
                 withCredentials: true,
                 data: JSON.stringify(preparedRequest)
             }).then(({data}) => {
-                console.log("Ther item is changed", {data})
-                dispatch( 
-                    CardActions.update_item_success(data)
-                )
+                dispatch( CardActions.update_item_success(data) )
+
+                return Promise.resolve(data)
 
             }).catch(err => {
                 console.log("The error was occured, Cannot change item")

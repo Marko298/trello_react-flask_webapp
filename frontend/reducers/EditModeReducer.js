@@ -15,10 +15,11 @@ import {
     TOGGLE_IS_ALLOW_TO_REMOVE,
     TOGGLE_OVERLAY,
     TOGGLE_UPDATE_BOARDNAME_MENU,
-
+    SET_SELECTED_ITEM
 
 
 } from '../constants/EditModeConstant'
+import { SSL_OP_NETSCAPE_CHALLENGE_BUG } from 'constants';
 
 const initialEditModeState = {
     forms: {
@@ -49,7 +50,7 @@ const initialEditModeState = {
 
 export default function EditModeReducer(
     state = initialEditModeState, 
-    {type, settings, marginLeft, switchBetweenComponents}
+    {type, settings, marginLeft, switchBetweenComponents, ...action}
 ) {
     switch (type) {
         case TOGGLE_EDIT_MODE_BOARDS: {
@@ -75,17 +76,23 @@ export default function EditModeReducer(
 
             
         case SETUP_CORDINATES: {
-            let {isPopupShow} = state.forms
-            let selected = {}
-    
-            if(isPopupShow) {
-                selected = {...settings.selected}
-            } 
-    
             return {
                 ...state,
-                selected: selected,
                 ...settings
+            }
+        }
+
+        case SET_SELECTED_ITEM: {
+            let selected = {}
+            let {isPopupShow} = state.forms
+
+            if(isPopupShow) {
+                selected = {...action.selected}
+            } 
+
+            return {
+                ...state,
+                selected
             }
         }
 

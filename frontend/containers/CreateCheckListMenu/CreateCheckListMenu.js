@@ -66,6 +66,7 @@ const mapStateToProps = ({
 
 const mapDispatchToProps = (dispatch, ownProps) => ({
     create_checklist(cardId, checklist) {
+        console.log("create_checklist", cardId, {ownProps})
         dispatch( CardActions.create_checklist(cardId, checklist) )
     }
 })

@@ -33,10 +33,10 @@ class CheckList extends Component {
         isCheckListUpdated: false
     }   
     
-    handleAddItem = (e) => {
-        if(this.state.length !== 0) {
+    handleAddItem = (title) => {
+        if(title.length !== 0) {
             this.setState( (state) => ({...state, isCheckListUpdated: true }) )
-            this.props.add_item(this.state.title).then( (resp) => {
+            this.props.add_item(title).then( (resp) => {
                 this.setState( (state) => ({ ...state, isCheckListUpdated: false}) )
             }) 
         }
@@ -102,6 +102,7 @@ class CheckList extends Component {
                         }}
                     >
                         <EditTitleForm
+                            btnText="Change checklist title"
                             isLoading={isCheckListUpdated}
                             Theme={Theme} 
                             title={title} 
@@ -131,9 +132,10 @@ class CheckList extends Component {
 
                 <div style={{marginLeft: '40px'}}>
                     <EditTitleForm
+                        
                         isLoading={isCheckListUpdated}
                         Theme={Theme.EditTitleForm} 
-                        presetedTextBtn="add item button..." 
+                        presetedTextBtn="add item ..." 
                         title={stateTitle} 
                         save_changes={handleAddItem}
                     />

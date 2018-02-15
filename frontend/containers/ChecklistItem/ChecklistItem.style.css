@@ -1,3 +1,14 @@
 .checklist-item {
     display: flex;
+    align-items: center;
+}
+.checklist-item__title {
+    width: 100%;
+    padding-left: 10px;
+}
+.checklist-item .wrapper > input[type='checkbox'] {
+    width: 25px;
+    height: 25px;
+    cursor: pointer;
+    box-shadow: 0 0 10px rgba(51,51,51, 0.1);
 }

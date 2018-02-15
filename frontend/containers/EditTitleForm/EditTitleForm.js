@@ -26,15 +26,13 @@ class EditTitleForm extends Component {
 
     handleChange = ({ target: {name, value} }) => {
         this.setState(state => ({
+            ...state,
             [name] : value
         }))
     }
 
     handleClick = (e) => {
-        const {save_changes} = this.props
-
-        save_changes(this.state.title)
-
+        this.props.save_changes(this.state.title)
     }
 
     render() {
@@ -53,7 +51,7 @@ class EditTitleForm extends Component {
                 name: 'title',
                 handleChange: this.handleChange,
                 field: this.state.title,
-                btnText: "Add",
+                btnText: this.props.btnText || 'Add',
                 btnTextSecond: 'X',
                 handleClick: this.handleClick,
                 addonsActionWhileToogling: this.props.handleClick,
@@ -64,8 +62,6 @@ class EditTitleForm extends Component {
                 }
             }
         }
-
-        console.log("EdiutingTitleForm", this.props)
 
         return Children.only(children(childProps))
     }
