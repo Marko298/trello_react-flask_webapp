@@ -1,12 +1,15 @@
-from server.common.database import Database
+from server.common.database import Database, FS
 
 from server.models.checklist.checklist import Checklist
 import server.models.cards.errors as err
 
+from bson import ObjectId
+
 import uuid
 
 class Card(object):
-    def __init__(self, title, forList, boardId, _id=None, labels=None, comments=None, checklists=None, description=None):
+    collection = 'cards'
+    def __init__(self, title, forList, boardId, attachments=None, _id=None, labels=None, comments=None, checklists=None, description=None):
         self.title = title
         self.forList = forList
         self.boardId = boardId
@@ -15,9 +18,26 @@ class Card(object):
         self._id = uuid.uuid4().hex if _id is None else _id
         self.comments = comments if comments is not None else list()
         self.checklists = checklists if checklists is not None else list()
+        self.attachments = attachments if attachments is not None else {'files' : [], 'assigned': ''}
     
     def __repr__(self):
         return '<Card with title — {}>'.format(self.title)
+
+    def add_attachment(self, file, content_type, file_name):
+        filedId = FS.put(file, content_type, file_name)
+
+        stringId = str(filedId)
+
+        if len(self.attachments['files']) == 0:
+            Database.update_one(Card.collection, {'_id': self._id}, {'attachments.assigned': stringId})
+        Database.update_push(Card.collection, { '_id': self._id }, {
+            'attachments.files' : stringId
+        })
+
+        return FS.get(ObjectId(stringId))
+
+        return 'yeah'
+
 
     def add_checklist(self, newChecklist):
         checklistId = Checklist(**newChecklist).save()
@@ -79,7 +99,8 @@ class Card(object):
             "boardId" : '',
             "labels" : '',
             "comments" : "",
-            "checklists" : ""
+            "checklists" : "",
+            "attachments" : ""
         }
 
     def json(self):
@@ -91,7 +112,8 @@ class Card(object):
             "boardId" : self.boardId,
             "labels" : self.labels,
             "comments" : self.comments,
-            "checklists" : self.checklists
+            "checklists" : self.checklists,
+            "attachments" : self.attachments
         }
 
 

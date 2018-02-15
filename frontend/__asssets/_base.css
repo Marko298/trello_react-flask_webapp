@@ -44,7 +44,7 @@ html, body {
 }
 
 #portal {
-    z-index: 10;
+    z-index: 201;
     width: 100%;
     position: absolute;
     overflow-y: auto;

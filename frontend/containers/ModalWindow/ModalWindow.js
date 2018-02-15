@@ -55,20 +55,6 @@ class ModalWindow extends Component {
             </section>,
             this.el
         )
-        // return (
-        //     <section className='overlay-modal' onClick={this.handleClick}>
-        //         <div className='modal-wrapper'>
-        //             <div className='model-header'>
-        //                 <Button onClick={this.back}>
-        //                     <i className="fas fa-times" />
-        //                 </Button>
-        //             </div>
-        //             <div>
-        //                 {Children.only(children(this.props))}
-        //             </div>
-        //         </div>
-        //     </section>
-        // )
     }
 }
 

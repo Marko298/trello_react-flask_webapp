@@ -66,12 +66,23 @@ class CardEditingContainer extends Component {
         }
     }
 
+    _handleFileOnChange = (e) => {
+        let image = e.target.files[0]
+        let data = new FormData(this.form[0])
+        data.append('attachment', image)
+
+        // this.setState(state => ({image}), function() {
+        //     console.log("WE ARE TRY TO UPLOAD")
+        //     this.props.upload_photo(data)
+
+        // })
+        this.props.upload_attachment_to_card(data)
+    }
+
     render() {
 
         const {list, list: {cards}, userPhoto, userName} = this.props
         const {comment} = this.state
-
-        console.log({cards})
 
         const Theme = {
             Description: {
@@ -125,8 +136,6 @@ class CardEditingContainer extends Component {
                             disabled={this.state.isCommentCreated}
                         />
 
-                      
-
                        
                         <div>
                             <CommentList>
@@ -134,6 +143,7 @@ class CardEditingContainer extends Component {
                             </CommentList>
                             Activity component
                         </div>
+
                     </div>
 
                     <div className='editing-right'>
@@ -144,8 +154,14 @@ class CardEditingContainer extends Component {
                         <ToggleCheckListMenu selected={cards} >
                             Add checklist
                         </ToggleCheckListMenu>
-                       
-                        {/* <Input type='file' name='attachment' handleChange={this.handle_Test}/> */}
+
+                        <form method='post' ref={node => this.form = node}>
+                            <input 
+                                type='file' 
+                                name='attachment' 
+                                onChange={this._handleFileOnChange} 
+                            />
+                        </form>
                     </div>
 
                 </section>
@@ -192,6 +208,12 @@ const mapDispatchToProps = (dispatch, ownProps) => ({
 
         dispatch(
             CardActions.update_card(cardId, updates)
+        )
+    },
+    upload_attachment_to_card(file) {
+        const {cardId} = ownProps.match.params
+        dispatch(
+            CardActions.add_attachment(cardId, file)
         )
     }
 })

@@ -9,7 +9,7 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    
+    z-index: 250;
     background-color: #4caf50;
     border-radius: 3px;
     box-shadow: 0 0 20px rgba(0,0,0,.3);

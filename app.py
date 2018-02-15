@@ -572,6 +572,22 @@ def get_all_cards(boardId):
     return jsonify(rez)
     # return jsonify(cardsCursor)
 
+@app.route('/card/add_attachment/<string:cardId>', methods=['POST'])
+def add_attachment_to_card(cardId):
+    image_file = request.files['attachment']
+
+    contentType = image_file.content_type
+    fileName = image_file.filename
+    print("IM HERE")
+
+    classCard, _ = Card.get_card_by_id(cardId)
+    fsCLass = classCard.add_attachment(image_file, contentType, fileName)
+
+    img_str = Utils.prepareImage(fsCLass)
+
+    return jsonify(img_str)
+
+    return "is Okay"
 
 @app.route('/card/card_schema', methods=['GET'])
 def card_schema():

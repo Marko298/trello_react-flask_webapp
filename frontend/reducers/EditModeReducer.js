@@ -87,7 +87,7 @@ export default function EditModeReducer(
             let {isPopupShow} = state.forms
 
             if(isPopupShow) {
-                selected = {...action.selected}
+                selected = action.selected
             } 
 
             return {

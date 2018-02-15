@@ -123,6 +123,10 @@ class API {
         return `${this.url}/card/update_card/${cardId}`
     }
 
+    add_attachemnt(cardId) {
+        return `${this.url}/card/add_attachment/${cardId}`
+    }
+
     /**
     |--------------------------------------------------
     | COMMENT ENDPOINTS

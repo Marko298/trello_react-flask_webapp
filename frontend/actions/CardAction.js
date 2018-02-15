@@ -28,6 +28,8 @@ import axios from 'axios'
 import api from '../settings'
 import uuidv1 from 'uuid/v1'
 
+import ToolsActions from './ToolsAction'
+
 export default class CardActions {
     static get_schema(response) {
         return {
@@ -403,6 +405,36 @@ export default class CardActions {
 
             }).catch(error => {
                 console.log("CANNOT UPDATE CURRENT CHECKLIST ")
+            })
+        }
+    }
+
+    static add_attachment(cardId, image) {
+      
+        return (dispatch) => {
+
+            dispatch(ToolsActions.is_file_start_upload())
+
+            axios({
+                url: api.add_attachemnt(cardId),
+                method: 'POST',
+                headers: api.headers(),
+                withCredentials: true,
+                data: image,
+                onUploadProgress: function({loaded, total}) {
+                    let percentCompleted = Math.round( (parseInt(loaded, 10) * 100) / parseInt(total, 10) );
+                    console.log({percentCompleted})
+                    dispatch(
+                        ToolsActions.file_upload_progress(percentCompleted)
+                    )
+
+                }
+            }).then(({data}) => {
+                dispatch( ToolsActions.is_file_uploaded() )
+                console.log("SUCCESS", {data})
+            }).catch(error => {
+                dispatch( ToolsActions.is_file_uploaded() )
+                console.log("CANNOT UPLOAD FILE",{error})
             })
         }
     }
