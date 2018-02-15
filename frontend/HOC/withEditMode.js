@@ -12,7 +12,8 @@ const withEditMode = (action, addonsSettings={}) => (Component) => {
     class Wrapper extends React.Component {
         static defaultProps = {
             selected: {},
-            justifyContanteCenter: false
+            justifyContanteCenter: false,
+            modalWindowIsOpen: false
         }
 
         state = {
@@ -40,6 +41,8 @@ const withEditMode = (action, addonsSettings={}) => (Component) => {
                 return null
             }
             const {width, top, left} = this.node.getBoundingClientRect()
+
+            console.log("this.node.getBoundingClientRect()", this.node.getBoundingClientRect())
             const {customLeft, customTop, customWidth, justifyContanteCenter} = this.props
 
 
@@ -64,7 +67,6 @@ const withEditMode = (action, addonsSettings={}) => (Component) => {
                 }
             }
 
-
             settings.selected = this.props.selected
             this.props.get_cordinates(settings)
 
@@ -78,9 +80,10 @@ const withEditMode = (action, addonsSettings={}) => (Component) => {
 
         _convertToString = (data) => typeof data === 'string' ? data : data + ''
 
-        _getNumber = (number, inded=0) => parseInt(number.slice(0, inded), 10)
+        _getNumber = (number, inded=-2) => parseInt(number.slice(0, inded), 10)
 
         _calculateCodsWithMetrics = (cords, metrix='px') => `${cords}${metrix}`
+
 
         componentDidUpdate(prevProps, prevState) {
 
@@ -103,33 +106,40 @@ const withEditMode = (action, addonsSettings={}) => (Component) => {
             let isAppBodyHeightNotEqualToBody = currentBodyHeight !== document.body.scrollHeight
             let isAppBodyWidthNotEqualToBody = currentBodyWidth !== document.body.scrollWidth
 
-            if( isAppBodyHeightNotEqualToBody || isAppBodyWidthNotEqualToBody ) {
-                if( isBodyWidthDifferentFromWindow || isBodyHeightDifferentFromWindow ) {
-
-                    let getWidthDifferent = document.body.scrollWidth - window.innerWidth
-                    let getHeightDifferent = document.body.scrollHeight - window.innerHeight
-
-                    let top = this._convertToString(propsTop)
-                    let left = this._convertToString(propsLeft)
-
-                    this.setState(state => {
-                        return {
-                            ...state,
-                            bodyScrollHeight: document.body.scrollHeight,
-                            bodyScrollWidth: document.body.scrollWidth
-                        }
-                    }, function() {
-
-                        let updatesCordinates = {
-                            top: this._calculateCodsWithMetrics(this._getNumber(top, -2) - getHeightDifferent),
-                            left:this._calculateCodsWithMetrics(this._getNumber(left, -2) - getWidthDifferent),
-                            width,
-                            selected
-                        }
-
-                        get_cordinates(updatesCordinates)
-
-                    })
+            if(this.props.isPopupShow) {
+                if( isAppBodyHeightNotEqualToBody || isAppBodyWidthNotEqualToBody ) {
+                    if( isBodyWidthDifferentFromWindow || isBodyHeightDifferentFromWindow ) {
+    
+                        let getWidthDifferent = document.body.scrollWidth - window.innerWidth
+                        let getHeightDifferent = document.body.scrollHeight - window.innerHeight
+    
+                        let top = this._convertToString(propsTop)
+                        let left = this._convertToString(propsLeft)
+    
+                        this.setState(state => {
+                            return {
+                                ...state,
+                                bodyScrollHeight: document.body.scrollHeight,
+                                bodyScrollWidth: document.body.scrollWidth
+                            }
+                        }, function() {
+    
+                            let _top = (this._getNumber(top) - getHeightDifferent) > 0 
+                                ? this._getNumber(top) - getHeightDifferent
+                                : top
+                            let _left = this._getNumber(left) - getWidthDifferent
+    
+                            let updatesCordinates = {
+                                top: this._calculateCodsWithMetrics(_top),
+                                left: this._calculateCodsWithMetrics(_left),
+                                width,
+                                selected
+                            }
+    
+                            get_cordinates(updatesCordinates)
+    
+                        })
+                    }
                 }
             }
         }

@@ -37,11 +37,42 @@ class Label(object):
             'description' : ''
         }
 
+        puprple_label = {
+            '_id' : uuid.uuid4().hex,
+            'color': '#4a148c'
+        }
+        pink_label = {
+            '_id' : uuid.uuid4().hex,
+            'color': '#d81b60',
+            'description' : ''
+        }
+
+        dark_green_label = {
+            '_id' : uuid.uuid4().hex,
+            'color': '#00796b',
+            'description' : ''
+        }
+        orange_label = {
+            '_id' : uuid.uuid4().hex,
+            'color' : '#e65100',
+            'description' : ''
+        }
+
+        silver_label = {
+            '_id' : uuid.uuid4().hex,
+            'color' : '#607d8b',
+            'description' : ''
+        }
+
         labels = [
             red_label,
             yellow_label,
             green_label,
-            blue_label
+            blue_label,
+            pink_label,
+            dark_green_label,
+            orange_label,
+            silver_label,
         ]
         
 

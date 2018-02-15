@@ -5,6 +5,7 @@ import uuid
 
 
 class List(object):
+    collection = 'lists'
     def __init__(self, title, forBoard, cards=None, _id=None):
         self.title = title
         self.forBoard = forBoard
@@ -34,6 +35,12 @@ class List(object):
     def get_all_lists_releted_to_board(cls, boardId):
         cursorLists = Database.find('lists', {"forBoard": boardId})
         return [list for list in cursorLists], [cls(**list) for list in cursorLists]
+
+    def update(self, updates):
+        updatedClass = Database.update_one(List.collection, {'_id': self._id}, {**updates})
+        if updatedClass.raw_result['nModified']  == 1:
+                return {'_id' : self._id, 'forBoard': self.forBoard, **updates}
+        return "Nothink to update"
 
     def json(self):
         return {

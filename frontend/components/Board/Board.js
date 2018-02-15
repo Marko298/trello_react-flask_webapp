@@ -68,7 +68,10 @@ class Board extends Component {
             <li style={{...styleSettings}} className={container}>
                 <Link to={{
                     state: {
-                        boardId: _id
+                        boardId: _id,
+                        toolbar_style: {
+                            color: styleSettings.backgroundColor
+                        }
                     },
                     pathname: `${this.props.match.url}board/${_id}/${reletedTo.teamId}`
                 }} >

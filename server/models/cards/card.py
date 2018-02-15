@@ -47,7 +47,7 @@ class Card(object):
             raise err.CardIsUndefined("Thee card is undefined with this id")
 
     def update_card(self, update):
-        curdId = Database.update_one('cards', {'_id': self._id}, update)
+        curdId = Database.update_one('cards', {'_id': self._id}, {**update})
         return curdId
 
 

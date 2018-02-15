@@ -1,4 +1,4 @@
-import React, {Component, Children} from 'react'
+import React, {Component, Children, Fragment} from 'react'
 import {connect} from 'react-redux'
 import {func} from 'prop-types'
 //HOC
@@ -9,27 +9,38 @@ import Textarea from '../../components/Textarea/Textarea'
 //actions
 import CardActions from '../../actions/CardAction'
 
+import './AddCardForm.style.css'
+
 class AddCardForm extends Component {
-
     state = {title: ''}
-
     static propTypes = {
         children: func.isRequired
     }
 
-    handleChange = (name) => (e) => this.setState({ [name] : e.target.value })
+    handleChange = (name) => ({target: {value} }) => this.setState({ [name] : value })
 
     handleClick = (e) => {
-        this.props.create_card(this.state.title)
+        const {title} = this.state
+
+        if(title.length > 0) {
+            this.props.create_card(title)
+            this.setState({
+                title: ''
+            })
+
+        }
     }
 
     render() {
-        const {children} = this.props
+        const {children, isListOending} = this.props
         const {title} = this.state
 
         const propsForChildren = {
             forFirst: {
-                btnText: "Add card..."
+                btnText: "Add card...",
+                buttonSettings: {
+                    disabled: isListOending
+                }
             },
             forSecond: {
                 btnTextFirst: "Add",
@@ -37,7 +48,11 @@ class AddCardForm extends Component {
                 field: title,
                 name: 'title',
                 handleChange: this.handleChange,
-                handleClick: this.handleClick
+                handleClick: this.handleClick,
+                buttonSettings: {
+                    success: this.state.title.length > 0,
+                    disabled: !this.state.title.length
+                }
             }
         }
 
@@ -50,12 +65,15 @@ class AddCardForm extends Component {
 const FirstForm = ({
     toggle,
     btnText,
+    buttonSettings: {disabled},
     ...props
 }) => {
     return (
-        <Button onClick={(e) => toggle()}>
-            {btnText}
-        </Button>
+        <div className='add-card-form-first'>
+            <Button onClick={(e) => toggle()} disabled={disabled}>
+                {btnText}
+            </Button>
+        </div>
     )
 }
 
@@ -66,24 +84,29 @@ const SecondForm = ({
     field,
     handleChange,
     handleClick,
+    buttonSettings: {success, disabled},
     name,
     ...props
 }) => {
-    return ([ 
-        <Textarea field={field} name={name} onChange={handleChange(name)} key='textarea'/>,
-        <Button onClick={handleClick} key='firstBtn'>
-            {btnTextFirst} 
-        </Button>,
-        <Button onClick={(e) => toggle()} key='secondBtn'>
-            {btnTextSecond}
-        </Button>,
-    ])
+    return ( 
+        <div className='add-card-form-second'>
+            <Textarea field={field} name={name} onChange={handleChange(name)} />
+            <div className='add-card-form-second__btn-group'>
+                <Button onClick={handleClick} success={success} disabled={disabled}>
+                    {btnTextFirst} 
+                </Button>
+                <Button onClick={(e) => toggle()} >
+                    <i className="fas fa-times" />
+                </Button>
+            </div>
+        </div>
+    )
 }
 
 const mapDispatchToProps = (dispatch, {forList, boardId}) => ({
     create_card(title) {
         let data = {title, boardId}
-        dispatch(CardActions.create_card_request(forList, data))
+        return dispatch(CardActions.create_card_request(forList, data))
     }
 })
 

@@ -199,10 +199,22 @@ export default class BoardActions {
                 let boards = responseArray[0]
                 let teams = responseArray[1]
 
+                if(boards.length === 0 && teams.length === 0) {
+                    dispatch(BoardActions.boardRequestGetSuccess([]))
+                    return "Nothink to upload"
+                }
+
+                if(boards.length === 0 && teams.length > 0) {
+                    let teamsWithBoard = Utils.reduceTeamToBoard(teams)
+                    dispatch(BoardActions.boardRequestGetSuccess(teamsWithBoard))
+                    return
+                }
+
                 let withTeams = Utils.partialReverse(
                     Utils.setMissedFieldsToBoardsFromTeams,
                     teams
                 )
+
 
                 let boardsWithAllTeamField = Utils.pipe(
                     Utils.splitBoardsToCommand,
@@ -211,12 +223,18 @@ export default class BoardActions {
                 )(boards)
 
                 let teamsWithoutBoardsWithoutStatus = teams.filter(team => team.boards.length === 0)
+                if (teamsWithoutBoardsWithoutStatus.length > 0) {
 
-                let teamsWithoutBoardsWithoutStatusMaps = teamsWithoutBoardsWithoutStatus.map( (team) => {
-                    return boardsWithAllTeamField.concat( [{...team, title: team.teamName}] )
-                })[0]
+                    let teamsWithoutBoardsWithoutStatusMaps = teamsWithoutBoardsWithoutStatus.map( (team) => {
+                        return boardsWithAllTeamField.concat( [{...team, title: team.teamName}] )
+                    })[0]
 
-                dispatch(BoardActions.boardRequestGetSuccess(teamsWithoutBoardsWithoutStatusMaps))
+                   dispatch(BoardActions.boardRequestGetSuccess(teamsWithoutBoardsWithoutStatusMaps))
+                   return
+
+                }
+
+                dispatch(BoardActions.boardRequestGetSuccess(boardsWithAllTeamField))
 
                 return "I'm done"
 

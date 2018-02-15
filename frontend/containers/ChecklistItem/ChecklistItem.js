@@ -8,7 +8,7 @@ import Title from '../../components/Title/Title'
 import EditTitleForm from '../EditTitleForm/EditTitleForm'
 //actions
 import CardActions from '../../actions/CardAction';
-
+import './ChecklistItem.style.css'
 {/* <EditTitleForm title={title} save_changes={handleClickSaveChanges}/> */}
 class ChecklistItem extends Component {
     state = {
@@ -44,15 +44,15 @@ class ChecklistItem extends Component {
         const {isCompleted} = this.state
 
         return (
-            <h4>
-                <EditTitleForm title={title} save_changes={handleClickUpdateTitle}/>
+            <div className='checklist-item'>
                 <Input
                     type="checkbox"
                     checked={isCompleted}
                     name="isCompleted"
                     handleChange={handleChange}
                 />
-            </h4>
+                <EditTitleForm title={title} save_changes={handleClickUpdateTitle}/>
+            </div>
         )
     }
 }

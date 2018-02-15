@@ -176,10 +176,10 @@ def get_user_by_ids():
         CONTENT = request.get_json()
 
         ids = CONTENT.get('user_ids')
-
+        
         users = [User.get_user_by_id_cursor(id) for id in ids]
-
-        return jsonify(users)
+        userWithImage = [isHaveImage(user) for user in users]
+        return jsonify(userWithImage)
         
 
 @app.route("/users/logout") 
@@ -386,6 +386,17 @@ def create_list(boardId):
 
         return jsonify(cursorList)
 
+@app.route('/list/update/<string:listId>', methods=['POST'])
+def update_list(listId):
+    if request.is_json:
+        CONTENT = request.get_json()
+
+        _, classList = List.get_list_by_id(listId)
+        
+        data = loop_over(CONTENT)
+        result = classList.update(data)
+
+        return jsonify(result)
     
 @app.route('/list/get_releted_lists/<string:boardId>', methods=["GET"])
 @user_dec.login_required

@@ -17,40 +17,41 @@ class AddDescriptionForm extends Component {
     }
 
     static defaultProps = {
-        description: ''
+        description: '',
+        Theme: {}
     }
 
     state = {
-        description: this.props.description || ''
+        description: this.props.description || '',
+        isLoading: false
     }
 
-    // componentDidMount() {
-    //     if(this.props.description.length > 0) {
-    //         this.setState(prevState => {
-    //             return {
-    //                 ...prevState,
-    //                 description: this.props.description
-    //             }
-    //         })
-    //     }
-    // }
-
-    handleChange = (e) => {
-        let {name, value} = e.target
-        this.setState({[name] : value})
-    }
+   
+    handleChange = ({target: {value, name}}) => this.setState(state => ({...state, [name] : value}))
 
     handleClick = (e) => {
-        this.props.add_description(this.state.description)
+        
+        if(this.state.description !== this.props.description) {
+
+            this.setState( (state) => ({...state, isLoading: true}) )
+
+            this.props.add_description(this.state.description).then( (response) => {
+                this.setState( (state) => ({ ...state, isLoading: false}) )
+            })
+
+        }
     }
 
     render() {
-        const {children, description} = this.props
+        
+        const { children, description, Theme: {first_button, textarea, button_group} } = this.props
+        const {description: stateDescr, isLoading} = this.state
         let titleForDescription = description ? "Edit description" : "Add description"
 
         const childProps = {
             forFirst: {
                 btnText: titleForDescription,
+                className: first_button
             },
             forSecond: {
                 name: 'description',
@@ -58,7 +59,15 @@ class AddDescriptionForm extends Component {
                 field: this.state.description,
                 btnText: "Add",
                 btnTextSecond: 'X',
-                handleClick: this.handleClick
+                handleClick: this.handleClick,
+                classes: {
+                    textarea,
+                    button_group
+                },
+                buttonSettings: {
+                    success: stateDescr.length,
+                    disabled: isLoading
+                }
             }
         }
         return Children.only(children(childProps))
@@ -70,9 +79,10 @@ class AddDescriptionForm extends Component {
 const FirstComponent = ({
     toggle,
     btnText,
+    className
 }) => {
     return (
-        <Button onClick={(e) => toggle()}>
+        <Button onClick={(e) => toggle()} className={className}>
             {btnText}
         </Button>
     )
@@ -85,25 +95,33 @@ const SecondComponent = ({
     name,
     field,
     btnTextSecond,
-    handleClick
+    handleClick,
+    classes: {textarea, button_group},
+    buttonSettings: {success, disabled}
 }) => {
     return (
         <Fragment>
             <Textarea
+                className={textarea}
                 value={field} 
                 onChange={handleChange} 
                 name={name} 
             >
             {field}
             </Textarea>
-            <Button
-                onClick={handleClick}>
-                {btnText}
-            </Button>
-            <Button
-                onClick={(e) => toggle()}>
-                {btnTextSecond}
-            </Button>
+            <div className={button_group}>
+                <Button
+                    success={success}
+                    disabled={disabled}
+                    onClick={handleClick}>
+                    {btnText}
+                </Button>
+                <Button
+                    onClick={(e) => toggle()}>
+                    
+                    <i className='fas fa-times'/>
+                </Button>
+            </div>
         </Fragment>
     )
 }
@@ -112,7 +130,7 @@ const mapDispatchToProps = (dispatch, ownProps) => ({
     add_description(description) {
         let data = {description}
         let {_id: cardId} = ownProps.card
-        dispatch(ListActions.add_description(cardId, data))
+        return dispatch(ListActions.add_description(cardId, data))
     }
 })
 export default connect(null, mapDispatchToProps)(withToggleBTWComponents(AddDescriptionForm)({

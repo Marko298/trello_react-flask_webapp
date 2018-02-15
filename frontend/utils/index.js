@@ -50,6 +50,20 @@ var Utils = (function() {
         return result
     }
 
+    function reduceTeamToBoard(teams) {
+        return teams.reduce(function(memo, team) {
+
+            let prepareTeam = {
+                _id: team._id,
+                title: team.teamName,
+                boards: [],
+                ...team
+            }
+            
+            return [...memo, prepareTeam]
+        }, [])
+    }
+
 
     function splitBoardsToCommand(boards) {
         return boards.reduce(function(memo, board){
@@ -250,7 +264,8 @@ var Utils = (function() {
         collectUniq,
         composition,
         splitBoardsToCommand,
-        setMissedFieldsToBoardsFromTeams
+        setMissedFieldsToBoardsFromTeams,
+        reduceTeamToBoard
     }
 })()
 

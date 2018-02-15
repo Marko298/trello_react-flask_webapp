@@ -1,4 +1,4 @@
-import React, {Component, Children} from 'react'
+import React, {Component, Children, Fragment} from 'react'
 import {connect} from 'react-redux'
 import {withRouter} from 'react-router-dom'
 import {func} from 'prop-types'
@@ -9,6 +9,8 @@ import Button from '../../components/Button/Button'
 import withToggleBTWComponents from '../../HOC/withToggleBTWComponents'
 //actions
 import ListActions from '../../actions/ListAction'
+
+import './AddListForm.style.css'
 
 class AddListForm extends Component {
     static propTypes = {
@@ -31,6 +33,7 @@ class AddListForm extends Component {
         const propsForChildren = {
             forFirst: {
                 btnText: "Create list...",
+                className: 'add-listform__toggle-btn'
             },
             forSecond: {
                 title,
@@ -38,7 +41,12 @@ class AddListForm extends Component {
                 handleChange,
                 handleClick,
                 firstBtnText: "Cancel",
-                secondBtnText: "Add"
+                secondBtnText: "Add",
+                classes: {
+                    inputClass: 'add-listform__input',
+                    btnGroup: 'add-listform__btn-group',
+                    wrapper: 'add-listform__wrapper'
+                }
             }
         }
 
@@ -62,9 +70,10 @@ const mapDispatchToProps = (dispatch, props) => ({
 
 const FirstForm = ({
     toggle,
-    btnText
+    btnText,
+    className
 }) => (
-    <Button onClick={(e) => {
+    <Button className={className} onClick={(e) => {
         toggle()
     }}>
         {btnText}
@@ -79,22 +88,26 @@ const SecondForm = ({
     handleClick,
     title,
     inputName,
+    classes: {inputClass, btnGroup, wrapper},
     ...props
 }) => (
-    [
-        <Input 
+    <div className={wrapper}>
+        <Input
+            className={inputClass} 
             name={inputName} 
             field={title} 
             handleChange={handleChange}
             key='input'
-        />,
-        <Button onClick={(e) => toggle()} key='firstButton'>
-            {firstBtnText}
-        </Button>,
-        <Button onClick={handleClick} key='secondButton'>
-            {secondBtnText}
-        </Button>
-    ]
+            />
+        <div className={btnGroup}>
+            <Button onClick={handleClick}  success>
+                {secondBtnText}
+            </Button>
+            <Button onClick={(e) => toggle()} >
+                <i className="fas fa-times" /> 
+            </Button>
+        </div>
+    </div>
 
 )
 

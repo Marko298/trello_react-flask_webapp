@@ -14,7 +14,8 @@ import {
     TOGGLE_ADD_CHECKLIST_FORM,
     TOGGLE_IS_ALLOW_TO_REMOVE,
     TOGGLE_OVERLAY,
-    TOGGLE_UPDATE_BOARDNAME_MENU
+    TOGGLE_UPDATE_BOARDNAME_MENU,
+   
 } from '../constants/EditModeConstant'
 
 export default class PopupActions {
@@ -75,4 +76,5 @@ export default class PopupActions {
     static toggle_update_boardname() {
         return {type: TOGGLE_UPDATE_BOARDNAME_MENU}
     }
+
 }

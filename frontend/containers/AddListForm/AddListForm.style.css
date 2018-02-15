@@ -1,0 +1,40 @@
+.add-listform__toggle-btn {
+    background-color: rgba(0,0,0,.4) !important;
+    width: 100%;
+    text-align: left;
+    font-size: 1rem;
+    padding: 10px;
+    color: #ffffff !important;
+    line-height: 1;
+    text-shadow: 0 0 1px #000;
+
+}
+.add-listform__wrapper > .wrapper {
+    margin: 0;
+}
+
+.add-listform__wrapper {
+    border-radius: 3px;
+    background-color: #e2e4e6;
+    padding: 8px 10px;
+}
+
+.add-listform__input {
+    width: 100%;
+    border-radius: 3px;
+    font-size: 1.2rem;
+    padding: 10px;
+}
+
+.add-listform__btn-group {
+    display: flex;
+    padding: 5px 0;
+    margin-top: 10px;
+
+    & div {
+        & button {
+            font-size: 1rem;
+            outline-style: none;
+        }
+    }
+}

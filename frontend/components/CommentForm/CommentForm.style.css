@@ -1,0 +1,38 @@
+.comment-form {
+    width: 100%;
+    display: flex;
+    padding: 10px 0;
+    margin: 0 5px;
+}
+
+.comment-form__avatar {
+    padding: 5px;
+}
+
+.comment-form__body {
+    width: 100%;
+    & div {
+
+    }
+}
+
+
+.comment-form__body > div > textarea {
+    width: 100%;
+    resize: none;
+    height: 76px;
+    border-radius: 3px;
+    border: none;
+    box-shadow: 0px 2px 7px #9e9e9e; 
+    padding: 10px;
+    font-size: 1.2rem;
+    line-height: 1.2;
+}
+.comment-form__body > div > textarea:focus {
+    outline-style: none;
+}
+.comment-form__body > div > button {
+    font-size: 1rem;
+    line-height: 1.1;
+    box-shadow: 0 1px 5px #9e9e9e !important;
+}

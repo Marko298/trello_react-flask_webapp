@@ -1,9 +1,9 @@
 import React, {Component, Children, Fragment} from 'react'
+import {compose} from 'redux'
 import {connect} from 'react-redux'
 import {func} from 'prop-types'
 //HOC
 import withToggleBTWComponents from '../../HOC/withToggleBTWComponents'
-
 //components
 import Button from '../../components/Button/Button'
 import Textarea from '../../components/Textarea/Textarea'
@@ -14,7 +14,10 @@ class EditTitleForm extends Component {
 
     static defaultProps = {
         title: '',
-        presetedTextBtn: ''
+        presetedTextBtn: '',
+        Theme: {},
+        handleClick: () => {},
+        isLoading: false
     }
 
     static propTypes = {
@@ -31,15 +34,20 @@ class EditTitleForm extends Component {
         const {save_changes} = this.props
 
         save_changes(this.state.title)
+
     }
 
     render() {
 
         const textForFirstButton = this.props.presetedTextBtn ? this.props.presetedTextBtn : this.state.title
-
+        const {children, Theme: {firstButton, textarea, buttonGroup} } = this.props
         const childProps = {
             forFirst: {
                 btnText: textForFirstButton,
+                classes: {
+                    firstButton
+                },
+                addonsActionWhileToogling: this.props.handleClick
             },
             forSecond: {
                 name: 'title',
@@ -47,11 +55,17 @@ class EditTitleForm extends Component {
                 field: this.state.title,
                 btnText: "Add",
                 btnTextSecond: 'X',
-                handleClick: this.handleClick
+                handleClick: this.handleClick,
+                addonsActionWhileToogling: this.props.handleClick,
+                classes: {textarea, buttonGroup},
+                buttonSettings: {
+                    success: this.state.title.length, 
+                    disabled: this.props.isLoading || !this.state.title.length
+                }
             }
         }
 
-        const {children} = this.props
+        console.log("EdiutingTitleForm", this.props)
 
         return Children.only(children(childProps))
     }
@@ -61,9 +75,11 @@ class EditTitleForm extends Component {
 const FirstComponent = ({
     toggle,
     btnText,
+    classes: {firstButton},
+    addonsActionWhileToogling
 }) => {
 return (
-        <Button onClick={(e) => toggle()}>
+        <Button onClick={(e) => compose( toggle, addonsActionWhileToogling )() } className={firstButton}>
             {btnText}
         </Button>
     )
@@ -76,25 +92,34 @@ const SecondComponent = ({
     name,
     field,
     btnTextSecond,
-    handleClick
+    handleClick,
+    classes: {textarea, buttonGroup},
+    addonsActionWhileToogling,
+    buttonSettings: {success, disabled}
 }) => {
     return (
         <Fragment>
             <Textarea
+                className={textarea}
                 value={field} 
                 onChange={handleChange} 
                 name={name} 
             >
-            {field}
+                {field}
             </Textarea>
-            <Button
-                onClick={handleClick}>
-                {btnText}
-            </Button>
-            <Button
-                onClick={(e) => toggle()}>
-                {btnTextSecond}
-            </Button>
+            <div className={buttonGroup}>
+                <Button
+                    success={success}
+                    disabled={disabled}
+
+                    onClick={handleClick}>
+                    {btnText}
+                </Button>
+                <Button
+                    onClick={(e) => compose( toggle, addonsActionWhileToogling )()}>
+                    <i className="fas fa-times" />
+                </Button>
+            </div>
         </Fragment>
     )   
 }

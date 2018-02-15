@@ -71,7 +71,12 @@ class AddBoardForm extends Component {
             const {history, match} = this.props
             history.push(
                 `${match.url}board/${resp._id}/${resp.reletedTo.teamId}`,
-                {boardId: resp._id}
+                {
+                    boardId: resp._id,
+                    toolbar_style: {
+                        color: resp.styleSettings.backgroundColor
+                    }
+                }
             )
         })
 

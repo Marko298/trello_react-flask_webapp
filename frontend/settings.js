@@ -97,6 +97,10 @@ class API {
         return `${this.url}/list/list_schema`
     }
 
+    update_list(listId) {
+        return `${this.url}/list/update/${listId}`
+    }
+
      /**
     |--------------------------------------------------
     | CARDS ENDPOINTS

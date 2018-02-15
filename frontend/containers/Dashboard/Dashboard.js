@@ -278,11 +278,17 @@ class Dashboard extends React.Component {
 
                         {isModal ? <Route path={`/card/:cardId/:listId`} render={(props) => {
                             const {match} = props
-                            return createPortal(
+                            let div = document.createElement('div').setAttribute('id', 'portal')
+                            // return createPortal(
+                            //     <ModalWindow {...props}>
+                            //         {(rest) => <CardEditingContainer match={match} {...rest}/>}
+                            //     </ModalWindow>,
+                            //     document.getElementById('portal')
+                            // )
+                            return (
                                 <ModalWindow {...props}>
                                     {(rest) => <CardEditingContainer match={match} {...rest}/>}
-                                </ModalWindow>,
-                                document.getElementById('portal')
+                                </ModalWindow>
                             )
                         }}/> : null}
 

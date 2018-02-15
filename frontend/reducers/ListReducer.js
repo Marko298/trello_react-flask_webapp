@@ -7,6 +7,9 @@ import {
     PROJECT_IS_FETCHET_SUCCESSFULLY,
     CLEAR_PROJECT_DATA,
     LIST_POST_DESCRIPTION_SUCCESS,
+    LIST_UPDATE_REQUEST,
+    LIST_UPDATE_REQUEST_SUCCESS,
+    LIST_UPDATE_REQUEST_FAILED,
 } from '../constants/ListConstant'
 
 import {
@@ -28,7 +31,11 @@ import {
     CARD_CHENCGE_ITEM_FOR_CHECKLIST_REQUEST_FAILED ,
     CARD_UPDATE_CHECKLIST_REQUEST,
     CARD_UPDATE_CHECKLIST_REQUEST_SUCCESS,
-    CARD_UPDATE_CHECKLIST_REQUEST_FIELD
+    CARD_UPDATE_CHECKLIST_REQUEST_FIELD,
+    CARD_UPDATE_REQUEST,
+    CARD_UPDATE_SUCCESS,
+    CARD_UPDATE_FAILED,
+   
 } from '../constants/CardConstant'
 
 import {
@@ -58,7 +65,9 @@ const initialState = {
         isCommentsFetch: false,
         isCommentPostLoading: false,
         commentList: []
-    }
+    },
+    cardsPending: [],
+    listsPending: []
 }
 
 
@@ -115,8 +124,6 @@ export default function ListReducer(state=initialState, {type, payload, ...actio
         case LIST_POST_REQUEST: {
             const {timeData} = action
 
-            console.log({timeData, LIST_POST_REQUEST})
-
             return {
                 ...state,
                 status: {
@@ -125,7 +132,8 @@ export default function ListReducer(state=initialState, {type, payload, ...actio
                 },
                 boardProject: {
                     lists: [...state.boardProject.lists, timeData]
-                }
+                },
+                listsPending: [...state.listsPending, timeData._id]
             }
         }
            
@@ -148,7 +156,8 @@ export default function ListReducer(state=initialState, {type, payload, ...actio
                         }
                         return {...list}
                     })
-                }
+                },
+                listsPending: state.listsPending.filter(ids => ids !== justCreatedListId)
             }
         }
 
@@ -186,7 +195,8 @@ export default function ListReducer(state=initialState, {type, payload, ...actio
                 ...state,
                 boardProject: {
                     lists: state.boardProject.lists.map(addNewCardForList(listId, 'cards', timeData))
-                }
+                },
+                cardsPending: [...state.cardsPending, timeData._id]
             }
 
         }
@@ -219,7 +229,8 @@ export default function ListReducer(state=initialState, {type, payload, ...actio
                         }
                         return {...list}
                     })
-                }
+                },
+                cardsPending: state.cardsPending.filter(card => card !== justCreatedCardId)
             }
 
         }
@@ -535,8 +546,69 @@ export default function ListReducer(state=initialState, {type, payload, ...actio
                 ...state
             }
         }
+        
 
-      
+        case LIST_UPDATE_REQUEST: {
+            return {
+                ...state
+            }
+        }
+        case LIST_UPDATE_REQUEST_SUCCESS: {
+            const {_id, forBoard: boardId } = payload
+
+            return {
+                ...state,
+                boardProject: {
+                    lists: state.boardProject.lists.map(list => {
+                        if (list._id === _id) {
+                            return {...list, ...payload}
+                        }
+                        return {...list}
+                    })
+                }
+            }
+        }
+        case LIST_UPDATE_REQUEST_FAILED: {
+            return {
+                ...state
+            }
+        }
+
+        
+
+        case CARD_UPDATE_REQUEST: {
+            return {
+                ...state
+            }
+        }
+        case CARD_UPDATE_SUCCESS: {
+            const {_id, forList} = payload
+
+            return {
+                ...state,
+                boardProject: {
+                    lists: state.boardProject.lists.map(list => {
+                        if(list._id === forList) {
+                            return {
+                                ...list,
+                                cards: list.cards.map(card => {
+                                    if(card._id === _id) {
+                                        return {...card, ...payload}
+                                    }
+                                    return {...card}
+                                })
+                            }
+                        }
+                        return {...list}
+                    })
+                } 
+            }
+            
+        }
+        case CARD_UPDATE_FAILED: {
+            return {...state}
+        }
+   
         default: {
             return state
         }

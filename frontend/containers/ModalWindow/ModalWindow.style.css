@@ -9,12 +9,21 @@
 }
 
 .modal-wrapper{
-    z-index: 50;
-    position: absolute;
-    background: #fff;
-    top: 25px;
-    left: 10%;
-    right: 10%;
+    background: #EDEFF0;
     padding: 15px;
-    border: 2px solid #444
+    border: 2px solid #444;
+
+    width: 755px;
+    margin: 50px auto 80px;
+
+    position: relative;
+}
+
+.model-header {
+    display: flex;
+    justify-content: flex-end;
+
+    position: absolute;
+    right: 15px;
+    top: 15px;
 }

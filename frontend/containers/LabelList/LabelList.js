@@ -29,6 +29,7 @@ class LabelList extends Component {
         return labels.map(label => {
             return (
                     <ColorBox
+                        className='inline-labels'
                         handleClick={handleClick} 
                         key={label._id} 
                         {...label} 
@@ -47,10 +48,10 @@ class LabelList extends Component {
         )
     }
 
-    componentDidUpdate(prev){
-        if(prev.isPopUpShow && !this.props.isPopUpShow && prev.isLabelListShow) {
-            prev.save_labels(prev.card._id, prev.card.labels, prev.card.forList)
-        }
+    componentWillUnmount() {
+        console.log("componentWillUnmount")
+        const {save_labels, card: {_id, labels, forList}} = this.props
+        save_labels(_id, labels, forList)
     }
 }
 

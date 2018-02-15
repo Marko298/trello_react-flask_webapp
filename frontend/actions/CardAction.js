@@ -18,7 +18,10 @@ import {
     CARD_CHENCGE_ITEM_FOR_CHECKLIST_REQUEST_FAILED,
     CARD_UPDATE_CHECKLIST_REQUEST,
     CARD_UPDATE_CHECKLIST_REQUEST_SUCCESS,
-    CARD_UPDATE_CHECKLIST_REQUEST_FIELD
+    CARD_UPDATE_CHECKLIST_REQUEST_FIELD,
+    CARD_UPDATE_REQUEST,
+    CARD_UPDATE_SUCCESS,
+    CARD_UPDATE_FAILED,
 } from '../constants/CardConstant'
 
 import axios from 'axios'
@@ -78,7 +81,7 @@ export default class CardActions {
 
             dispatch(CardActions.create_static_card(createSchemaRequest))
 
-            axios({
+            return axios({
                 url: api.create_card(listId),
                 method: 'POST',
                 headers: api.headers(),
@@ -88,6 +91,8 @@ export default class CardActions {
                 console.log({response})
                 const {data} = response
                 dispatch(CardActions.create_card_is_success(data))
+
+                return Promise.resolve(data)
 
             }).catch(error => {
                 console.log("cannot create this card")
@@ -157,6 +162,44 @@ export default class CardActions {
             }).catch(error => {
                 console.log("cant save labels fro CARD")
             })
+        }
+    }
+
+    static update_card_request() {
+        return {
+            type: CARD_UPDATE_REQUEST
+        }
+    }
+    static update_card_success(response) {
+        return {
+            type: CARD_UPDATE_SUCCESS,
+            payload: response
+        }
+    }
+    static update_card_failed() {
+        return {
+            type: CARD_UPDATE_FAILED
+        }
+    }
+
+    static update_card(cardId, updates) {
+        return (dispatch) => {
+            dispatch( CardActions.update_card_request() )
+
+            axios({
+                url: api.update_card(cardId),
+                method: "POST",
+                headers: api.headers(),
+                withCredentials: true,
+                data: JSON.stringify(updates)
+            }).then(response => {
+                let {data} = response
+                console.log(data)
+                dispatch( CardActions.update_card_success(data) )
+            }).catch(error => {
+                dispatch( CardActions.update_card_failed() )
+            })
+            
         }
     }
     
@@ -265,18 +308,15 @@ export default class CardActions {
 
             const prepareRequest = {title}
 
-            axios({
+            return axios({
                 url: api.add_item(checklistId),
                 method: 'POST',
                 withCredentials: true,
                 headers: api.headers(),
                 data: JSON.stringify(prepareRequest)
             }).then(({data}) => {
-
-                console.log("ITEM WAS ADDED")
-                dispatch(
-                    CardActions.add_item_success(data)
-                )
+                dispatch(  CardActions.add_item_success(data))
+                return Promise.resolve(data)
             }).catch(error => {
                 console.log("CANNOT ADD THIS ITEM", title)
             })
@@ -349,7 +389,7 @@ export default class CardActions {
 
             const preparedRequest = {...upToDate}
 
-            axios({
+            return axios({
                 url: api.update_checklist(checkListId),
                 method: "POST",
                 headers: api.headers(),
@@ -357,10 +397,10 @@ export default class CardActions {
                 data: JSON.stringify(preparedRequest)
             }).then(({data}) => {
 
-                console.log("UP{DATED SUCCESSC", {data})
                 dispatch(
                     CardActions.update_checklist_success(data)
                 )
+                return Promise.resolve(data)
 
             }).catch(error => {
                 console.log("CANNOT UPDATE CURRENT CHECKLIST ")

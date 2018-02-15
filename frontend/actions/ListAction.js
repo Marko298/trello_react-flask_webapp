@@ -6,7 +6,10 @@ import {
     LIST_POST_REQUEST,
     PROJECT_IS_FETCHET_SUCCESSFULLY,
     CLEAR_PROJECT_DATA,
-    LIST_POST_DESCRIPTION_SUCCESS
+    LIST_POST_DESCRIPTION_SUCCESS,
+    LIST_UPDATE_REQUEST,
+    LIST_UPDATE_REQUEST_FAILED,
+    LIST_UPDATE_REQUEST_SUCCESS
 } from '../constants/ListConstant'
 
 import axios from 'axios'
@@ -156,7 +159,7 @@ export default class ListActions {
 
     static add_description(cardId, description) {
         return (dispatch) => {
-            axios({
+            return axios({
                 url: api.update_card(cardId),
                 method: 'POST',
                 headers: api.headers(),
@@ -165,11 +168,44 @@ export default class ListActions {
             }).then(response => {
                 const {data} = response
 
-                console.log({data})
-
                 dispatch(ListActions.add_description_success(data))
+
+                return Promise.resolve(data)
             }).catch(error => {
                 console.log("Error cant add description anywhey")
+            })
+        }
+    }
+    static update_list_request() {
+        return {type: LIST_UPDATE_REQUEST}
+    }
+
+    static update_list_success(response) {
+        return {
+            type: LIST_UPDATE_REQUEST_SUCCESS,
+            payload: response
+        }
+    }
+    
+    static update_list_failed() {
+        return {type: LIST_UPDATE_REQUEST_FAILED}
+    }
+
+    static update_list(listId, updates) {
+        return (dispatch) => {
+
+            dispatch( ListActions.update_list_request() )
+
+            axios({
+                url: api.update_list(listId),
+                method: 'POST',
+                headers: api.headers(),
+                withCredentials: true,
+                data: JSON.stringify(updates)
+            }).then(({data}) => {
+                dispatch( ListActions.update_list_success(data) )
+            }).catch(err => {
+                dispatch( ListActions.update_list_failed() )
             })
         }
     }

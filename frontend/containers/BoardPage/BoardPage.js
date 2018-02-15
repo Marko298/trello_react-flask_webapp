@@ -1,6 +1,7 @@
-import React, {Component} from 'react'
+import React, {Component, Fragment} from 'react'
 import {findDOMNode} from 'react-dom'
 import {connect} from 'react-redux'
+import {Motion, spring, presets} from 'react-motion'
 //components
 import Button from '../../components/Button/Button'
 import Title from '../../components/Title/Title'
@@ -45,29 +46,39 @@ class BoardPage extends Component {
         this.offsetTop = element.getBoundingClientRect().bottom
     }
 
-    componentWillUnmount() {
-        // this.props.clear_project_data()
-    }
+   
     _header = (boardName, isImportant, reletedTo) => {
         return (
-            <header style={{display: 'flex'}} ref={this._boundElement}>
-                <ChangeBoardNameBtn customTop={this.offsetTop} selected={{
-                    _id: this.props.board._id,
-                    boardName
-                }}>
-                    <Title text={boardName} large bold/>
-                </ChangeBoardNameBtn>
-                <span>
-                    <Input 
-                        type='checkbox' 
-                        name='isImportant' 
-                        checked={isImportant}
-                    />
-                </span>
-                <Title text={reletedTo.teamName} large bold/>
-                <button onClick={this.handleClickMenuToggle}>
-                    Show Menu
-                </button>
+            <header
+                style={{
+                    backgroundColor: this.props.board.styleSettings.backgroundColor || 'blue'
+                }} 
+                className="board-page__header-toolbar" 
+                ref={this._boundElement}
+            >
+                <div className='board-page__header-toolbar--left'>
+                    <ChangeBoardNameBtn customTop={this.offsetTop} selected={{
+                        _id: this.props.board._id,
+                        boardName
+                    }}>
+                        <Title text={boardName} large bold color='#ffffff'/>
+                    </ChangeBoardNameBtn>
+                    <span>
+                        <Input 
+                            type='checkbox' 
+                            name='isImportant' 
+                            checked={isImportant}
+                        />
+                    </span>
+                    <Title text={reletedTo.teamName} medium tiny color='#ffffff'/>
+                </div>
+                <div className='board-page__header-toolbar--right'>
+                    { !this.props.isMenuInBoardPageShow &&
+                    <Button onClick={this.handleClickMenuToggle}>
+                        Show Menu
+                    </Button> }
+                </div>
+
             </header>
         )
     }
@@ -78,38 +89,61 @@ class BoardPage extends Component {
             {boardName, isImportant, reletedTo},
             isMenuInBoardPageShow
         } = this.props
-
+    
         return (
-            <div className='board-wrapper'>
-                <div className='board-content'>
-                    {this._header(boardName, isImportant, reletedTo)}
-                    <div className='board-canvas'>
-                        <section className='list-container'>
-                            {this.props.lists.map(list => {
-                                return (
+            <Fragment>
+                <Motion style={{x: spring(isMenuInBoardPageShow ? 340 : 0)}}>
+                {({x}) => (
+                    <div className='board-wrapper' style={{
+                        marginRight: `${x}px`,
+                        backgroundColor: this.props.board.styleSettings.backgroundColor || 'blue'
+                    }}>
+                        <div className='board-content'>
+                            {this._header(boardName, isImportant, reletedTo)}
+                            <div className='board-canvas'>
+                                <section className='list-container'>
+                                    {this.props.lists.map(list => {
+                                        return (
+                                            <div className='column'>
+                                                <ListsContainer {...list} >
+                                                    {(listId, boardId, isListOending) => <AddCardForm boardId={boardId} forList={listId} isListOending={isListOending}/>}
+                                                </ListsContainer>
+                                            </div>
+                                        )
+                                    })}
                                     <div className='column'>
-                                        <ListsContainer {...list} >
-                                            {(listId, boardId) => <AddCardForm boardId={boardId} forList={listId}/>}
-                                        </ListsContainer>
+                                        <AddListForm/>
                                     </div>
-                                )
-                            })}
-                            <div className='column' id="test">
-                                <AddListForm/>
+
+                                </section>
                             </div>
+                        </div>
 
-                        </section>
                     </div>
-                </div>
+                )}
+                </Motion>
+                <Motion style={{route: spring(!isMenuInBoardPageShow ? 340 : 0)}}>
+                    { ({route}) => {
+                        return (
+                            <div className='menu-container' style={{
+                                    WebkitTransform: `translate3d(${route}px, 0, 0)`,
+                                    transform: `translate3d(${route}px, 0, 0)`,
+                                    display: route === 340 && !isMenuInBoardPageShow ? 'none' : 'block'
 
-                <div className='menu-container' style={{display: isMenuInBoardPageShow ? 'block' : 'none'}}>
-                {/* Here this component could be imported like <SideBoardMenu /> */}
-                    <div className='menu-wrapper'>
-                        menu
-                    </div>
-                </div>
-            </div>
+                                }}>
+                                <div className='menu-wrapper'>
+                                    menu
+                                    <Button onClick={this.handleClickMenuToggle}>
+                                        x
+                                    </Button>
+                                </div>
+                            </div>
+                        )
+                    }}
+                </Motion>
+            </Fragment>
         )
+
     }
 }
 
@@ -132,7 +166,8 @@ const mapDispatchToProps = (dispatch) => ({
     },
     clear_project_data() {
         dispatch(ListActions.clear_project_data())
-    }
+    },
+   
 })
 
 export default connect(mapStateToProps, mapDispatchToProps)(BoardPage)

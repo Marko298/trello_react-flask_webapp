@@ -22,7 +22,7 @@ let defaultLabels = [
 ]
 
 const initialState = {
-    userId: "3aa620bb18354ed2884e5c8ebd2351d2",
+    userId: "17fce7315d3a419bbae02f09d71f85ae",
     // userId: null,
     email: null,
     error: null,
@@ -133,24 +133,7 @@ const UserReducer = function (state = initialState, {type, payload, progress}) {
                 error: null,
                 isLoading: false
             }
-        // case USER_LOGIN_SUCCESS:
-        //     return {
-        //         ...state,
-        //         error: null,
-        //         userId: payload
-        //     }
-            
-        // case USER_LOGIN_ERROR:
-        //     return {
-        //         ...state,
-        //         error: payload,
-        //         userId: null
-        //     }
-            /**
-            |--------------------------------------------------
-            | TEST REDUCER
-            |--------------------------------------------------
-            */
+
 
         default:
             return state

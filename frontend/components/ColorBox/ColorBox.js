@@ -11,10 +11,15 @@ export default function ColorBox({
     handleClick,
     ...props
 }) {
+    let isSelected;
+    if (typeof selectedLabels === 'object') {
+        isSelected = selectedLabels.includes(_id) ? true : false
+    } else if (typeof selectedLabels === 'string') {
+        isSelected = selectedLabels === color 
+    }
     
-    // const isSelected = selectedLabels.includes(_id) ? true : false
 
-    let isChecked = selectedLabels === color 
+    // let isSelected = selectedLabels === color 
     
     
     const styles = function({color}) {
@@ -34,7 +39,7 @@ export default function ColorBox({
             className={classes}
             style={styles(label)}
         >
-        {isChecked && <div style={{
+        {isSelected && <div style={{
             width: '10px',
             height: '10px',
             backgroundColor: 'yellow'

@@ -1,7 +1,7 @@
 import React, {Component} from 'react'
 import {findDOMNode} from 'react-dom'
 import {connect} from 'react-redux'
-import {Link} from 'react-router-dom'
+import {Link, withRouter} from 'react-router-dom'
 //action
 import PopupActions from '../../actions/EditModeAction'
 //components
@@ -65,8 +65,16 @@ class ToolBar extends Component {
         const {boundElement} = this
         const {offsetTopAccountSettingsMenu, offsetTopCreativeMenu} = this.state
 
+        let bgFromBoard = (
+            this.props.location.state &&
+            this.props.location.state.toolbar_style &&
+            this.props.location.state.toolbar_style.color
+        )
+
         return (
-            <div className="tool-bar">
+            <div className="tool-bar" style={{
+                backgroundColor: bgFromBoard ? `${bgFromBoard}77` : "#026aa7"
+            }}>
                 <div className='left-toolbar-side'>
                     {!isPinned && 
                         <Button onClick={this.props.toggleSidebar}>
@@ -82,7 +90,7 @@ class ToolBar extends Component {
                 </div>
                 
                 <div className='middle-toolbar-side'>
-                    <Spinner />
+                    {/* <Spinner /> */}
                     <Link to='/'>Trello</Link>
                 </div>  
 
@@ -143,7 +151,6 @@ const mapStatToProps = ({mode: {sidebar, menu}, user }) => ({
         photo: user.photo,
         name: user.name
     }
-
 })
 
 const mapDispatchToProps = (dispatch) => ({
@@ -155,4 +162,4 @@ const mapDispatchToProps = (dispatch) => ({
     }
 })
 
-export default connect(mapStatToProps, mapDispatchToProps)(ToolBar)
+export default withRouter(connect(mapStatToProps, mapDispatchToProps)(ToolBar))

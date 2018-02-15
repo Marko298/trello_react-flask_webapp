@@ -7,10 +7,12 @@ import {Link, withRouter} from 'react-router-dom'
 import Title from '../../components/Title/Title'
 import Button from '../../components/Button/Button'
 
+import './ListContainer.style.css'
+import ListActions from '../../actions/ListAction';
 
 class ListsContainer extends Component {
     state = {
-        cardTitle: ''
+        title: this.props.title
     }
     static defaultProps = {
         cards: []
@@ -20,48 +22,90 @@ class ListsContainer extends Component {
         children: func.isRequired
     }
 
-    // handleClick = (e) => {
-    //     this.props.create_card("iii")
-    // }
 
-    componentDidMount() {
+   _handleChange = ( {target: { name, value }} ) => 
+        this.setState( (state) => {
+            return {
+                ...state,
+                [name] : value
+            }
+        })
 
-    }
+   _handleOnBlur = (e) => {
+
+       const {title: stateTitle} = this.state
+       const {title: propsTitle} = this.props
+
+       if (stateTitle !== propsTitle) {
+           this.props.update_list({
+               title: this.state.title
+           })
+       }
+       return null
+   }
+   _renderCardInPending = (text) => (
+        <div className='card-in-pending'>
+            {text}
+        </div>
+   )
+   
+   _renderCardWithAnchor = (card) => (
+        <Link to={{
+            pathname: `/card/${card._id}/${this.props._id}`,
+            state: {
+                modal: true
+            }
+        }}>
+            {card.title}
+        </Link>
+   )
 
     render() {
 
         const {
             title,
             _id,
-            forBoard
+            forBoard,
+            cardsPending,
+            listsPending
         } = this.props
 
-        return (
-            <div>
+        function isPending(currentCardId) {
+            return function(_idPending) {
+                return _idPending === currentCardId
+            }
+        }
 
-                <div className='list-header'>
-                    <Title text={title} bold large/>
+        let isListOending = listsPending.some(isPending(_id))
+
+        return (
+            <div className='list-container-wrapper'>
+
+                <div className='list-container-wrapper__title'>
+                    <textarea
+                        readOnly={isListOending}
+                        name='title'
+                        onBlur={this._handleOnBlur}
+                        onChange={this._handleChange} 
+                        className='list-container-wrapper__title-textarea' 
+                    >
+                        {this.state.title}
+                    </textarea>
                 </div>
                 {this.props.cards.map(card => {
                     return (
-                        <div key={card._id}>
-                            <Link to={{
-                                pathname: `/card/${card._id}/${_id}`,
-                                state: {
-                                    modal: true
-                                }
-                            }}>
-                                {card.title}
-                            </Link>
+                        <div key={card._id} className='list-container__card'>
+                            {
+                                cardsPending.some(isPending(card._id)) 
+                                    ? this._renderCardInPending(card.title)
+                                    : this._renderCardWithAnchor(card)
+                            }
                         </div>
                     )
                 })}
 
                 <div>
-                    {/* <Button onClick={this.handleClick}>
-                        create card
-                    </Button> */}
-                    {Children.only(this.props.children(_id, forBoard))}
+                    {Children.only(this.props.children(_id, forBoard, isListOending))}
                 </div>
 
             </div>
@@ -69,12 +113,19 @@ class ListsContainer extends Component {
     }
 } 
 
-// const mapDispatchToProps = (dispatch, ownProps) => ({
-//     create_card(title) {
-//         let {_id: listId} = ownProps
-//         let data = {title}
-//         dispatch(CardActions.create_card_request(listId, data))
-//     }
-// })
 
-export default connect(null, null)(ListsContainer)
+const mapStateToProps = ( {lists} ) => ({
+    cardsPending: lists.cardsPending,
+    listsPending: lists.listsPending
+})
+
+const napDispatchToProps = (dispatch, props) => ({
+    update_list(updates) {
+        const { _id } = props
+        dispatch(
+            ListActions.update_list(_id,updates)
+        )
+    }
+})
+
+export default connect(mapStateToProps, napDispatchToProps)(ListsContainer)

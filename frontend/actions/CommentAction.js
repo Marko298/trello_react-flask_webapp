@@ -31,7 +31,7 @@ export default class CommentActions{
     static create_comment(body, cardId) {
         return (dispatch, getState)  => {
             let {user} = getState()
-            axios({
+            return axios({
                 url: api.create_comment(cardId),
                 method: 'POST',
                 withCredentials: true,
@@ -49,7 +49,8 @@ export default class CommentActions{
                 }
 
                 dispatch(CommentActions.post_comment_success_created(prepareComment))
-                console.log("COMMENT IS CREATED", prepareComment)
+                
+                return Promise.resolve()
 
             }).catch(error => {
                 console.log("FAILED POST REQUEST. COMMENT IS NOT CREATED !!!")
