@@ -2,6 +2,7 @@ from server.common.database import Database, FS
 
 from server.models.checklist.checklist import Checklist
 import server.models.cards.errors as err
+from server.common.utils import Utils
 
 from bson import ObjectId
 
@@ -25,18 +26,20 @@ class Card(object):
 
     def add_attachment(self, file, content_type, file_name):
         filedId = FS.put(file, content_type, file_name)
-
-        stringId = str(filedId)
+        query = { '_id': self._id }
 
         if len(self.attachments['files']) == 0:
-            Database.update_one(Card.collection, {'_id': self._id}, {'attachments.assigned': stringId})
-        Database.update_push(Card.collection, { '_id': self._id }, {
-            'attachments.files' : stringId
+            Database.update_one(Card.collection,query , {'attachments.assigned': filedId})
+
+        Database.update_push(Card.collection, query , {
+            'attachments.files' : filedId
         })
 
-        return FS.get(ObjectId(stringId))
+        _, cursorCard = Card.get_card_by_id(self._id)
 
-        return 'yeah'
+        # fsClass = FS.get(filedId)
+
+        return cursorCard, filedId
 
 
     def add_checklist(self, newChecklist):
@@ -87,6 +90,48 @@ class Card(object):
     def get_card_by_boardId(boardId):
         cursors = Database.find('cards', {'boardId': boardId})
         return [c for c in cursors]
+
+    @staticmethod
+    def return_with_checklists(cardsCursor):
+        result = list()
+        for card in cardsCursor:
+            if card['checklists'] is not None and len(card['checklists']) is not 0:
+                checkLists = []
+                for chId in card['checklists']:
+                    chList = Checklist.get_by_id(chId).dict_from_class()
+                    checkLists.append(chList)
+
+                result.append({
+                    **card,
+                    'checklists': checkLists
+                })
+            else:
+                result.append({**card})
+        
+        return result
+
+
+    @staticmethod
+    def return_with_assigned_files(cardsCursor):
+        result = list()
+        for card in cardsCursor:
+            if card['attachments']['assigned']:
+                fsClass = FS.get(card['attachments']['assigned'])
+                imgStr = Utils.prepareImage(fsClass)
+                prepareAttach = {
+                    'assigned_image' : imgStr,
+                    'assigned' : card['attachments']['assigned'],
+                    **card['attachments']
+                    }
+                result.append({**card, "attachments": prepareAttach})
+            else:
+                result.append({**card, "attachments": {
+                    'assigned_image' : None,
+                    'assigned' : card['attachments']['assigned'],
+                    **card['attachments']
+                }})
+
+        return result
 
 
     @staticmethod

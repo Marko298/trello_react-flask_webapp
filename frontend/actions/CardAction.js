@@ -118,6 +118,7 @@ export default class CardActions {
                 headers: api.headers(),
                 withCredentials: true
             }).then(response => {
+                console.log({response})
                 // console.log({response})
                 // dispatch(CardActions.fetch_cards_successfully(response.data))
                 return Promise.resolve(response.data)

@@ -1,5 +1,6 @@
 from pymongo import MongoClient
 from gridfs import GridFS
+from bson import ObjectId
 
 class Database(object):
     URI = 'mongodb://127.0.0.1:27017'
@@ -50,8 +51,10 @@ class FS(object):
 
     @staticmethod
     def put(file, content_type, file_name):
-        return FS.DATABASE.put(file, content_type=content_type, filename=file_name)
+        fieldId = FS.DATABASE.put(file, content_type=content_type, filename=file_name)
+        return str(fieldId)
     
     @staticmethod
     def get(fileId):
-        return FS.DATABASE.get(fileId)
+        objectId = ObjectId(fileId)
+        return FS.DATABASE.get(objectId)

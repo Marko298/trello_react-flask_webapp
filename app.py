@@ -60,11 +60,17 @@ def loop_over(data):
     return newDict
 
 def isHaveImage(team):
-    if isinstance(team['photo'], ObjectId):
+    if team['photo']:
         fsClass = FS.get(team['photo'])
         photo = Utils.prepareImage(fsClass)
         return {**team, 'photo': photo}
     return team
+        
+    # if isinstance(team['photo'], ObjectId):
+    #     fsClass = FS.get(team['photo'])
+    #     photo = Utils.prepareImage(fsClass)
+    #     return {**team, 'photo': photo}
+    # return team
 
 @app.before_first_request
 def init_db():
@@ -110,13 +116,19 @@ def user_login():
                 session['email'] = email
                 user = User.get_user_by_email(email)
 
-                if isinstance(user['photo'], ObjectId):
+                # if isinstance(user['photo'], ObjectId):
                     
+                #     fsClass = FS.get(user['photo'])
+                #     photo = Utils.prepareImage(fsClass)
+                #     user['photo'] = photo
+
+                #     return jsonify(user)
+
+                if user['photo']:
                     fsClass = FS.get(user['photo'])
                     photo = Utils.prepareImage(fsClass)
                     user['photo'] = photo
-
-                    return jsonify(user)
+                    
 
                 return jsonify(user)
 
@@ -552,25 +564,13 @@ def remove_item(checklistId, itemId):
 @app.route('/card/get_all_cards/<string:boardId>')
 def get_all_cards(boardId):
     cardsCursor =  Card.get_card_by_boardId(boardId)
-    rez = []
+    cardsWithChecklists = Card.return_with_checklists(cardsCursor)
+    print("cardsWithChecklists {}".format(cardsWithChecklists))
+    cardsWithAssignedFiled = Card.return_with_assigned_files(cardsWithChecklists)
 
-    for card in cardsCursor:
-        if card['checklists'] is not None and len(card['checklists']) is not 0:
-            checkLists = []
-            for chId in card['checklists']:
-                chList = Checklist.get_by_id(chId).dict_from_class()
-                checkLists.append(chList)
-
-            rez.append({
-                **card,
-                'checklists': checkLists
-                })
-        else:
-            rez.append({**card})
-
-        # print(rez)
-    return jsonify(rez)
-    # return jsonify(cardsCursor)
+    print("cardsWithAssignedFiled {}".format(cardsWithAssignedFiled))
+ 
+    return jsonify(cardsWithAssignedFiled)
 
 @app.route('/card/add_attachment/<string:cardId>', methods=['POST'])
 def add_attachment_to_card(cardId):
@@ -578,16 +578,33 @@ def add_attachment_to_card(cardId):
 
     contentType = image_file.content_type
     fileName = image_file.filename
-    print("IM HERE")
 
     classCard, _ = Card.get_card_by_id(cardId)
-    fsCLass = classCard.add_attachment(image_file, contentType, fileName)
+    updatedCard, newImageId = classCard.add_attachment(image_file, contentType, fileName)
 
-    img_str = Utils.prepareImage(fsCLass)
+    fsClass = FS.get(newImageId)
+    imageStr = Utils.prepareImage(fsClass)
 
-    return jsonify(img_str)
+    imgAssigned = updatedCard['attachments']['assigned']
 
-    return "is Okay"
+    if imgAssigned == newImageId:
+        assignedImage = imageStr
+    else:
+        assignedImage = None
+            
+    responseSchema = {
+        '_id' : updatedCard['_id'],
+        'forList' : updatedCard['forList'],
+        'boardId': updatedCard['boardId'],
+        'attachments' : {
+            'file_id' : newImageId,
+            'files' : imageStr,
+            'assigned' : assignedImage
+        }
+    }
+    
+    return jsonify(responseSchema)
+
 
 @app.route('/card/card_schema', methods=['GET'])
 def card_schema():

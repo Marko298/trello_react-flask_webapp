@@ -86,7 +86,6 @@ class EditFormProfile extends Component {
             this.props.upload_photo(data)
 
         })
-
     }
     
     handleSubmit = (e) => {
