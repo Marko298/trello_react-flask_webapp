@@ -44,7 +44,17 @@ class CardEditingContainer extends Component {
     state = {
         comment: '',
         title: this.props.list.cards.title,
-        isCommentCreated: false
+        isCommentCreated: false,
+        isAttachmentLoading: false
+    }
+
+    componentDidMount() {
+        // if(this.props.list.cards.attachments.files)
+        
+        this.setState( (state) => ({ ...state,  isAttachmentLoading: true}))
+        this.props.get_all_attachmants().then(() => {
+            this.setState( (state) => ({ ...state, comment: '', isAttachmentLoading: false }))
+        })
     }
 
     handleCreateCommentClick = (e) => {
@@ -53,6 +63,10 @@ class CardEditingContainer extends Component {
         this.props.create_comment(comment).then( () => {
             this.setState( (state) => ({ ...state, comment: '', isCommentCreated: false }))
         })
+    }
+
+    handleClickAssignFile = (file_id) => (e) => {
+        this.props.assign_file(file_id)
     }
 
 
@@ -71,18 +85,16 @@ class CardEditingContainer extends Component {
         let data = new FormData(this.form[0])
         data.append('attachment', image)
 
-        // this.setState(state => ({image}), function() {
-        //     console.log("WE ARE TRY TO UPLOAD")
-        //     this.props.upload_photo(data)
-
-        // })
-        this.props.upload_attachment_to_card(data)
+        this.setState( (state) => ({ ...state, isAttachmentLoading: true }) )
+        this.props.upload_attachment_to_card(data).then(resp => {
+            this.setState( (state) => ({ ...state, isAttachmentLoading: false }) )
+        })
     }
 
     render() {
 
         const {list, list: {cards}, userPhoto, userName} = this.props
-        const {comment} = this.state
+        const {comment, isAttachmentLoading} = this.state
 
         const Theme = {
             Description: {
@@ -92,9 +104,22 @@ class CardEditingContainer extends Component {
             }
         }
 
+        console.log({cards})
+
         return (
             <div>
                 <header className='container-editing__header'>
+                    <div style={{
+                        width: '100%',
+                        display: 'flex',
+                        justifyContent: 'center',
+                        backgroundColor: '#CDD2D4'
+                    }}>
+                        {cards.attachments.assigned && <div style={{width: '300px'}}>
+                            <img src={cards.attachments.assigned} style={{width: '100%'}}/>
+                        </div>}
+                    </div>
+                    
                     <div className='container-editing__header-top'>
                         <i className="fab fa-flipboard" />
                         <Input 
@@ -117,6 +142,21 @@ class CardEditingContainer extends Component {
                             description={cards.description} 
                             Theme={Theme.Description}
                         />
+
+                        <div className='attachment-container'>
+                            <Title text='Attachment' medium bold/>
+                            {cards.attachments.files.map(fileObj => {
+                                const textForButton = fileObj.file_id === cards.attachments.file_id
+                                return (
+                                    <div style={{width: '110px'}} key={fileObj.file_id}>
+                                        <img src={fileObj.image} style={{width: '100%'}}/>
+                                        <button onClick={this.handleClickAssignFile(fileObj.file_id)}>
+                                            {textForButton ? "remove cover" : "assing cover"}
+                                        </button>
+                                    </div>
+                                )
+                            })}
+                        </div>
 
                         <div id='checklistwrapper'>
                             <div>
@@ -155,13 +195,22 @@ class CardEditingContainer extends Component {
                             Add checklist
                         </ToggleCheckListMenu>
 
-                        <form method='post' ref={node => this.form = node}>
-                            <input 
-                                type='file' 
-                                name='attachment' 
-                                onChange={this._handleFileOnChange} 
-                            />
-                        </form>
+                        <div className={isAttachmentLoading ? 'on-pending' : null}>
+                            <form method='post' ref={node => this.form = node} className='attachment-form button'>
+                                <input
+                                    disabled={isAttachmentLoading}
+                                    className='attachment' 
+                                    id="attachment"
+                                    type='file' 
+                                    name='attachment' 
+                                    onChange={this._handleFileOnChange} 
+                                    />
+                                <label htmlFor="attachment">
+                                    Attachment
+                                </label>
+                            </form>
+                        </div>
+
                     </div>
 
                 </section>
@@ -212,9 +261,17 @@ const mapDispatchToProps = (dispatch, ownProps) => ({
     },
     upload_attachment_to_card(file) {
         const {cardId} = ownProps.match.params
-        dispatch(
-            CardActions.add_attachment(cardId, file)
-        )
+        return dispatch( CardActions.add_attachment(cardId, file) )
+    },
+    get_all_attachmants() {
+        
+       const {cardId} = ownProps.match.params
+       return dispatch(CardActions.get_all_attachments(cardId))
+    },
+    assign_file(fileId) {
+        const {cardId} = ownProps.match.params
+
+        return dispatch(CardActions.assign_file(cardId, fileId))
     }
 })
 

@@ -462,6 +462,12 @@ def update_card(cardId):
 
         if len(CONTENT) is not 0:
             classCard, _ = Card.get_card_by_id(cardId)
+            print("CONTENT {}".format(CONTENT))
+
+            if CONTENT.get('attachments') is not None and CONTENT.get('attachments')['assigned'] is not None:
+                updatedCard = classCard.assign_attachment_file(CONTENT.get('attachments')['assigned'])
+                print ("WE GOT SOMETINH", CONTENT.get('attachments')['assigned'])
+                return jsonify(updatedCard)
 
             updatedFields = dict(
                 filter(lambda pair: pair[0] is not 'labels', CONTENT.items())
@@ -484,8 +490,6 @@ def create_checklist(cardId):
         CONTENT = request.get_json()
 
         classCard, _ = Card.get_card_by_id(cardId)
-
-        print(CONTENT)
 
         justCreatedChecklist = classCard.add_checklist({
             'authorId' : session['email'],
@@ -565,11 +569,8 @@ def remove_item(checklistId, itemId):
 def get_all_cards(boardId):
     cardsCursor =  Card.get_card_by_boardId(boardId)
     cardsWithChecklists = Card.return_with_checklists(cardsCursor)
-    print("cardsWithChecklists {}".format(cardsWithChecklists))
     cardsWithAssignedFiled = Card.return_with_assigned_files(cardsWithChecklists)
 
-    print("cardsWithAssignedFiled {}".format(cardsWithAssignedFiled))
- 
     return jsonify(cardsWithAssignedFiled)
 
 @app.route('/card/add_attachment/<string:cardId>', methods=['POST'])
@@ -588,9 +589,9 @@ def add_attachment_to_card(cardId):
     imgAssigned = updatedCard['attachments']['assigned']
 
     if imgAssigned == newImageId:
-        assignedImage = imageStr
+        assignedImage = True
     else:
-        assignedImage = None
+        assignedImage = False
             
     responseSchema = {
         '_id' : updatedCard['_id'],
@@ -598,13 +599,20 @@ def add_attachment_to_card(cardId):
         'boardId': updatedCard['boardId'],
         'attachments' : {
             'file_id' : newImageId,
-            'files' : imageStr,
+            'image' : imageStr,
             'assigned' : assignedImage
         }
     }
     
     return jsonify(responseSchema)
 
+
+@app.route('/card/get_attachments/<string:cardId>')
+def get_attachments_for_card(cardId):
+    _, cursrosCard = Card.get_card_by_id(cardId)
+    cardsWithImages = Card.get_attachment_in_string(cursrosCard)
+
+    return jsonify(cardsWithImages)
 
 @app.route('/card/card_schema', methods=['GET'])
 def card_schema():

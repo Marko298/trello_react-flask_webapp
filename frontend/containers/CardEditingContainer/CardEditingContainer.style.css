@@ -13,7 +13,7 @@
     width: 185px;
 
     & div {
-        & button {
+        & .button {
             padding: 10px;
             color: var(--nice_grey);
             font-weight: 600;
@@ -22,7 +22,7 @@
             text-align: left;
 
             margin: 5px 0;
-            box-shadow: 0 1px 1px rgba(0,0,0,.5);
+            box-shadow: 0 1px 1px rgba(0,0,0,.5) !important;
 
             outline-style: none;
 
@@ -32,7 +32,7 @@
 }
 
 .editing-left {
-    padding: 10px;
+    padding: 0 15px;
     flex-grow: 1;
     /* background-color: lightblue; */
 }
@@ -77,4 +77,30 @@
 
 .add_description__textarea:focus {
     outline-style: none;
+}
+
+.attachment {
+    display: none;
+}
+.attachment-form {
+    cursor: pointer;
+    & > label {
+        font-size: 1.1rem;
+        color: rgb(117, 117, 117) !important;
+        margin: 0;
+        cursor: pointer;
+    }
+}
+
+.attachment-container {
+    & div > span.title {
+        font-size: 24px !important;
+    }
+}
+
+.editing-right .on-pending  > form > label{
+    color: rgba(255,255,255,.6) !important;
+    font-style: italic;
+    cursor: none;
+    cursor: not-allowed;
 }

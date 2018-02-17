@@ -40,6 +40,37 @@ class Card(object):
         # fsClass = FS.get(filedId)
 
         return cursorCard, filedId
+    
+    def assign_attachment_file(self, fileId):
+        query = {'_id': self._id}
+        Database.update_one(Card.collection, query, {'attachments.assigned': fileId})
+        cursorCard = Database.find_one(Card.collection, query)
+        return {**cursorCard, 'attachments': {'assigned': cursorCard['attachments']['assigned']}}
+        # return {}
+    
+    @staticmethod
+    def get_attachment_in_string(cursors):
+        cardWithImage = list()
+        if len(cursors['attachments']['files']) is not 0:
+            images = list()
+            for ids in cursors['attachments']['files']:
+                fsClass = FS.get(ids)
+                imgStr = Utils.prepareImage(fsClass)
+                imageDict = {'file_id': ids, 'image': imgStr}
+                images.append(imageDict)
+
+            cardWithImage.append({
+                **cursors,
+                'attachments' : {
+                    'files': images,
+                    'assigned': cursors['attachments']['assigned']
+                }
+            })
+        else:
+            cardWithImage.append({**cursors})
+
+        return cardWithImage
+
 
 
     def add_checklist(self, newChecklist):
@@ -119,16 +150,16 @@ class Card(object):
                 fsClass = FS.get(card['attachments']['assigned'])
                 imgStr = Utils.prepareImage(fsClass)
                 prepareAttach = {
-                    'assigned_image' : imgStr,
-                    'assigned' : card['attachments']['assigned'],
-                    **card['attachments']
+                    **card['attachments'],
+                    'assigned' : imgStr,
+                    'file_id' : card['attachments']['assigned']
                     }
                 result.append({**card, "attachments": prepareAttach})
             else:
                 result.append({**card, "attachments": {
-                    'assigned_image' : None,
-                    'assigned' : card['attachments']['assigned'],
-                    **card['attachments']
+                    **card['attachments'],
+                    'assigned' : None,
+                    'file_id' : card['attachments']['assigned']
                 }})
 
         return result

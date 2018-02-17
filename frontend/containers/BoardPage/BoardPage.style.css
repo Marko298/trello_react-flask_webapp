@@ -64,6 +64,8 @@
     margin: 0 5px;
     display: inline-block;
     height: 100%;
+    overflow-x: hidden;
+    overflow-y: auto;
 
 }
 

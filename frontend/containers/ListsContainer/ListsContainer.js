@@ -1,13 +1,15 @@
 import React, {Component, Children} from 'react'
 import {connect} from 'react-redux'
 import {func} from 'prop-types'
-import {Link, withRouter} from 'react-router-dom'
-
+import {withRouter} from 'react-router-dom'
 //components
 import Title from '../../components/Title/Title'
 import Button from '../../components/Button/Button'
-
+//contianers
+import CardItem from '../CardItem/CardItem'
+//styles
 import './ListContainer.style.css'
+//actions
 import ListActions from '../../actions/ListAction';
 
 class ListsContainer extends Component {
@@ -50,14 +52,7 @@ class ListsContainer extends Component {
    )
    
    _renderCardWithAnchor = (card) => (
-        <Link to={{
-            pathname: `/card/${card._id}/${this.props._id}`,
-            state: {
-                modal: true
-            }
-        }}>
-            {card.title}
-        </Link>
+       <CardItem card={card} _id={this.props._id}/>
    )
 
     render() {

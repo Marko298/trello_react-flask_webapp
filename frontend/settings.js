@@ -127,6 +127,10 @@ class API {
         return `${this.url}/card/add_attachment/${cardId}`
     }
 
+    get_attachment(cardId) {
+        return `${this.url}/card/get_attachments/${cardId}`
+    }
+
     /**
     |--------------------------------------------------
     | COMMENT ENDPOINTS

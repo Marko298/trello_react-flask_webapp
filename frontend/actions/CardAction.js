@@ -22,6 +22,9 @@ import {
     CARD_UPDATE_REQUEST,
     CARD_UPDATE_SUCCESS,
     CARD_UPDATE_FAILED,
+    CARD_UPLOADED_ATTACHMENT_SUCCESS,
+    CARD_GET_ALL_ATTACHMENT_SUCESS,
+    CARD_ASSIGN_FILE
 } from '../constants/CardConstant'
 
 import axios from 'axios'
@@ -410,13 +413,20 @@ export default class CardActions {
         }
     }
 
+    static attachment_is_uploaded(response) {
+        return {
+            type: CARD_UPLOADED_ATTACHMENT_SUCCESS,
+            payload: response
+        }
+    }
+
     static add_attachment(cardId, image) {
       
         return (dispatch) => {
 
             dispatch(ToolsActions.is_file_start_upload())
 
-            axios({
+            return axios({
                 url: api.add_attachemnt(cardId),
                 method: 'POST',
                 headers: api.headers(),
@@ -424,18 +434,75 @@ export default class CardActions {
                 data: image,
                 onUploadProgress: function({loaded, total}) {
                     let percentCompleted = Math.round( (parseInt(loaded, 10) * 100) / parseInt(total, 10) );
-                    console.log({percentCompleted})
-                    dispatch(
-                        ToolsActions.file_upload_progress(percentCompleted)
-                    )
-
+                    dispatch( ToolsActions.file_upload_progress(percentCompleted))
                 }
-            }).then(({data}) => {
+            }).then( ({data}) => {
                 dispatch( ToolsActions.is_file_uploaded() )
-                console.log("SUCCESS", {data})
+                dispatch( CardActions.attachment_is_uploaded(data) )
+                console.log({data})
+                return Promise.resolve(data)
             }).catch(error => {
                 dispatch( ToolsActions.is_file_uploaded() )
                 console.log("CANNOT UPLOAD FILE",{error})
+            })
+        }
+    }
+
+    static get_all_attachment_success(attachments) {
+        return {
+            type: CARD_GET_ALL_ATTACHMENT_SUCESS,
+            payload: attachments
+        }
+    }
+
+    static get_all_attachments(cardId) {
+
+        return (dispatch) => {
+            return axios({
+                url: api.get_attachment(cardId),
+                method: 'GET',
+                headers: api.headers(),
+                withCredentials: true,
+            }).then( ({data}) => {
+
+                dispatch( CardActions.get_all_attachment_success(data) )
+
+                return Promise.resolve()
+            } ).catch(error => {
+                console.log("CANNOT GET")
+            })
+        }
+    }
+
+    static change_assigned_file(response) {
+        return {
+            type: CARD_ASSIGN_FILE,
+            payload: response
+        }
+    }
+
+    static assign_file(cardId, fileId) {
+        return (dispatch) => {
+
+            const prepareRequest = {
+                attachments: {
+                    assigned: fileId
+                }
+            }
+
+            return axios({
+                url: api.update_card(cardId),
+                method: "POST",
+                headers: api.headers(),
+                withCredentials: true,
+                data: JSON.stringify(prepareRequest)
+            }).then( ({data}) => {
+                console.log("SUCCESS file assigned", {data})
+                dispatch( CardActions.change_assigned_file(data) )
+
+                return Promise.resolve()
+            }).catch(error => {
+                console.log("SOMETHING FO WRONG")
             })
         }
     }

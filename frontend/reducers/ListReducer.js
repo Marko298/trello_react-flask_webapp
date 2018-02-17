@@ -35,6 +35,9 @@ import {
     CARD_UPDATE_REQUEST,
     CARD_UPDATE_SUCCESS,
     CARD_UPDATE_FAILED,
+    CARD_UPLOADED_ATTACHMENT_SUCCESS,
+    CARD_GET_ALL_ATTACHMENT_SUCESS,
+    CARD_ASSIGN_FILE
    
 } from '../constants/CardConstant'
 
@@ -593,7 +596,7 @@ export default function ListReducer(state=initialState, {type, payload, ...actio
                                 ...list,
                                 cards: list.cards.map(card => {
                                     if(card._id === _id) {
-                                        return {...card, ...payload}
+                                        return {...card, ...payload, attachments: {...card.attachments}}
                                     }
                                     return {...card}
                                 })
@@ -607,6 +610,122 @@ export default function ListReducer(state=initialState, {type, payload, ...actio
         }
         case CARD_UPDATE_FAILED: {
             return {...state}
+        }
+
+
+        case CARD_UPLOADED_ATTACHMENT_SUCCESS: {
+            const {forList, _id, attachments, attachments: {image} } = payload
+            return {
+                ...state,
+                boardProject: {
+                    lists: state.boardProject.lists.map(list => {
+                        if(list._id === forList) {
+                            return {
+                                ...list,
+                                cards: list.cards.map(card => {
+                                    if(card._id === _id) {
+                                        const _file = {file_id: attachments.file_id, image}
+                                        if(attachments.assigned) {
+                                            return {
+                                                ...card,
+                                                attachments: {
+                                                    assigned: attachments.image,
+                                                    assigned_id: attachments.file_id,
+                                                    files: [...card.attachments.files, _file]
+                                                }
+                                            }
+                                        }
+                                        return {
+                                            ...card,
+                                            attachments: {
+                                                ...card.attachments,
+                                                files: [...card.attachments.files, _file]
+                                            }
+                                        }
+                                    }
+                                    return card
+                                })
+                            }
+                        }
+                        return list
+                    })
+                }
+            }
+        }
+
+        case CARD_GET_ALL_ATTACHMENT_SUCESS: {
+            const {forList, _id, attachments: uploaded} = payload[0]
+            console.log("payload", payload[0], {forList}, {_id})
+            return {
+                ...state,
+                boardProject: {
+                    lists: state.boardProject.lists.map(list => {
+                        if(forList === list._id) {
+                            return {
+                                ...list,
+                                cards: list.cards.map(card => {
+                                    if (card._id === _id) {
+                                        return {
+                                            ...card,
+                                            attachments: {
+                                                ...card.attachments,
+                                                files: [...uploaded.files]
+                                            }
+                                        }
+                                    }
+                                    return card
+                                })
+                            }
+                        }
+                        return list
+                    })
+                }
+            }
+        }
+
+        case CARD_ASSIGN_FILE: {
+            const {forList, _id, attachments: {assigned: newAssignedId}} = payload
+            
+            function findImageInFiles(lokingId, arr) {
+                if (Array.isArray(arr.attachments.files)) {
+                    const files = arr.attachments.files
+                    const foundedImage = files.filter(a => a.file_id === lokingId)
+                    if(foundedImage.length === 0) {
+                        return
+                    } else if (foundedImage.length === 1) {
+                        return foundedImage[0].image
+                    }
+                }
+                return
+            }
+
+            return {
+                ...state,
+                boardProject: {
+                    lists: state.boardProject.lists.map(list => {
+                        if(list._id === forList) {
+                            return {
+                                ...list,
+                                cards: list.cards.map(card => {
+                                    if (card._id ==_id ) {
+                                        const assigned_image = findImageInFiles(newAssignedId, card)
+                                        return {
+                                            ...card,
+                                            attachments: {
+                                                ...card.attachments,
+                                                file_id: newAssignedId ? newAssignedId : null,
+                                                assigned: assigned_image ? assigned_image : null,
+                                            }
+                                        }
+                                    }
+                                    return card
+                                })
+                            }
+                        }
+                        return list
+                    })
+                }
+            }
         }
    
         default: {
