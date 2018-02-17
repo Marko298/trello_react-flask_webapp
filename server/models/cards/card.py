@@ -37,13 +37,35 @@ class Card(object):
 
         _, cursorCard = Card.get_card_by_id(self._id)
 
-        # fsClass = FS.get(filedId)
-
         return cursorCard, filedId
-    
+
+
+    def delete_attachment(self, fileId):
+        query = {'_id' : self._id} 
+        toRemoveFile = { 'attachments.files': fileId }
+
+        isRemoveFromFs = FS.delete(fileId)
+
+        try:
+            if isRemoveFromFs:
+                if fileId == self.attachments['assigned']:
+                    clearAssignment = { 'attachments.assigned': '' }
+                    Database.update_one(Card.collection, query, clearAssignment)
+
+                Database.delete_one_from_array(Card.collection, query, toRemoveFile)
+            
+            return {**query, 'forList' : self.forList, 'deletedFile' : fileId}
+        except:
+            raise "The file is not exist with — {} | id".format(fileId)
+
+
     def assign_attachment_file(self, fileId):
         query = {'_id': self._id}
-        Database.update_one(Card.collection, query, {'attachments.assigned': fileId})
+        if fileId == self.attachments['assigned']:
+            Database.update_one(Card.collection, query, {'attachments.assigned': ''})
+        else:
+            Database.update_one(Card.collection, query, {'attachments.assigned': fileId})
+            
         cursorCard = Database.find_one(Card.collection, query)
         return {**cursorCard, 'attachments': {'assigned': cursorCard['attachments']['assigned']}}
         # return {}
@@ -55,8 +77,18 @@ class Card(object):
             images = list()
             for ids in cursors['attachments']['files']:
                 fsClass = FS.get(ids)
+                
+                filename = fsClass.filename
+                uploadDate = fsClass.uploadDate
+
                 imgStr = Utils.prepareImage(fsClass)
-                imageDict = {'file_id': ids, 'image': imgStr}
+
+                imageDict = {
+                    'file_id': ids,
+                    'image': imgStr,
+                    'filename': filename,
+                    'uploadDate': uploadDate
+                }
                 images.append(imageDict)
 
             cardWithImage.append({

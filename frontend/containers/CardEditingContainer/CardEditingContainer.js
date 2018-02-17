@@ -10,6 +10,8 @@ import Textarea from '../../components/Textarea/Textarea'
 import Avatarka from '../../components/Avatarka/Avatarka'
 import FormForEditing from '../../components/FormForEditing/FormForEditing'
 import CommentForm from '../../components/CommentForm/CommentForm'
+import Timestamp from '../../components/Timestamp/Timestamp'
+import AttachmentFileItem from '../../components/AttachmentFileItem/AttachmentFileItem'
 //HOC
 import withToggleBTWComponents from '../../HOC/withToggleBTWComponents'
 import withEditMode from '../../HOC/withEditMode'
@@ -49,12 +51,15 @@ class CardEditingContainer extends Component {
     }
 
     componentDidMount() {
-        // if(this.props.list.cards.attachments.files)
-        
-        this.setState( (state) => ({ ...state,  isAttachmentLoading: true}))
-        this.props.get_all_attachmants().then(() => {
-            this.setState( (state) => ({ ...state, comment: '', isAttachmentLoading: false }))
-        })
+        const isAttachmentsExist = this.props.list.cards.attachments.files.length > 0
+
+        if(isAttachmentsExist) {
+            this.setState( (state) => ({ ...state,  isAttachmentLoading: true}))
+            this.props.get_all_attachmants().then(() => {
+                this.setState( (state) => ({ ...state, comment: '', isAttachmentLoading: false }) )
+            })
+        }
+
     }
 
     handleCreateCommentClick = (e) => {
@@ -64,9 +69,19 @@ class CardEditingContainer extends Component {
             this.setState( (state) => ({ ...state, comment: '', isCommentCreated: false }))
         })
     }
+    
+    handleClickRemoveFile = (fileId) => (event) => {
+        this.setState( (state) => ({ ...state, isAttachmentLoading: true }) )
+        this.props.remove_attachment(fileId).then(() => {
+            this.setState( (state) => ({ ...state, isAttachmentLoading: false }) )
+        })
+    }
 
     handleClickAssignFile = (file_id) => (e) => {
-        this.props.assign_file(file_id)
+        this.setState( (state) => ({ ...state, isAttachmentLoading: true }) )
+        this.props.assign_file(file_id).then(() => {
+            this.setState( (state) => ({ ...state, isAttachmentLoading: false }) )
+        })
     }
 
 
@@ -104,7 +119,12 @@ class CardEditingContainer extends Component {
             }
         }
 
-        console.log({cards})
+
+        const isObject = Array.isArray(cards.attachments.files) && cards.attachments.files.every(function(a) {
+            return typeof a === 'object'
+        })
+
+        console.log({cards}, isObject)
 
         return (
             <div>
@@ -116,6 +136,7 @@ class CardEditingContainer extends Component {
                         backgroundColor: '#CDD2D4'
                     }}>
                         {cards.attachments.assigned && <div style={{width: '300px'}}>
+                            
                             <img src={cards.attachments.assigned} style={{width: '100%'}}/>
                         </div>}
                     </div>
@@ -142,25 +163,25 @@ class CardEditingContainer extends Component {
                             description={cards.description} 
                             Theme={Theme.Description}
                         />
-
-                        <div className='attachment-container'>
-                            <Title text='Attachment' medium bold/>
-                            {cards.attachments.files.map(fileObj => {
-                                const textForButton = fileObj.file_id === cards.attachments.file_id
-                                return (
-                                    <div style={{width: '110px'}} key={fileObj.file_id}>
-                                        <img src={fileObj.image} style={{width: '100%'}}/>
-                                        <button onClick={this.handleClickAssignFile(fileObj.file_id)}>
-                                            {textForButton ? "remove cover" : "assing cover"}
-                                        </button>
-                                    </div>
-                                )
-                            })}
-                        </div>
+                        {isObject && (
+                            <div className='attachment-container'>
+                                <Title text='Attachment' medium bold color='rgb(51,51,51)'/>
+                                {cards.attachments.files.map(fileObj => {
+                                    const textForButton = fileObj.file_id === cards.attachments.file_id
+                                    return <AttachmentFileItem 
+                                        {...fileObj}
+                                        disabled={isAttachmentLoading}
+                                        textForButton={textForButton} 
+                                        handleClickAssignFile={this.handleClickAssignFile}
+                                        handleClickRemoveFile={this.handleClickRemoveFile}
+                                    />
+                                })}
+                            </div>
+                        )}
 
                         <div id='checklistwrapper'>
                             <div>
-                                {cards.checklists.map(checklist => {
+                                {isObject && cards.checklists.map(checklist => {
                                     return <CheckList key={checklist._id} {...checklist}/>
                                 })}
                             </div>
@@ -270,8 +291,12 @@ const mapDispatchToProps = (dispatch, ownProps) => ({
     },
     assign_file(fileId) {
         const {cardId} = ownProps.match.params
-
+        
         return dispatch(CardActions.assign_file(cardId, fileId))
+    },
+    remove_attachment(file) {
+        const {cardId} = ownProps.match.params
+        return dispatch( CardActions.remove_attachment(cardId, file) )
     }
 })
 

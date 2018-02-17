@@ -37,7 +37,8 @@ import {
     CARD_UPDATE_FAILED,
     CARD_UPLOADED_ATTACHMENT_SUCCESS,
     CARD_GET_ALL_ATTACHMENT_SUCESS,
-    CARD_ASSIGN_FILE
+    CARD_ASSIGN_FILE,
+    CARD_REMOVE_ATTACHMENT
    
 } from '../constants/CardConstant'
 
@@ -614,7 +615,7 @@ export default function ListReducer(state=initialState, {type, payload, ...actio
 
 
         case CARD_UPLOADED_ATTACHMENT_SUCCESS: {
-            const {forList, _id, attachments, attachments: {image} } = payload
+            const {forList, _id, attachments, attachments: {image, filename, uploadDate} } = payload
             return {
                 ...state,
                 boardProject: {
@@ -624,7 +625,12 @@ export default function ListReducer(state=initialState, {type, payload, ...actio
                                 ...list,
                                 cards: list.cards.map(card => {
                                     if(card._id === _id) {
-                                        const _file = {file_id: attachments.file_id, image}
+                                        const _file = {
+                                            file_id: attachments.file_id, 
+                                            image,
+                                            filename,
+                                            uploadDate
+                                        }
                                         if(attachments.assigned) {
                                             return {
                                                 ...card,
@@ -715,6 +721,40 @@ export default function ListReducer(state=initialState, {type, payload, ...actio
                                                 ...card.attachments,
                                                 file_id: newAssignedId ? newAssignedId : null,
                                                 assigned: assigned_image ? assigned_image : null,
+                                            }
+                                        }
+                                    }
+                                    return card
+                                })
+                            }
+                        }
+                        return list
+                    })
+                }
+            }
+        }
+
+        case CARD_REMOVE_ATTACHMENT: {
+            const {_id, forList, deletedFile} = payload
+            return {
+                ...state,
+                boardProject: {
+                    lists: state.boardProject.lists.map((list) => {
+                        if(forList === list._id) {
+                            return {
+                                ...list,
+                                cards: list.cards.map(card => {
+                                    if(card._id === _id) {
+                                        const cardAttach = card.attachments
+                                        const isRemovedFileWasAssigned = cardAttach.file_id === deletedFile
+                                        return {
+                                            ...card,
+                                            attachments: {
+                                                files: cardAttach.files.filter(file => {
+                                                    return file.file_id !== deletedFile
+                                                }),
+                                                file_id: isRemovedFileWasAssigned ? null : cardAttach.file_id,
+                                                assigned: isRemovedFileWasAssigned ? null : cardAttach.assigned
                                             }
                                         }
                                     }

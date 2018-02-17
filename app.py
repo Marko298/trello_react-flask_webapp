@@ -462,11 +462,13 @@ def update_card(cardId):
 
         if len(CONTENT) is not 0:
             classCard, _ = Card.get_card_by_id(cardId)
-            print("CONTENT {}".format(CONTENT))
+            
+            attachments = CONTENT.get('attachments')
 
-            if CONTENT.get('attachments') is not None and CONTENT.get('attachments')['assigned'] is not None:
-                updatedCard = classCard.assign_attachment_file(CONTENT.get('attachments')['assigned'])
-                print ("WE GOT SOMETINH", CONTENT.get('attachments')['assigned'])
+
+            if attachments is not None and attachments['assigned'] is not None:
+                updatedCard = classCard.assign_attachment_file(attachments['assigned'])
+                print ("WE GOT SOMETINH", attachments['assigned'])
                 return jsonify(updatedCard)
 
             updatedFields = dict(
@@ -565,6 +567,22 @@ def remove_item(checklistId, itemId):
 
         return jsonify(result)
 
+
+@app.route('/card/remove_attachment/<string:cardId>', methods=['DELETE'])
+def delete_attachment_from_card(cardId):
+    if request.method == 'DELETE' and request.is_json:
+        CONTENT = request.get_json()
+
+        fileId = CONTENT.get('file')
+
+        classCard, _ = Card.get_card_by_id(cardId)
+
+        deletedFile = classCard.delete_attachment(fileId)
+
+        return jsonify(deletedFile)
+
+
+
 @app.route('/card/get_all_cards/<string:boardId>')
 def get_all_cards(boardId):
     cardsCursor =  Card.get_card_by_boardId(boardId)
@@ -600,7 +618,9 @@ def add_attachment_to_card(cardId):
         'attachments' : {
             'file_id' : newImageId,
             'image' : imageStr,
-            'assigned' : assignedImage
+            'assigned' : assignedImage,
+            'filename' : fsClass.filename,
+            'uploadDate' : fsClass.uploadDate
         }
     }
     

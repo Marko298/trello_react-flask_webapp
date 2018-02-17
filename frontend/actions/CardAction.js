@@ -24,7 +24,8 @@ import {
     CARD_UPDATE_FAILED,
     CARD_UPLOADED_ATTACHMENT_SUCCESS,
     CARD_GET_ALL_ATTACHMENT_SUCESS,
-    CARD_ASSIGN_FILE
+    CARD_ASSIGN_FILE,
+    CARD_REMOVE_ATTACHMENT
 } from '../constants/CardConstant'
 
 import axios from 'axios'
@@ -503,6 +504,36 @@ export default class CardActions {
                 return Promise.resolve()
             }).catch(error => {
                 console.log("SOMETHING FO WRONG")
+            })
+        }
+    }
+
+    static card_remove_attachment(response) {
+        return {
+            type: CARD_REMOVE_ATTACHMENT,
+            payload: response
+        }
+    }
+
+    static remove_attachment(cardId, fileId) {
+        return dispatch => {
+
+            const prepareRequest = {'file': fileId}
+
+            return axios({
+                url: api.remove_attachment(cardId),
+                headers: api.headers(),
+                method: "DELETE",
+                withCredentials: true,
+                data: JSON.stringify(prepareRequest)
+            }).then( ({data}) => {
+
+                dispatch(CardActions.card_remove_attachment(data))
+                console.log("REMOVED SUCCESSFULL", {data})
+
+                return Promise.resolve()
+            }).catch(error => {
+                console.log("CANT REMOVE FILE")
             })
         }
     }

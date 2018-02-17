@@ -58,3 +58,12 @@ class FS(object):
     def get(fileId):
         objectId = ObjectId(fileId)
         return FS.DATABASE.get(objectId)
+
+    @staticmethod
+    def delete(fileId):
+        objectId = ObjectId(fileId)
+        if FS.DATABASE.exists(objectId):
+            FS.DATABASE.delete(objectId)
+            return True
+        else:
+            return False

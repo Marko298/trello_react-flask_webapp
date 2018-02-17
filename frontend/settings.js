@@ -131,6 +131,10 @@ class API {
         return `${this.url}/card/get_attachments/${cardId}`
     }
 
+    remove_attachment(cardId) {
+        return `${this.url}/card/remove_attachment/${cardId}`
+    }
+
     /**
     |--------------------------------------------------
     | COMMENT ENDPOINTS
