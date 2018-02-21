@@ -1,6 +1,7 @@
 import React, {Fragment, Children, cloneElement} from 'react'
 import {withRouter} from 'react-router-dom'
 import {connect} from 'react-redux'
+import update from 'immutability-helper'
 //styles
 import './BoardList.style.css'
 //compoenents
@@ -18,7 +19,8 @@ import BoardActions from '../../actions/BoardAction';
 
 class BoardsList extends React.Component {
     state = {
-        isShow: true
+        isShow: true,
+        // organization: this.props.boardsGroup
     }
     static defaultProps = {
         boards:  [
@@ -34,6 +36,16 @@ class BoardsList extends React.Component {
             Board: {}
         },
         title: ''
+    }
+
+    moveBoard = (dragIndex, hoverIndex) => {
+        console.log("moveBoard", dragIndex, hoverIndex)
+
+        // this.setState( (state) => {
+        //     return update(state, {
+        //         organization: {}
+        //     })
+        // })
     }
     propsCollection = (_id='') => ( {props}={} ) => {
         return {
@@ -85,6 +97,8 @@ class BoardsList extends React.Component {
                                         {team['boards'] instanceof Array 
                                             ? team.boards.map( (board, idx) => (
                                                 <Board
+                                                    moveBoard={this.moveBoard}
+                                                    index={idx}
                                                     status={status}
                                                     Theme={SingleBoard}
                                                     {...board} 

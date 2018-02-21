@@ -7,7 +7,7 @@ import './NavigationBar.style.css'
     render() {
         return (
             <nav className='navigation-bar'>
-                <a href='https://github.com/PashaSchool' className="logo-githab-author-link">
+                <a href='https://github.com/PashaSchool' className="logo-githab-author-link" target='_blank'>
                     <i className="fab fa-github"></i>
                 </a>
                 <div className='navigation-bar__right'>

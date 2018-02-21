@@ -39,6 +39,8 @@ from server.models.checklist.checklist import Checklist
 app = Flask(__name__,  template_folder="static/")
 
 
+app.config['MONGO_DBNAME'] = 'trello'
+app.config['MONGO_URI'] = 'mongodb://pavlo_kuzina:123123@ds245228.mlab.com:45228/trello'
 app.secret_key = 'A0Zr98j/3yX R~XHH!jmN]LWX/,?RT'
 
 #### FOR TESTING PURPOSE
@@ -72,9 +74,10 @@ def isHaveImage(team):
     #     return {**team, 'photo': photo}
     # return team
 
+
 @app.before_first_request
 def init_db():
-    Database.initialize()
+    Database.initialize(app)
 
 
 @app.route("/")

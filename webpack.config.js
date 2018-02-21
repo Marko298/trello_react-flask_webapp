@@ -40,7 +40,7 @@ module.exports = {
     devServer: {
         contentBase: path.resolve(__dirname, "static/"),
         host: 'localhost',
-        port: 3000,
+        port: 3005,
         hot: true,
         stats: "errors-only",
         open: true,

@@ -1,5 +1,6 @@
 from pymongo import MongoClient
 from gridfs import GridFS
+from flask_pymongo import PyMongo
 from bson import ObjectId
 
 class Database(object):
@@ -7,9 +8,11 @@ class Database(object):
     DATABASE = None
 
     @staticmethod
-    def initialize():
-        client = MongoClient(Database.URI)
-        Database.DATABASE = client['trello']
+    def initialize(app):
+        mongo = PyMongo(app)
+        # client = MongoClient(Database.URI)
+        # Database.DATABASE = client['trello']
+        Database.DATABASE = mongo.db
         FS.DATABASE = GridFS(Database.DATABASE)
         
 

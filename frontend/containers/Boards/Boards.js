@@ -141,8 +141,8 @@ class Boards extends Component {
 
     }
     
-    renderChildren = (boards, important, Theme) => Children.map(
-            this.props.children,
+    renderChildren = (boards, important, Theme) => 
+        Children.map(this.props.children,
             child => cloneElement(child, {boards, important, Theme})
         )
 

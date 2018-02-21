@@ -1,6 +1,7 @@
 import React, {Component} from 'react'
 import PropTypes from 'prop-types'
 import {connect} from 'react-redux'
+import {compose} from 'redux'
 import {Link, withRouter} from 'react-router-dom'
 //actions
 import {toggleIsImportant} from '../../actions/BoardAction'
@@ -13,6 +14,25 @@ import {Color} from '../../__asssets/color'
 //styles
 import './Board.css'
 
+//DND
+import Type from '../../types'
+import {DragSource} from 'react-dnd'
+
+
+const boardTarget = {
+    beginDrag({_id, index}, monitor, component) {
+        console.log("BIGN DROP", {index,_id})
+
+        return {index,_id}
+    }
+}
+
+function collect(connect, monitor) {
+    return {
+        connectDragSource: connect.dragSource(),
+        isDragging: monitor.isDragging()
+    }
+}
 
 class Board extends Component {
     state = {
@@ -27,6 +47,7 @@ class Board extends Component {
             container: ''
         }
     }
+
 
     componentDidMount() {
         this.setState((prevState) => {
@@ -49,7 +70,7 @@ class Board extends Component {
 
     }
     render() {
-        
+
         const {
             isImportant, 
             boardName,
@@ -59,13 +80,14 @@ class Board extends Component {
             styleSettings,
             status
         } = this.props
-        const {Theme: {container, isImortant, title, SettingBoard}} = this.props
+
+        const {Theme: {container, isImortant, title, SettingBoard}, connectDragSource, isDragging} = this.props
         const {isChecked} = this.state
 
-        // title: 'title-for-single-board',
-        // isImortant: 'is-important'
-        return (
-            <li style={{...styleSettings}} className={container}>
+        const opacity = isDragging ? 0 : 1
+
+        return connectDragSource(
+            <li style={{...styleSettings, opacity}} className={container}>
                 <Link to={{
                     state: {
                         boardId: _id,
@@ -100,10 +122,6 @@ class Board extends Component {
         )
     }
 }
-// {isChecked ? <i className="fas fa-star"></i> : <i className="far fa-star"></i>}
-// {
-//     isChecked ? <i class="far fa-star"></i> : null
-// }
 
 const mapDispatchToProps = (dispatch) => ({
     toggleIsImportant(id, data) {
@@ -111,5 +129,14 @@ const mapDispatchToProps = (dispatch) => ({
     }
 })
 
-// export default connect(null, mapDispatchToProps)(Board)
-export default withRouter(connect(null, mapDispatchToProps)(Board))
+
+
+// export default withRouter(
+//     connect(null, mapDispatchToProps)(DragSource(Type.BOARD, boardTarget, collect)(Board))
+// )
+
+export default compose(
+    withRouter,
+    DragSource(Type.BOARD, boardTarget, collect),
+    connect(null, mapDispatchToProps)
+)(Board)

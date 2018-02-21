@@ -196,8 +196,8 @@ export default class BoardActions {
                dispatch(CardActions.get_schema_card_request())
             ]).then((responseArray) => {
 
-                let boards = responseArray[0]
-                let teams = responseArray[1]
+
+                const [boards, teams, listSc, cardSc] = responseArray
 
                 if(boards.length === 0 && teams.length === 0) {
                     dispatch(BoardActions.boardRequestGetSuccess([]))

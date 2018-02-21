@@ -22,8 +22,8 @@ let defaultLabels = [
 ]
 
 const initialState = {
-    userId: "cbc51241a8bc485d88107ff09f016887",
-    // userId: null,
+    // userId: "cbc51241a8bc485d88107ff09f016887",
+    userId: null,
     email: null,
     error: null,
     isLoading: false,
