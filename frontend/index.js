@@ -14,25 +14,34 @@ import { AppContainer } from 'react-hot-loader'
 
 const logger = createLogger();
 
-const store = createStore(reducer, applyMiddleware(thunk, logger));
+const store = createStore(reducer, applyMiddleware(thunk));
+// const store = createStore(reducer, applyMiddleware(thunk, logger));
 
+// {/* <App/> */}
 
-const render = Component => {
-    ReactDOM.render(
-        <AppContainer>
-            <Provider store={store}>
-                <Component/>
-            </Provider>
-        </AppContainer>,
-        document.getElementById("app")
-    )
-}
+ReactDOM.render(
+    <Provider store={store}>
+        <App/>
+    </Provider>,
+    document.getElementById("app")
+)
 
-render(App)
+// const render = Component => {
+//     ReactDOM.render(
+//         <AppContainer>
+//             <Provider store={store}>
+//                 <Component/>
+//             </Provider>
+//         </AppContainer>,
+//         document.getElementById("app")
+//     )
+// }
 
-if (module.hot) {
-    module.hot.accept('./App', () => {
-        const newApp = require('./App').default
-      render(newApp)
-    })
-  }
+// render(App)
+
+// if (module.hot) {
+//     module.hot.accept('./App', () => {
+//         const newApp = require('./App').default
+//       render(newApp)
+//     })
+//   }

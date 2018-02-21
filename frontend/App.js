@@ -4,7 +4,7 @@ import Routes from './routes/Routes'
 import Button from './components/Button/Button'
 import Title from './components/Title/Title'
 
-import MyTagControlContext from './dnd'
+// import MyTagControlContext from './dnd'
 
 
 //styles
@@ -18,4 +18,5 @@ class App extends Component {
     }
 }
 
-export default MyTagControlContext(App)
+// export default MyTagControlContext(App)
+export default App

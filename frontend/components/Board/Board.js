@@ -14,25 +14,25 @@ import {Color} from '../../__asssets/color'
 //styles
 import './Board.css'
 
-//DND
-import Type from '../../types'
-import {DragSource} from 'react-dnd'
+// //DND
+// import Type from '../../types'
+// import {DragSource} from 'react-dnd'
 
 
-const boardTarget = {
-    beginDrag({_id, index}, monitor, component) {
-        console.log("BIGN DROP", {index,_id})
+// const boardTarget = {
+//     beginDrag({_id, index}, monitor, component) {
+//         console.log("BIGN DROP", {index,_id})
 
-        return {index,_id}
-    }
-}
+//         return {index,_id}
+//     }
+// }
 
-function collect(connect, monitor) {
-    return {
-        connectDragSource: connect.dragSource(),
-        isDragging: monitor.isDragging()
-    }
-}
+// function collect(connect, monitor) {
+//     return {
+//         connectDragSource: connect.dragSource(),
+//         isDragging: monitor.isDragging()
+//     }
+// }
 
 class Board extends Component {
     state = {
@@ -81,13 +81,13 @@ class Board extends Component {
             status
         } = this.props
 
-        const {Theme: {container, isImortant, title, SettingBoard}, connectDragSource, isDragging} = this.props
+        const {Theme: {container, isImortant, title, SettingBoard}} = this.props
         const {isChecked} = this.state
 
-        const opacity = isDragging ? 0 : 1
+        // const opacity = isDragging ? 0 : 1
 
-        return connectDragSource(
-            <li style={{...styleSettings, opacity}} className={container}>
+        return (
+            <li style={{...styleSettings}} className={container}>
                 <Link to={{
                     state: {
                         boardId: _id,
@@ -135,8 +135,10 @@ const mapDispatchToProps = (dispatch) => ({
 //     connect(null, mapDispatchToProps)(DragSource(Type.BOARD, boardTarget, collect)(Board))
 // )
 
-export default compose(
-    withRouter,
-    DragSource(Type.BOARD, boardTarget, collect),
-    connect(null, mapDispatchToProps)
-)(Board)
+// export default compose(
+//     withRouter,
+//     DragSource(Type.BOARD, boardTarget, collect),
+//     connect(null, mapDispatchToProps)
+// )(Board)
+
+export default withRouter(connect(null, mapDispatchToProps)(Board))
