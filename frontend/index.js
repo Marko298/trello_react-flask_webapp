@@ -17,11 +17,11 @@ const logger = createLogger();
 const store = createStore(reducer, applyMiddleware(thunk));
 // const store = createStore(reducer, applyMiddleware(thunk, logger));
 
-// {/* <App/> */}
 
+ // <App/>
 ReactDOM.render(
     <Provider store={store}>
-        <App/>
+        <div>Hello React</div>
     </Provider>,
     document.getElementById("app")
 )
