@@ -1,7 +1,8 @@
 
 class API {
     constructor() {
-        this.url = 'http://localhost:4004'
+        // this.url = 'http://localhost:4004'
+        this.url = ''
     }
     
     headers = () => ({

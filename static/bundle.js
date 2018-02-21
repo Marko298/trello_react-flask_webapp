@@ -10252,7 +10252,8 @@ var API = function () {
             };
         };
 
-        this.url = 'http://localhost:4004';
+        // this.url = 'http://localhost:4004'
+        this.url = '';
     }
 
     _createClass(API, [{
