@@ -1,7 +1,7 @@
 
 class API {
     constructor() {
-        this.url = 'http://localhost:4000'
+        this.url = 'http://localhost:4004'
     }
     
     headers = () => ({

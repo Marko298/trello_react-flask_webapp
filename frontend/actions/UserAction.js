@@ -47,7 +47,6 @@ export default class UserActions {
                 method: 'post',
                 headers: api.headers(),
                 data: JSON.stringify(data),
-                withCredentials: true
             }).then(({data}) => {
 
                 dispatch(UserActions.userRequestLogined(data))

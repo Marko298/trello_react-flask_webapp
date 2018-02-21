@@ -24,7 +24,6 @@ function Input(props) {
                 onBlur={onBlur}
                 className='input'
                 type={type}
-                ref={n => this.node = n}
                 name={name}
                 placeholder={`Type from ${label}`}
                 onChange={handleChange(name)}

@@ -10,18 +10,18 @@ import App from './App'
 import {createLogger} from 'redux-logger'
 
 //HMR
-import { AppContainer } from 'react-hot-loader'
+// import { AppContainer } from 'react-hot-loader'
 
-const logger = createLogger();
+// const logger = createLogger();
 
 const store = createStore(reducer, applyMiddleware(thunk));
 // const store = createStore(reducer, applyMiddleware(thunk, logger));
 
 
- // <App/>
+//  <div>Hello React</div>
 ReactDOM.render(
     <Provider store={store}>
-        <div>Hello React</div>
+        <App/>
     </Provider>,
     document.getElementById("app")
 )
