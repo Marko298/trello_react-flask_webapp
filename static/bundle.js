@@ -35922,12 +35922,16 @@ var logger = (0, _reduxLogger.createLogger)();
 var store = (0, _redux.createStore)(_reducers.reducer, (0, _redux.applyMiddleware)(_reduxThunk2.default));
 // const store = createStore(reducer, applyMiddleware(thunk, logger));
 
-// {/* <App/> */}
 
+// <App/>
 _reactDom2.default.render(_react2.default.createElement(
     _reactRedux.Provider,
     { store: store },
-    _react2.default.createElement(_App2.default, null)
+    _react2.default.createElement(
+        'div',
+        null,
+        'Hello React'
+    )
 ), document.getElementById("app"));
 
 // const render = Component => {
