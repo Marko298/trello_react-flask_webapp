@@ -25,6 +25,7 @@ import {
     BOARD_UPDATE_REQUEST,
     BOARD_UPDATE_SUCCESS,
     BOARD_UPDATE_FAILED,
+    CREATED_NEW_LIST_FOR_BOARD
 } from '../constants/BoardConstant'
 
 import Utils from '../utils'
@@ -81,6 +82,25 @@ export default function BoardReducer(state=innitialState, {type, payload, progre
                     return {...team}
                 })
             }
+        }
+
+        case CREATED_NEW_LIST_FOR_BOARD: {
+            
+            const testTeams = state.teams.map(team => {
+                
+                const boardOfTeam = team.boards.map(board => {
+                    if(board._id === payload.forBoard) {
+                        return {
+                            ...board,
+                            lists: [...board.lists, payload._id]
+                        }
+                    }
+                    return {...board}
+                })
+                return {...team, boards: [...boardOfTeam]}
+            })
+            
+            return {...state, teams: testTeams}
         }
            
            

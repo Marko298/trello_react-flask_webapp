@@ -69,7 +69,7 @@ class Login extends Component{
             : {primary: true, disabled: false}
 
         return (
-            <div {...this.props}>
+            <div {...this.props} className='authenth-container'>
                 <FormWithValidation
                     {...this.props.custom_style}
                     submit={this.onSubmit}

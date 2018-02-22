@@ -23,6 +23,7 @@ import {
     BOARD_UPDATE_REQUEST,
     BOARD_UPDATE_SUCCESS,
     BOARD_UPDATE_FAILED,
+    CREATED_NEW_LIST_FOR_BOARD
 
 } from '../constants/BoardConstant'
 
@@ -44,6 +45,7 @@ export default class BoardActions {
         return {type: BOARD_REQUEST_ERROR, error: message}
     }
     static boardRequestGetSuccess(data) {
+        console.log({data})
         return {type: BOARD_REQUEST_GET_SUCCESS, payload: data}
     }
 
@@ -76,7 +78,7 @@ export default class BoardActions {
                         status: '__PRIVATE__',
                         _id: userId,
                         boards: [],
-                        title: name || 'Pasha School'
+                        title: name 
                     })
                 }
 
@@ -88,6 +90,10 @@ export default class BoardActions {
                 // BoardActions.boardRequestFailed(message)
             })
         }
+    }
+
+    static createdNewList(listId) {
+        return {type: CREATED_NEW_LIST_FOR_BOARD, payload: listId}
     }
 
     static toggleIsImportant(boardId, data) {
@@ -185,7 +191,7 @@ export default class BoardActions {
     }
 
     static fetchBoardsAndTeams() {
-        return (dispatch) => {
+        return (dispatch, getState) => {
 
             dispatch(BoardActions.boardRequest())
 
@@ -195,20 +201,31 @@ export default class BoardActions {
                 dispatch(ListActions.get_list_schema()),
                dispatch(CardActions.get_schema_card_request())
             ]).then((responseArray) => {
-
-
+                const state = getState()
                 const [boards, teams, listSc, cardSc] = responseArray
+                const {boards: userBoards} = state.user
+                const isUserHaveBoards = userBoards.length > 0 ? true : false
+
+                const {userId, name } = state.user
+                const teamForUser = {
+                    _id: userId,
+                    title: name,
+                    boards: userBoards,
+                    photo: '',
+                    websites: ''
+                }
 
                 if(boards.length === 0 && teams.length === 0) {
-                    dispatch(BoardActions.boardRequestGetSuccess([]))
+                    dispatch(BoardActions.boardRequestGetSuccess([teamForUser]))
                     return "Nothink to upload"
                 }
 
                 if(boards.length === 0 && teams.length > 0) {
                     let teamsWithBoard = Utils.reduceTeamToBoard(teams)
-                    dispatch(BoardActions.boardRequestGetSuccess(teamsWithBoard))
+                    dispatch(BoardActions.boardRequestGetSuccess([teamsWithBoard, teamForUser]))
                     return
                 }
+
 
                 let withTeams = Utils.partialReverse(
                     Utils.setMissedFieldsToBoardsFromTeams,
@@ -223,15 +240,29 @@ export default class BoardActions {
                 )(boards)
 
                 let teamsWithoutBoardsWithoutStatus = teams.filter(team => team.boards.length === 0)
-                if (teamsWithoutBoardsWithoutStatus.length > 0) {
+                const isHaveSomeTeamWithoutBoards = teamsWithoutBoardsWithoutStatus.length > 0
+
+                if (!isUserHaveBoards) {
+                    
+                    boardsWithAllTeamField = [...boardsWithAllTeamField, teamForUser]
+                } 
+
+                if (isHaveSomeTeamWithoutBoards) {
 
                     let teamsWithoutBoardsWithoutStatusMaps = teamsWithoutBoardsWithoutStatus.map( (team) => {
-                        return boardsWithAllTeamField.concat( [{...team, title: team.teamName}] )
-                    })[0]
+                        const preparedTeam = {
+                            _id: team._id,
+                            title: team.teamName,
+                            boards: team.boards,
+                            photo: team.photo,
+                            website: team.website,
+                        }
+                        return  preparedTeam
+                    })
 
-                   dispatch(BoardActions.boardRequestGetSuccess(teamsWithoutBoardsWithoutStatusMaps))
+                   const mergeTeams = [...teamsWithoutBoardsWithoutStatusMaps, ...boardsWithAllTeamField]
+                   dispatch(BoardActions.boardRequestGetSuccess(mergeTeams))
                    return
-
                 }
 
                 dispatch(BoardActions.boardRequestGetSuccess(boardsWithAllTeamField))

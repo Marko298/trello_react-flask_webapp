@@ -54,7 +54,9 @@ class AddBoardForm extends Component {
 
     handleClick = () => {
         const {selected, title, bacground} = this.state
-        const {create_board, toggle} = this.props
+        const {create_board, toggle, userId} = this.props
+        const selectedDefault = selected ? selected : userId
+
         const boardSchema = {
             boardName: title,
             styleSettings: {
@@ -62,7 +64,7 @@ class AddBoardForm extends Component {
             }
         }
 
-        create_board(boardSchema, selected).then(resp => {
+        create_board(boardSchema, selectedDefault).then(resp => {
             // if(isEditBoardShow) {
             //     toggle()
             // }
@@ -101,12 +103,39 @@ class AddBoardForm extends Component {
                 bacground: color
             }
         })
+
     }
 
     _close_menu = (e) => {
         const {isPopupShow, withOverlayScene} = this.props
         isPopupShow && this.props.close_menu()
         withOverlayScene &&  this.props.close_overlay()
+    }
+
+    _renderDropDown = () => {
+        const {selected, teams, userId} = this.props
+        const selectedIsObject = typeof selected === 'object'
+
+        if(selectedIsObject && Object.keys(selected).length === 0) {
+            return teams.map( ({
+                _id,
+                title,
+            }) => {
+                return (
+                    <option key={_id} value={_id} selected={userId === _id}>
+                        {title}
+                    </option>
+                )
+            })
+        }
+
+        return teams.map(team => {
+            return (
+                <option key={team._id} value={team._id} selected={
+                    selected === team._id ? team.title : ''
+                }>{team.title}</option>
+            )
+        })
     }
 
     render() {
@@ -141,7 +170,6 @@ class AddBoardForm extends Component {
                                     placeholder="Title for board ..."
                                 />
 
-
                                 <Button onClick={this._close_menu}>
                                     <i className='fas fa-times'/>
                                 </Button>
@@ -149,13 +177,7 @@ class AddBoardForm extends Component {
 
                             <div className='form-fieldset '>
                                 <select name="selected" onChange={this.handleChange} className="select-drop-down" >
-                                    { teams.map(team => {
-                                        return (
-                                            <option key={team._id} value={team._id} selected={
-                                                selected === team._id ? team.title : ''
-                                            }>{team.title}</option>
-                                        )
-                                    }) }
+                                    {this._renderDropDown()}
                                 </select>
                             </div>
                         </div>
@@ -181,7 +203,7 @@ class AddBoardForm extends Component {
     }
 }
 
-const mapStateToProps = ({mode, organizations: {teams}}) => ({
+const mapStateToProps = ({mode, organizations: {teams}, user: {userId} }) => ({
     teams: teams.map((group) => {
         if(group.title !== "__PRIVATE__" && group.title !== "__IMPORTANT__") {
             return {title: group.title, _id: group._id}
@@ -189,7 +211,8 @@ const mapStateToProps = ({mode, organizations: {teams}}) => ({
     }).filter(b => b),
     selected: mode.selected,
     withOverlayScene: mode.withOverlayScene,
-    isPopupShow: mode.forms.isPopupShow
+    isPopupShow: mode.forms.isPopupShow,
+    userId
 })
 
 const mapDispatchToProps = (dispatch) => ({

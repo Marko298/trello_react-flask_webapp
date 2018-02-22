@@ -46,6 +46,7 @@ export default class UserActions {
                 url: api.login_user,
                 method: 'post',
                 headers: api.headers(),
+                withCredentials: true,
                 data: JSON.stringify(data),
             }).then(({data}) => {
 

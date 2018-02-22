@@ -10,38 +10,38 @@ import App from './App'
 import {createLogger} from 'redux-logger'
 
 //HMR
-// import { AppContainer } from 'react-hot-loader'
+import { AppContainer } from 'react-hot-loader'
 
-// const logger = createLogger();
+const logger = createLogger();
 
-const store = createStore(reducer, applyMiddleware(thunk));
-// const store = createStore(reducer, applyMiddleware(thunk, logger));
+// const store = createStore(reducer, applyMiddleware(thunk));
+const store = createStore(reducer, applyMiddleware(thunk, logger));
 
 
 //  <div>Hello React</div>
-ReactDOM.render(
-    <Provider store={store}>
-        <App/>
-    </Provider>,
-    document.getElementById("app")
-)
+// ReactDOM.render(
+//     <Provider store={store}>
+//         <App/>
+//     </Provider>,
+//     document.getElementById("app")
+// )
 
-// const render = Component => {
-//     ReactDOM.render(
-//         <AppContainer>
-//             <Provider store={store}>
-//                 <Component/>
-//             </Provider>
-//         </AppContainer>,
-//         document.getElementById("app")
-//     )
-// }
+const render = Component => {
+    ReactDOM.render(
+        <AppContainer>
+            <Provider store={store}>
+                <Component/>
+            </Provider>
+        </AppContainer>,
+        document.getElementById("app")
+    )
+}
 
-// render(App)
+render(App)
 
-// if (module.hot) {
-//     module.hot.accept('./App', () => {
-//         const newApp = require('./App').default
-//       render(newApp)
-//     })
-//   }
+if (module.hot) {
+    module.hot.accept('./App', () => {
+        const newApp = require('./App').default
+      render(newApp)
+    })
+  }

@@ -38,7 +38,15 @@ class BoardPage extends Component {
         this.props.toggle_menu()
     }
     componentDidMount() {
-        this.props.fetch_list(this.props.match.params.boardId)
+        const {board: {lists}, fetch_list, match} = this.props
+        if(lists.length) {
+            console.log("its look like we have to fetch some data")
+            fetch_list(match.params.boardId)
+        }
+    }
+
+    componentWillUnmount() {
+        this.props.clear_project_data()
     }
 
     _boundElement = (element) => {
@@ -89,6 +97,8 @@ class BoardPage extends Component {
             {boardName, isImportant, reletedTo},
             isMenuInBoardPageShow
         } = this.props
+
+        console.log("BOARD PAGE ", this.props)
     
         return (
             <Fragment>

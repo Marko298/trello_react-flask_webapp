@@ -16,6 +16,7 @@ import axios from 'axios'
 import api from '../settings'
 import uuidv1 from 'uuid/v1'
 import CardActions from '../actions/CardAction'
+import BoardActions from '../actions/BoardAction'
 
 export default class ListActions {
     static list_request() {
@@ -60,8 +61,8 @@ export default class ListActions {
                 data: JSON.stringify(createRequest)
             }).then(response => {
                 let {data} = response
-                console.log("SUCCESS")
                 dispatch(ListActions.list_successfully_created(data))
+                dispatch( BoardActions.createdNewList({_id: data._id, forBoard: data.forBoard}))
             }).catch(error => {
                 console.log("Cannot create this list for some reson")
             })

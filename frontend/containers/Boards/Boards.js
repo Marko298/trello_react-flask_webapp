@@ -17,90 +17,50 @@ import './Boards.style.css'
 
 class Boards extends Component {
 
-    // static Important = class extends Component {
-    //     render() {
-    //         const {important} = this.props
-    //         return (
-    //             <BoardsList
-    //             {...this.props}
-    //             status="__IMPORTANT__" 
-    //             title={this.props.title} 
-    //             boardsGroup={[ important ? important : {} ]} 
-    //             render={this.props.render} 
-    //             Theme={this.props.Theme}
-    //             />
-    //         )
-    //     }
-    // }
-
     static Important = function(props) {
         let {important} = props
-         
-       return <BoardsList
-            status="__IMPORTANT__" 
-            title={props.title} 
-            boardsGroup={[ important ? important : {} ]} 
-            render={props.render} 
-            Theme={props.Theme}
-       />
+        const isHasBoards = important && important.boards && important.boards.hasOwnProperty('length') && important.boards.length > 0
+        console.log("isHasBoards", isHasBoards, important)
+        
+        return isHasBoards
+            ? <BoardsList
+                status="__IMPORTANT__" 
+                title={props.title} 
+                boardsGroup={[ important ? important : {} ]} 
+                render={props.render} 
+                Theme={props.Theme}
+             /> 
+             :  null
     }
-
-    // static Private = class extends Component {
-    //     render() {
-    //         const {props} = this
-    //         // const privateGroup = props.boards.filter( ({status}) => status === "__PRIVATE__")
-    //         return props.withButtonAddBoard !== undefined 
-    //         ? (
-    //             <BoardsList
-    //             {...this.props} 
-    //             title={props.title} 
-    //             boardsGroup={[]} 
-    //             render={props.render}
-    //             Theme={props.Theme}
-    //             >
-    //                 <ButtonAddBoard>
-    //                     Add new Board
-    //                 </ButtonAddBoard>
-    //             </BoardsList>
-    //         )
-    //         : (
-    //             <BoardsList
-    //             {...this.props} 
-    //             title={props.title} 
-    //             boardsGroup={[]} 
-    //             render={props.render}
-    //             Theme={props.Theme}
-    //             />
-    
-    //         )
-    //     }
-    // }
 
     static Private = function(props) {
         const privateGroup = props.boards.filter( ({status}) => status === "__PRIVATE__")
+        const isHasPrivateBoards = privateGroup[0] && privateGroup[0].boards.length > 0
 
-        return props.withButtonAddBoard !== undefined 
-        ? (
-            <BoardsList 
-                title={props.title} 
-                boardsGroup={privateGroup} 
-                render={props.render}
-                Theme={props.Theme}
-            >
-                <ButtonAddBoard customTop={50} justifyContanteCenter={true} customWidth={415}>
-                    Add new Board
-                </ButtonAddBoard>
-            </BoardsList>
-        )
-        : (
-            <BoardsList 
-                title={props.title} 
-                boardsGroup={privateGroup} 
-                render={props.render}
-                Theme={props.Theme}
-            />
+        return isHasPrivateBoards
+            ?  props.withButtonAddBoard !== undefined 
+                ? (
+                    <BoardsList 
+                        title={props.title} 
+                        boardsGroup={privateGroup} 
+                        render={props.render}
+                        Theme={props.Theme}
+                    >
+                        <ButtonAddBoard customTop={50} justifyContanteCenter={true} customWidth={415}>
+                            Add new Board
+                        </ButtonAddBoard>
+                    </BoardsList>
+                )
+                : (
+                    <BoardsList 
+                        title={props.title} 
+                        boardsGroup={privateGroup} 
+                        render={props.render}
+                        Theme={props.Theme}
+                    />
 
-        )
+                )
+            : null
     }
 
     static Comands = withRouter(function({match ,...props}) {

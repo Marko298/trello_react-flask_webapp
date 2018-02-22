@@ -1,0 +1,16 @@
+.authenth-container {
+    width: 100%;
+    max-width: 600px;
+    min-width: 315px;
+}
+
+.danger-response {
+    padding: 40px 10px;
+    margin-bottom: 20px;
+    border-radius: 4px;
+    background-color: #d32f2f88;
+}
+
+.margin-v-15 {
+    margin: 15px 0;
+}

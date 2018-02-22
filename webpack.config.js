@@ -7,6 +7,7 @@ const APP_DIR = path.resolve(__dirname, 'static');
 module.exports = {
     entry: [ 
         'babel-polyfill',
+        'react-hot-loader/patch',
         BUILD_DIR + "/index.js"],
     output: {
         path: APP_DIR,
@@ -16,7 +17,7 @@ module.exports = {
         rules: [
             {
                 test: /\.js$/,
-                use: ['babel-loader'],
+                use: ['react-hot-loader/webpack', 'babel-loader'],
                 exclude: /node_modules/
             },
             {

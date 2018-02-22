@@ -22,7 +22,7 @@ let defaultLabels = [
 ]
 
 const initialState = {
-    // userId: "cbc51241a8bc485d88107ff09f016887",
+    // userId: "9c93e869f077477d9976c6a57418aea3",
     userId: null,
     email: null,
     error: null,
@@ -34,7 +34,8 @@ const initialState = {
     progree_photo_upload: 0,
     initials: null,
     bio: null,
-    isDataUpdateRequest: false
+    isDataUpdateRequest: false,
+    boards: []
 }
 
 
@@ -57,7 +58,8 @@ const UserReducer = function (state = initialState, {type, payload, progress}) {
                 labels: payload.labels,
                 photo: payload.photo,
                 bio: payload.bio,
-                initials: payload.initials
+                initials: payload.initials,
+                boards: [...payload.boards]
             }
         }
         case USER_REQUEST_FAILED: {
@@ -131,6 +133,13 @@ const UserReducer = function (state = initialState, {type, payload, progress}) {
             return {
                 ...state,
                 error: null,
+                email: payload.email,
+                userId : payload._id,
+                name: payload.name,
+                labels: payload.labels,
+                photo: payload.photo,
+                bio: payload.bio,
+                initials: payload.initials,
                 isLoading: false
             }
 

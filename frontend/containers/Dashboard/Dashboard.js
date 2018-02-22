@@ -242,11 +242,6 @@ class Dashboard extends React.Component {
                                 
                             }}/>
 
-                            {/* <Route path={`${this.props.match.path}profile/:userId`} render={(props) => {
-                                console.log(" <Route path={`${this.props.match.path}profile/:userId`} render={(props)", props)
-                                return <h1>profile {props.match.params.userId}</h1>
-                            }}/> */}
-
 
                             <Route path={`${this.props.match.path}:teamId`} render={(props) => {
                                 let foundedTeam = Utils.returnGroupById(boards, props.match.params.teamId)[0]
@@ -279,12 +274,7 @@ class Dashboard extends React.Component {
                         {isModal ? <Route path={`/card/:cardId/:listId`} render={(props) => {
                             const {match} = props
                             let div = document.createElement('div').setAttribute('id', 'portal')
-                            // return createPortal(
-                            //     <ModalWindow {...props}>
-                            //         {(rest) => <CardEditingContainer match={match} {...rest}/>}
-                            //     </ModalWindow>,
-                            //     document.getElementById('portal')
-                            // )
+
                             return (
                                 <ModalWindow {...props}>
                                     {(rest) => <CardEditingContainer match={match} {...rest}/>}
