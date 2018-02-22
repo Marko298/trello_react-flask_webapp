@@ -13,6 +13,9 @@ import ListActions from '../../actions/ListAction'
 import './AddListForm.style.css'
 
 class AddListForm extends Component {
+    static defaultProps = {
+        disabled: false
+    }
     static propTypes = {
         children: func.isRequired
     }
@@ -33,7 +36,10 @@ class AddListForm extends Component {
         const propsForChildren = {
             forFirst: {
                 btnText: "Create list...",
-                className: 'add-listform__toggle-btn'
+                className: 'add-listform__toggle-btn',
+                buttonSettings: {
+                    disabled: this.props.disabled
+                }
             },
             forSecond: {
                 title,
@@ -71,9 +77,10 @@ const mapDispatchToProps = (dispatch, props) => ({
 const FirstForm = ({
     toggle,
     btnText,
-    className
+    className,
+    buttonSettings: {disabled}
 }) => (
-    <Button className={className} onClick={(e) => {
+    <Button disabled={disabled} className={className} onClick={(e) => {
         toggle()
     }}>
         {btnText}

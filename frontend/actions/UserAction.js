@@ -48,15 +48,15 @@ export default class UserActions {
                 headers: api.headers(),
                 withCredentials: true,
                 data: JSON.stringify(data),
-            }).then(({data}) => {
+            }).then( resp => {
 
-                dispatch(UserActions.userRequestLogined(data))
-                return Promise.resolve(data)
+                dispatch(UserActions.userRequestLogined(resp.data))
+                return Promise.resolve(resp.data)
 
             }).catch((error) => {
                 console.log("ERROR", {error})
-                dispatch(UserActions.userRequestFailed(error.message))
-                return Promise.reject(error)
+                // dispatch(UserActions.userRequestFailed(error.message))
+                // return Promise.reject(error)
             })
         }
     }

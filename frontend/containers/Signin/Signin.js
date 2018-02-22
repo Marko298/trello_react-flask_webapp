@@ -55,9 +55,11 @@ class Signin extends Component {
         const postRequest = {name, email, password};
         this.setState( (state) => ({...state, isLoading: true, serverResponse: ''}))
         this.props.register(postRequest).then(response => {
+            
             this.setState( (state) => ({...state, isLoading: false}))
-            console.log("register", {response})
+
             if('error' in response) {
+
                 this.setState((state) => ({
                     ...state,
                     serverResponse: response.error,
@@ -67,7 +69,7 @@ class Signin extends Component {
                         {password: ''}
                     ],
                 }))
-                console.log(response.error)
+
             }
         })
     }

@@ -2,6 +2,7 @@ import React, {Component, Fragment} from 'react'
 import {findDOMNode} from 'react-dom'
 import {connect} from 'react-redux'
 import {Motion, spring, presets} from 'react-motion'
+
 //components
 import Button from '../../components/Button/Button'
 import Title from '../../components/Title/Title'
@@ -24,36 +25,63 @@ const actionForShowFormThatUpdateNameBoard = () => ({
     toggle: PopupActions.toggle_editMode,
     menu: PopupActions.toggle_update_boardname
 })
+
 let ChangeBoardNameBtn = withEditMode(actionForShowFormThatUpdateNameBoard)(Button)
 
 
 class BoardPage extends Component {
+    state = {
+        isListsLoaded: false
+    }
 
     static defaultProps = {
         lists: [],
-        isPostRequstPending: false,
+        isPostRequstPending: false
     }
    
     handleClickMenuToggle = (e) => {
         this.props.toggle_menu()
     }
+
     componentDidMount() {
         const {board: {lists}, fetch_list, match} = this.props
         if(lists.length) {
-            console.log("its look like we have to fetch some data")
-            fetch_list(match.params.boardId)
+            this._setLodForList(true)
+            fetch_list(match.params.boardId).then( () => this._setLodForList(false) )
         }
     }
 
+    _setLodForList = (indicator) => 
+        this.setState( (state) => ({
+        ...state,
+        isListsLoaded: indicator})
+    )
+
     componentWillUnmount() {
-        this.props.clear_project_data()
+        if(this.props.board.lists.length) {
+            this.props.clear_project_data()
+        }
+    }
+
+    componentWillReceiveProps(next) {
+        if(this.props.location.key !== next.location.key) {
+            const {match: {params: boardIdNext }, board: {lists: nextLists}} = next
+            const {match: {params: boardIdCurrent }, clear_project_data, fetch_list} = this.props
+
+            if (boardIdNext.boardId !== boardIdCurrent.boardId ) {
+                clear_project_data()
+                if( nextLists.length ) {
+                    this._setLodForList(true)
+                    fetch_list( boardIdNext.boardId ).then( () => this._setLodForList(false) )  
+                }
+            } 
+        }
     }
 
     _boundElement = (element) => {
         if (this.offsetTop) return
         this.offsetTop = element.getBoundingClientRect().bottom
     }
-
    
     _header = (boardName, isImportant, reletedTo) => {
         return (
@@ -86,7 +114,6 @@ class BoardPage extends Component {
                         Show Menu
                     </Button> }
                 </div>
-
             </header>
         )
     }
@@ -98,8 +125,8 @@ class BoardPage extends Component {
             isMenuInBoardPageShow
         } = this.props
 
-        console.log("BOARD PAGE ", this.props)
-    
+        const {isListsLoaded} = this.state
+
         return (
             <Fragment>
                 <Motion style={{x: spring(isMenuInBoardPageShow ? 340 : 0)}}>
@@ -116,13 +143,14 @@ class BoardPage extends Component {
                                         return (
                                             <div className='column'>
                                                 <ListsContainer {...list} >
-                                                    {(listId, boardId, isListOending) => <AddCardForm boardId={boardId} forList={listId} isListOending={isListOending}/>}
+                                                    {(listId, boardId, isListOending) => 
+                                                        <AddCardForm boardId={boardId} forList={listId} isListOending={isListOending}/>}
                                                 </ListsContainer>
                                             </div>
                                         )
                                     })}
                                     <div className='column'>
-                                        <AddListForm/>
+                                        <AddListForm disabled={isListsLoaded}/>
                                     </div>
 
                                 </section>
@@ -172,7 +200,7 @@ const mapDispatchToProps = (dispatch) => ({
         dispatch(PopupActions.toggle_menu_on_boardPage())
     },
     fetch_list(boardId) {
-        dispatch(ListActions.fetch_project_lists_with_cards(boardId))
+        return dispatch(ListActions.fetch_project_lists_with_cards(boardId))
     },
     clear_project_data() {
         dispatch(ListActions.clear_project_data())

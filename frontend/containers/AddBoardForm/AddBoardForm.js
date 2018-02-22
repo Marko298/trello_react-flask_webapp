@@ -40,7 +40,8 @@ class AddBoardForm extends Component {
     state = {
         title: '',
         selected: '',
-        bacground: '#e91e63'
+        bacground: '#e91e63',
+        isBoardCreating: false
     }
 
    
@@ -64,7 +65,10 @@ class AddBoardForm extends Component {
             }
         }
 
+        this.setState( (state) => ({...state, isBoardCreating: true}) )
+
         create_board(boardSchema, selectedDefault).then(resp => {
+            this.setState( (state) => ({...state, isBoardCreating: false}) )
             // if(isEditBoardShow) {
             //     toggle()
             // }
@@ -151,8 +155,10 @@ class AddBoardForm extends Component {
             '#2e7d32',
         ]
         
-        const {selected, title, bacground} = this.state
+        const {selected, title, bacground, isBoardCreating} = this.state
         const {teams} = this.props
+
+        const foDisabled = (isBoardCreating || !title.length)
 
         return (
             <div className='add-board-container '>
@@ -182,7 +188,7 @@ class AddBoardForm extends Component {
                             </div>
                         </div>
                         <div className='form-fieldset '>
-                            <Button onClick={this.handleClick} disabled={!title.length} success={!!title.length}>
+                            <Button onClick={this.handleClick} disabled={foDisabled} success={!!title.length}>
                                 create
                             </Button>
                         </div>

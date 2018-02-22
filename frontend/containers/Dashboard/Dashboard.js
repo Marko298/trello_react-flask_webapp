@@ -38,6 +38,7 @@ import Utils from '../../utils'
 
 
 
+import Start from 'react-svg-loader!../../__asssets/icons/star.svg'
 
 
 let Profile = ({match}) => (
@@ -172,6 +173,7 @@ class Dashboard extends React.Component {
         return (
             <Fragment>
                 <SidebarBoards>
+
                     <Boards 
                         withAddTeamButton={false} 
                         boards={notEmptyOrganization} 
@@ -200,6 +202,7 @@ class Dashboard extends React.Component {
                 </SidebarBoards>
                     <Wrapper style={Dashboard.styles({isPinned, backing})}> 
                         <ToolBar/>
+                        {/* <Start width="50px" height="50px" /> */}
                        <ProgressBar progress={progress} isLoaded={isFileUploaded}/>
                         <Switch location={isModal ? this.previouseLocation : location}>
                             <Route exact path={`${this.props.match.path}`} render={(props) => {

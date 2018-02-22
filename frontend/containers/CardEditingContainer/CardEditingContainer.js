@@ -47,7 +47,8 @@ class CardEditingContainer extends Component {
         comment: '',
         title: this.props.list.cards.title,
         isCommentCreated: false,
-        isAttachmentLoading: false
+        isAttachmentLoading: false,
+        isChecklistLoading: false
     }
 
     componentDidMount() {
@@ -123,8 +124,6 @@ class CardEditingContainer extends Component {
         const isObject = Array.isArray(cards.attachments.files) && cards.attachments.files.every(function(a) {
             return typeof a === 'object'
         })
-
-        console.log({cards}, isObject)
 
         return (
             <div>
@@ -240,12 +239,6 @@ class CardEditingContainer extends Component {
     }
 }
 
-
-// function renderComments(comments) {
-//     return comments.map(comment => {
-//         return <CommentBox {...comment} />
-//     })
-// }
 
 const mapStateToProps = ({lists: {boardProject}, user}, ownProps) => ({
     list: boardProject.lists.map(list => {

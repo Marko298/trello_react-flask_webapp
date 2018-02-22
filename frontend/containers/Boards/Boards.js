@@ -10,6 +10,8 @@ import BoardsList from '../BoardList/BoardList'
 import BoardList from '../BoardList/BoardList'
 import ButtonAddBoard from '../ButtonAddBoard/ButtonAddBoard'
 import AddTeamButton from '../ButtonAddTeam/ButtonAddTeam'
+//icons
+
 
 
 
@@ -20,7 +22,6 @@ class Boards extends Component {
     static Important = function(props) {
         let {important} = props
         const isHasBoards = important && important.boards && important.boards.hasOwnProperty('length') && important.boards.length > 0
-        console.log("isHasBoards", isHasBoards, important)
         
         return isHasBoards
             ? <BoardsList

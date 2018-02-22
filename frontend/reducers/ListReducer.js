@@ -253,7 +253,11 @@ export default function ListReducer(state=initialState, {type, payload, ...actio
                                     if(card._id === _id) {
                                         return {
                                             ...card,
-                                            ...payload
+                                            ...payload,
+                                            attachments: {
+                                                ...card.attachments
+                                            }
+
                                         }
                                     }
                                     return {...card}

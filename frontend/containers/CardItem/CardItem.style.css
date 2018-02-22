@@ -1,0 +1,34 @@
+.indicator-wrapper {
+    display: flex;
+}
+.indicator-container {
+    margin: 1px 8px;
+
+    align-items: center;
+    display: flex;
+    padding: 3px 0;
+    justify-content: space-between;
+    color: rgb(117, 117, 117);
+
+    & > svg {
+        fill: rgba(117, 117, 117, .8);
+        margin-left: 5px;
+    }
+}
+
+svg {
+    fill: rgba(117, 117, 117, .8);
+}
+
+.label-wrapper {
+    display: flex;
+    margin: 3px 0;
+}
+
+.label-wrapper > span {
+    width: 45px;
+    height: 10px;
+    display: block;
+    margin: 0 2px;
+    border-radius: 3px;
+}

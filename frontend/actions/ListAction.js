@@ -120,7 +120,7 @@ export default class ListActions {
     static fetch_project_lists_with_cards(boardId) {
         return (dispatch) => {
 
-            Promise.all([
+            return Promise.all([
                 dispatch(ListActions.get_lists(boardId)),
                 dispatch(CardActions.fetch_cards(boardId))
             ]).then(responseArray => {
@@ -138,6 +138,8 @@ export default class ListActions {
                 })
 
                dispatch(ListActions.project_is_fetch_successfully(project))
+
+               return Promise.resolve()
             }).catch(err => {
                 console.log("Cannot get project")
             })

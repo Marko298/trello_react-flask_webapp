@@ -14,7 +14,7 @@ import Avatarka from '../../components/Avatarka/Avatarka'
 //action
 import BoardActions from '../../actions/BoardAction';
 
-
+import GroupIcn from 'react-svg-loader!../../__asssets/icons/group.svg'
 
 
 class BoardsList extends React.Component {
@@ -86,7 +86,9 @@ class BoardsList extends React.Component {
                         <Wrapper key={idx} className={BoardList}>
                             <Row className={titleWrapper}>
                                 <div className='image-organization-wrapper'>
-                                    {team.photo ? <Avatarka src={team.photo} small ractangle /> : "Some nice SVG"}  
+                                    {team.photo 
+                                        ? <Avatarka src={team.photo} small ractangle /> 
+                                        : <GroupIcn width="30px" />}  
                                 </div>
                                 <Title text={title ? title : team.title} tiny large {...headerTitle}/>
                                 {this.props.render(this.propsCollection( team._id ))}

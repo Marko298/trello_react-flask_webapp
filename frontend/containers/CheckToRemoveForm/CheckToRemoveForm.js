@@ -26,6 +26,7 @@ const mapSstateToProps = ({mode}) => ({
 
 const mapDispatchToProps = (dispatch, ownProps) => ({
     delete_checklist(_id) {
+        console.log({_id})
         return dispatch(
             CardActions.remove_checklist(_id)
         )

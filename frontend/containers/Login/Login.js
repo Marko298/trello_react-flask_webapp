@@ -29,7 +29,8 @@ class Login extends Component{
 
     state = {
         email: '',
-        password: ''
+        password: '',
+        serverResponse: ''
     }
 
     handleChange = (field) => (evant) => {
@@ -40,13 +41,28 @@ class Login extends Component{
         })
     }
     onSubmit = () => {
-
         const { email, password } = this.state
 
+        if(this.state.serverResponse.length > 0) {
+
+            this.setState( (state) => ({...state,
+                email: '',
+                password: '',
+                serverResponse: ''
+            }))
+
+        }
+
         this.props.login({email, password}).then(response => {
-            if('error' in response) {
-                console.log(response.error)
-            }
+            // if('error' in response) {
+
+                // this.setState( (state) => ({...state,
+                //     email: '',
+                //     password: '',
+                //     serverResponse: response.error
+                // }))
+
+            // }
         })
 
     }
@@ -63,13 +79,18 @@ class Login extends Component{
     }
 
     render() {
-        const { email, password } = this.state
+        const { email, password, serverResponse } = this.state
         const allowUserSubmitButton = this.props.isUserLoading 
             ? {primary: false, disabled: true} 
             : {primary: true, disabled: false}
 
         return (
             <div {...this.props} className='authenth-container'>
+                {serverResponse && (
+                    <div className='danger-response'>
+                        <Title text={serverResponse} large color="#ffffff"/>
+                    </div>
+                )}
                 <FormWithValidation
                     {...this.props.custom_style}
                     submit={this.onSubmit}

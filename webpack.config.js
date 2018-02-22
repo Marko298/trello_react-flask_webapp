@@ -3,11 +3,10 @@ const webpack = require('webpack');
 
 const BUILD_DIR = path.resolve(__dirname, 'frontend');
 const APP_DIR = path.resolve(__dirname, 'static');
-
+// 'react-hot-loader/patch',
 module.exports = {
     entry: [ 
         'babel-polyfill',
-        'react-hot-loader/patch',
         BUILD_DIR + "/index.js"],
     output: {
         path: APP_DIR,
@@ -17,7 +16,7 @@ module.exports = {
         rules: [
             {
                 test: /\.js$/,
-                use: ['react-hot-loader/webpack', 'babel-loader'],
+                use: ['babel-loader'],
                 exclude: /node_modules/
             },
             {
@@ -30,6 +29,17 @@ module.exports = {
                     },
                    "postcss-loader"],
                 exclude: /node_modules/
+            },
+            {
+                test: '/\.svg$/',
+                use: [
+                    "babel-loader",
+                  {
+                    loader: "react-svg-loader",
+                    options: {
+                      jsx: true 
+                    }
+                  }]
             }
         ]
     },
@@ -46,3 +56,6 @@ module.exports = {
         historyApiFallback: true
     }
 }
+
+
+// use: ['react-hot-loader/webpack', 'babel-loader'],
