@@ -3,10 +3,10 @@ const webpack = require('webpack');
 
 const BUILD_DIR = path.resolve(__dirname, 'frontend');
 const APP_DIR = path.resolve(__dirname, 'static');
-// 'react-hot-loader/patch',
 module.exports = {
     entry: [ 
         'babel-polyfill',
+        'react-hot-loader/patch',
         BUILD_DIR + "/index.js"],
     output: {
         path: APP_DIR,
@@ -16,7 +16,7 @@ module.exports = {
         rules: [
             {
                 test: /\.js$/,
-                use: ['babel-loader'],
+                use: ['react-hot-loader/webpack','babel-loader'],
                 exclude: /node_modules/
             },
             {

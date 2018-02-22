@@ -44,8 +44,8 @@ app.config['MONGO_URI'] = 'mongodb://pavlo_kuzina:123123@ds245228.mlab.com:45228
 app.secret_key = 'A0Zr98j/3yX R~XHH!jmN]LWX/,?RT'
 
 #### FOR TESTING PURPOSE
-# from flask_cors import CORS
-# CORS(app, supports_credentials=True)
+from flask_cors import CORS
+CORS(app, supports_credentials=True)
 
 class JSONEncoder(json.JSONEncoder):
     def default(self, o):
