@@ -74,7 +74,7 @@ class CardItem extends Component {
             }}>
                 {card.attachments.assigned && <Image src={card.attachments.assigned}/>}
 
-                { isLabels && (
+                { isLabels > 0 && (
                     <div className='label-wrapper'>
                         {card.labels.map( ({color}) => <span style={{backgroundColor: color}} />)}
                     </div>
