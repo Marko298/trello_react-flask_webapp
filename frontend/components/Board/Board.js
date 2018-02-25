@@ -85,7 +85,7 @@ class Board extends Component {
         const {isChecked} = this.state
 
         // const opacity = isDragging ? 0 : 1
-
+        // ${this.props.match.url}
         return (
             <li style={{...styleSettings}} className={container}>
                 <Link to={{
@@ -95,8 +95,9 @@ class Board extends Component {
                             color: styleSettings.backgroundColor
                         }
                     },
-                    pathname: `${this.props.match.url}board/${_id}/${reletedTo.teamId}`
+                    pathname: `/board/${_id}/${reletedTo.teamId}`
                 }} >
+
                     <Title 
                         text={boardName} 
                         medium 

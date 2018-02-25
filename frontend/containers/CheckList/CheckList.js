@@ -27,6 +27,7 @@ const actionToRemove = () => ({
 let RemoveItem = withEditMode(actionToRemove)(Button)
 
 class CheckList extends Component {
+    
     state = {
         title: '',
         showButton: true,

@@ -2,15 +2,17 @@ import React, {Component, Children} from 'react'
 import {withRouter, Route, Switch} from 'react-router-dom'
 import {connect} from 'react-redux'
 import PropTypes from 'prop-types'
-
 //components
-// import FormForEditing from '../../components/FormForEditing/FormForEditing'
 import Avatarka from '../../components/Avatarka/Avatarka'
 import TabRoutes from '../../components/TabRoutes/TabRoutes'
 import BoardActions from '../../actions/BoardAction';
 import UploadImageForm from '../../components/UploadImageForm/UploadImageForm'
-
-
+import Board from '../../components/Board/Board'
+import ListBoardsOfTeam from '../../components/ListBoardsOfTeam/ListBoardsOfTeam'
+//containers
+import ButtonAddBoard from '../ButtonAddBoard/ButtonAddBoard'
+//styles
+import './EditFormOrganization.style.css'
 
 class EditFormOrganization extends Component {
     static routes = [
@@ -83,6 +85,14 @@ class EditFormOrganization extends Component {
 
         })
    }
+   renderChildren = (teamId) => {
+        const boards = this.props.boards.filter(board => {
+            if(board._id === teamId) return board
+        })
+        return Children.map(this.props.children, child => {
+            return cloneElement(child, {selected: boards[0]})
+        })
+    }
 
     render() {
         const {InputsSchema, handleChange} = this
@@ -106,11 +116,18 @@ class EditFormOrganization extends Component {
             }
         }
 
-        const {match, match: {params}} = this.props
+        const {match, match: {params}, boards} = this.props
         const Theme = {
             container: 'tab-routes-edit',
-            button: 'tab-routes-edit__button'
+            button: 'tab-routes-edit__button',
+            SingleBoard: {
+                container: 'single-board',
+                title: 'title-for-single-board',
+                isImortant: 'is-important',
+            },
+            BoardsLine: "container-boardlist",
         }
+
         return (
             <div style={{position: 'relative', overflowY: 'auto', flexGrow: 1}}>
                 <div className="edit-form-wrapper">
@@ -156,7 +173,21 @@ class EditFormOrganization extends Component {
 
                             <Route path={`/${params.teamId}`} render={(props) => {
                                 return (
-                                    <div>Board</div>
+                                    <div className='edit-form-organization-boards'>
+                                        <ListBoardsOfTeam 
+                                            boards={boards}
+                                            BoardsLine={Theme.BoardsLine}
+                                            SingleBoard={Theme.SingleBoard}
+                                            status=" "
+                                            renderChildren={this.renderChildren}
+                                            propsCollection={() => {}}
+                                            renderChildrenForBoard={() => {}}
+                                        >
+                                            <ButtonAddBoard customTop={50} justifyContanteCenter={true} customWidth={415}>
+                                                Add new Board
+                                            </ButtonAddBoard>
+                                        </ListBoardsOfTeam>
+                                    </div>
                                 )
                             }}/>
 
@@ -184,8 +215,14 @@ const mapDispatchToProps = (dispatch, props) => ({
     }
 })
 
-const mapStateToProps = ({organizations}) => ({
-    isTeamEditingRequestDone: organizations.isTeamEditingRequestDone
+const mapStateToProps = ({organizations}, props) => ({
+    isTeamEditingRequestDone: organizations.isTeamEditingRequestDone,
+    boards: organizations.teams.map( team => {
+        if ( team._id === props._id ) {
+            return team.boards
+        }
+        return
+    }).filter(o => o)[0]
 })
 
 export default connect(mapStateToProps, mapDispatchToProps)(withRouter(EditFormOrganization))

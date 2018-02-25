@@ -1,6 +1,6 @@
 import React, {Component, Children} from 'react'
 import PropTypes from 'prop-types'
-import {Switch, Route, withRouter} from 'react-router-dom'
+import {Switch, Route, withRouter, Link} from 'react-router-dom'
 
 import {connect} from 'react-redux'
 
@@ -8,6 +8,7 @@ import {connect} from 'react-redux'
 import Avatarka from '../../components/Avatarka/Avatarka'
 import TabRoutes from '../../components/TabRoutes/TabRoutes'
 import UploadImageForm from '../../components/UploadImageForm/UploadImageForm'
+import Title from '../../components/Title/Title'
 //actions
 import UserActions from '../../actions/UserAction';
 //styles
@@ -110,7 +111,16 @@ class EditFormProfile extends Component {
     render() {
 
         const {InputsSchema, handleChange} = this
-        const {children, title, photo, match, match: {params}, isDataUpdateRequestDone, bio} = this.props
+        const {
+            children, 
+            title, 
+            photo, 
+            match,
+            match: {params}, 
+            isDataUpdateRequestDone, 
+            bio,
+            teams
+        } = this.props
 
         const propsForChildren = {
             forSecond: {
@@ -181,7 +191,14 @@ class EditFormProfile extends Component {
                         <Route path={`/${params.teamId}`} render={(props) => {
                             return (
                                 <div>
-                                    Profile
+                                    <Title text='Team' bold medium/>
+                                    <div>
+                                        {teams.map( ({_id, title}) => 
+                                            <Link to={_id} key={_id}>
+                                                {title}
+                                            </Link>
+                                        )}
+                                    </div>
                                     
                                 </div>
                             )
@@ -207,10 +224,11 @@ const mapDispatchToProps = (dispatch) => ({
     }
 })
 
-const mapStateToProps = ({user}) => ({
+const mapStateToProps = ({user, organizations: {teams} }) => ({
     isDataUpdateRequestDone: user.isDataUpdateRequest,
     initials: user.initials,
-    bio: user.bio
+    bio: user.bio,
+    teams: teams.filter(team => team._id !== user.userId)
 })
 // export default EditFormProfile
 export default withRouter(connect(mapStateToProps, mapDispatchToProps)(EditFormProfile))

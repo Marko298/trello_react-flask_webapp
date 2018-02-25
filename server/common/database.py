@@ -9,11 +9,12 @@ class Database(object):
 
     @staticmethod
     def initialize(app):
-        mongo = PyMongo(app)
-        # client = MongoClient(Database.URI)
-        # Database.DATABASE = client['trello']
-        Database.DATABASE = mongo.db
+        # mongo = PyMongo(app)
+        client = MongoClient(Database.URI)
+        Database.DATABASE = client['trello']
+        # Database.DATABASE = mongo.db
         FS.DATABASE = GridFS(Database.DATABASE)
+        # FS.DATABASE = GridFS(Database.DATABASE)
         
 
     @staticmethod

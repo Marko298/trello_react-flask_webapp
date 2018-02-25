@@ -11,6 +11,7 @@ import Wrapper from '../../components/Wrapper/Wrapper'
 import Row from '../../components/Row/Row'
 import Title from '../../components/Title/Title'
 import Avatarka from '../../components/Avatarka/Avatarka'
+import ListBoardsOfTeam from '../../components/ListBoardsOfTeam/ListBoardsOfTeam'
 //action
 import BoardActions from '../../actions/BoardAction';
 
@@ -94,7 +95,26 @@ class BoardsList extends React.Component {
                                 {this.props.render(this.propsCollection( team._id ))}
                             </Row>
                             <div style={{display: isShow ? 'block' : 'none'}}>
-                                <List  className={BoardsLine}>
+
+
+                            {team['boards'] instanceof Array
+                                ? (
+                                    <ListBoardsOfTeam 
+                                        boards={team.boards}
+                                        BoardsLine={BoardsLine} 
+                                        SingleBoard={SingleBoard}
+                                        status={status}
+                                        renderChildren={this.renderChildren}
+                                        propsCollection={this.propsCollection}
+                                        renderChildrenForBoard={this.props.renderChildrenForBoard}
+                                        team_id={team._id}
+                                    >
+                                    {this.props.children && this.props.children}
+                                    </ListBoardsOfTeam>
+                                )
+                                : null}
+                                
+                                {/* <List  className={BoardsLine}>
                                     <Fragment>
                                         {team['boards'] instanceof Array 
                                             ? team.boards.map( (board, idx) => (
@@ -112,7 +132,7 @@ class BoardsList extends React.Component {
                                             : null}
                                     </Fragment>
                                     {this.props.children && <li className='single-board button-board'>{this.renderChildren(team._id)}</li> }
-                                </List>
+                                </List> */}
                             </div>
                         </Wrapper>
                     )

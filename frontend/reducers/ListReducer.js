@@ -254,10 +254,8 @@ export default function ListReducer(state=initialState, {type, payload, ...actio
                                         return {
                                             ...card,
                                             ...payload,
-                                            attachments: {
-                                                ...card.attachments
-                                            }
-
+                                            attachments: {...card.attachments},
+                                            checklists: [...card.checklists]
                                         }
                                     }
                                     return {...card}
