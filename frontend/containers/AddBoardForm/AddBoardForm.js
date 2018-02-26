@@ -44,19 +44,17 @@ class AddBoardForm extends Component {
         isBoardCreating: false
     }
 
-   
-
     handleChange = (e) => {
         let { name, value } = e.target
-        this.setState( prevState => ({...prevState, [name]: value}) )
+        this.setState( prevState => ({...prevState, [name]: value}), () => {
+            console.log("Yehhoo", this.state.selected)
+        } )
     }
-
-
 
     handleClick = () => {
         const {selected, title, bacground} = this.state
         const {create_board, toggle, userId} = this.props
-        const selectedDefault = selected ? selected : userId
+        const selectedDefault = selected.length === 0 ? selected : userId
 
         const boardSchema = {
             boardName: title,
@@ -89,13 +87,13 @@ class AddBoardForm extends Component {
     }
 
     componentWillReceiveProps(nextProps) {
-        if(!this.props.selected._id && nextProps.selected._id) {
-            this.setState(prevState => ({...prevState, selected: nextProps.selected._id}))
+        if(!this.props.selected && nextProps.selected) {
+            this.setState(prevState => ({...prevState, selected: nextProps.selected}))
         }
     }
     componentDidMount() {
-        if(this.props.selected._id && !this.state.selected) {
-            this.setState(prevState => ({...prevState, selected: this.props.selected._id}))
+        if(this.props.selected && !this.state.selected) {
+            this.setState(prevState => ({...prevState, selected: this.props.selected}))
         }
     }
 
