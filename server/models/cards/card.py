@@ -139,6 +139,11 @@ class Card(object):
 
     def add_comment(self, commentId):
         Database.update_push('cards', {'_id': self._id}, { 'comments': commentId })
+    
+    def remove_comment(self, commentId):
+        query = {'_id': self._id}
+        removeComment = {'comments': commentId}
+        Database.delete_one_from_array(Card.collection, query, removeComment)
 
 
     def add_label(self, label):

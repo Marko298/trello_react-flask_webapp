@@ -681,12 +681,15 @@ def get_comments_for_card(cardId):
     return jsonify(commentsList)
 
 
-@app.route('/comment/delete_comment/<string:commentId>', methods=["DELETE"])
+@app.route('/comment/delete_comment/<string:cardId>/<string:commentId>', methods=["DELETE"])
 @user_dec.login_required
-def remove_comment(commentId):
+def remove_comment(cardId, commentId):
     _, classComment = Comment.get_by_id(commentId)
     result = classComment.delete_comment(commentId)
+
     if result:
+        cardClass, _ = Card.get_card_by_id(cardId)
+        cardClass.remove_comment(commentId)
         return jsonify(result)
 
     
@@ -706,4 +709,4 @@ def edit_comment(commentId):
 
 
 if __name__ == '__main__':
-    app.run(port=4004, debug=True)
+    app.run(port=4004, debug=True, threaded=True)

@@ -29,12 +29,12 @@ let sidebar =  {
         boardControlls: 'board-controll'
     }
 } 
-
 class SidebarBoards extends React.Component {
     static styles = ({isFixed, isPinned}) => {
         return {
             display: isFixed ? 'block' : 'none',
-            height: isPinned ? window.innerHeight + 'px' : '600px',
+            height: isPinned ?  `${window.innerHeight}px`: 'auto',
+            maxHeight: `${window.innerHeight}px`,
             top: isPinned ? '0px' : '41px'
         }
     }

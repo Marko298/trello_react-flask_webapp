@@ -211,12 +211,12 @@ export default class CommentActions{
         }
     }
     
-    static remove_comment(commentId){
+    static remove_comment(cardId, commentId){
 
         return dispatch => {
 
             axios({
-                url: api.remove_comment(commentId),
+                url: api.remove_comment(cardId, commentId),
                 method: 'DELETE',
                 headers: api.headers(),
                 withCredentials: true

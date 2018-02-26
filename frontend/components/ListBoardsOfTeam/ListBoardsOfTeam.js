@@ -34,7 +34,8 @@ class ListBoardsOfTeam extends React.Component {
             if(board._id === teamId) return board
         })
         return Children.map(this.props.children, child => {
-            return cloneElement(child, {selected: boards[0]})
+            // return cloneElement(child, {selected: boards[0]})
+            return cloneElement(child, {selected: teamId})
         })
     }
 
@@ -48,6 +49,7 @@ class ListBoardsOfTeam extends React.Component {
             renderChildren,
             team_id,
         } = this.props
+
         return (
             <List  className={BoardsLine}>
                 <Fragment>
@@ -65,7 +67,8 @@ class ListBoardsOfTeam extends React.Component {
                         ))
                     }
                 </Fragment>
-                {this.props.children && <li className='single-board button-board'>{this.renderChildren(team_id)}</li> }
+                {this.props.children 
+                    && <li className='single-board button-board'>{this.renderChildren(team_id)}</li> }
             </List>
         )
     }

@@ -45,7 +45,7 @@ module.exports = {
     },
     plugins: [
     ],
-    devtool: 'cheap-module-source-map',
+    devtool: 'eval',
     devServer: {
         contentBase: path.resolve(__dirname, "static/"),
         host: 'localhost',
@@ -56,6 +56,5 @@ module.exports = {
         historyApiFallback: true
     }
 }
-
-
+// devtool: 'cheap-module-source-map',
 // use: ['react-hot-loader/webpack', 'babel-loader'],

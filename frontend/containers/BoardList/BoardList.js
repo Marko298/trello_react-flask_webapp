@@ -109,7 +109,7 @@ class BoardsList extends React.Component {
                                         renderChildrenForBoard={this.props.renderChildrenForBoard}
                                         team_id={team._id}
                                     >
-                                    {this.props.children && this.props.children}
+                                        {this.props.children && this.props.children}
                                     </ListBoardsOfTeam>
                                 )
                                 : null}

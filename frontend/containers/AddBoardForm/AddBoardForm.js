@@ -118,9 +118,10 @@ class AddBoardForm extends Component {
 
     _renderDropDown = () => {
         const {selected, teams, userId} = this.props
-        const selectedIsObject = typeof selected === 'object'
+        const selectedIsString = typeof selected === 'string'
+        // const selectedIsObject = typeof selected === 'object'
 
-        if(selectedIsObject && Object.keys(selected).length === 0) {
+        if(selectedIsString && Object.keys(selected).length === 0) {
             return teams.map( ({
                 _id,
                 title,

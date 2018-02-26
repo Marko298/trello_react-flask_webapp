@@ -154,8 +154,8 @@ class API {
        return `${this.url}/comment/edit_comment/${commentId}`
    }
 
-   remove_comment(commentId) {
-       return `${this.url}/comment/delete_comment/${commentId}`
+   remove_comment(cardId, commentId) {
+       return `${this.url}/comment/delete_comment/${cardId}/${commentId}`
    }
 
     /**

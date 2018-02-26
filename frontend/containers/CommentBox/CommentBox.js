@@ -157,8 +157,8 @@ const mapDispatchToProps = (dispatch, ownProps) => ({
         dispatch( CommentActions.edit_comment(_id, description) )
     },
     remove_comment() {
-        const {_id} = ownProps
-        dispatch( CommentActions.remove_comment(_id) )
+        const {_id, forCard} = ownProps
+        dispatch( CommentActions.remove_comment(forCard, _id) )
     }
 })
 

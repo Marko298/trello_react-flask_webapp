@@ -107,6 +107,17 @@ class CardEditingContainer extends Component {
         })
     }
 
+    _renderLabelsList = (labels) => {
+
+        const background = (color) => ({backgroundColor: color})
+
+        const labelsList = labels.map( ({color, _id}) => {
+            return <div key={_id} style={background(color)} className='label-in-list'/>
+        })
+
+        return labelsList
+    }
+
     render() {
 
         const {list, list: {cards}, userPhoto, userName} = this.props
@@ -154,6 +165,12 @@ class CardEditingContainer extends Component {
                         <Title text={list.title} medium />
                     </p>
                 </header>
+                <section className='editing-container-labels'>
+                    <Title text='labels' medium tiny/>
+                    <div className='editing-container-labels__wrapper'>
+                        {this._renderLabelsList(cards.labels)}
+                    </div>
+                </section>
 
                 <section className='editing-container'>
                     <div className='editing-left'>

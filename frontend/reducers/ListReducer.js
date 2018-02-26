@@ -310,8 +310,25 @@ export default function ListReducer(state=initialState, {type, payload, ...actio
         }
         
         case POST_COMMENT_REQUEST_SUCCESS: {
+            const {forCard: cardId, _id: commentId} = payload
             return {
                 ...state,
+                boardProject: {
+                    lists: state.boardProject.lists.map(list => {
+                        return {
+                            ...list,
+                            cards: list.cards.map(card => {
+                                if (card._id === cardId) {
+                                    return {
+                                        ...card,
+                                        comments: [...card.comments, commentId]
+                                    }
+                                }
+                                return {...card}
+                            })
+                        }
+                    })
+                },
                 comments: {
                     isCommentPostLoading: false,
                     commentList: [...state.comments.commentList, payload]
@@ -364,7 +381,21 @@ export default function ListReducer(state=initialState, {type, payload, ...actio
                 comments: {
                     ...state.comments,
                     commentList: state.comments.commentList.filter(({_id}) => payload !== _id)
+                },
+                boardProject: {
+                    lists: state.boardProject.lists.map(list => {
+                        return {
+                            ...list,
+                            cards: list.cards.map(card => {
+                                return {
+                                    ...card,
+                                    comments: card.comments.filter(cmtId => cmtId !== payload)
+                                }
+                            })
+                        }
+                    })
                 }
+
             }
         }
 
@@ -599,7 +630,12 @@ export default function ListReducer(state=initialState, {type, payload, ...actio
                                 ...list,
                                 cards: list.cards.map(card => {
                                     if(card._id === _id) {
-                                        return {...card, ...payload, attachments: {...card.attachments}}
+                                        return {
+                                            ...card, 
+                                            ...payload, 
+                                            attachments: {...card.attachments},
+                                            checklists: [...card.checklists]
+                                        }
                                     }
                                     return {...card}
                                 })
