@@ -36,13 +36,14 @@ class AddBoardForm extends Component {
             _id: ''
         }
     }
-
-    state = {
+    initialState = {
         title: '',
         selected: '',
         bacground: '#e91e63',
         isBoardCreating: false
     }
+
+    state = {...this.initialState, selected: this.props.selected}
 
     handleChange = (e) => {
         let { name, value } = e.target
@@ -54,7 +55,7 @@ class AddBoardForm extends Component {
     handleClick = () => {
         const {selected, title, bacground} = this.state
         const {create_board, toggle, userId} = this.props
-        const selectedDefault = selected.length === 0 ? selected : userId
+        const selectedDefault = selected.length > 0 ? selected : userId
 
         const boardSchema = {
             boardName: title,
@@ -91,10 +92,14 @@ class AddBoardForm extends Component {
             this.setState(prevState => ({...prevState, selected: nextProps.selected}))
         }
     }
-    componentDidMount() {
-        if(this.props.selected && !this.state.selected) {
-            this.setState(prevState => ({...prevState, selected: this.props.selected}))
-        }
+    // componentDidMount() {
+    //     if(this.props.selected && !this.state.selected) {
+    //         this.setState(prevState => ({...prevState, selected: this.props.selected}))
+    //     }
+    // }
+
+    componentWillUnmount() {
+        this.setState((state) => ({...this.initialState}))
     }
 
     handleChangeColor = ({color}) => (e) => {
@@ -117,9 +122,9 @@ class AddBoardForm extends Component {
     _renderDropDown = () => {
         const {selected, teams, userId} = this.props
         const selectedIsString = typeof selected === 'string'
-        // const selectedIsObject = typeof selected === 'object'
+        const selectedIsObject = typeof selected === 'object'
 
-        if(selectedIsString && Object.keys(selected).length === 0) {
+        if(selectedIsString && selected.length === 0) {
             return teams.map( ({
                 _id,
                 title,
@@ -133,10 +138,15 @@ class AddBoardForm extends Component {
         }
 
         return teams.map(team => {
+
             return (
-                <option key={team._id} value={team._id} selected={
-                    selected === team._id ? team.title : ''
-                }>{team.title}</option>
+                <option 
+                    key={team._id} 
+                    value={team._id} 
+                    selected={selected === team._id ? team.title : ''}
+                >
+                    {team.title}
+                </option>
             )
         })
     }

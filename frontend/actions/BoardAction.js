@@ -127,12 +127,12 @@ export default class BoardActions {
                 headers: api.headers(),
                 withCredentials: true,
                 data: JSON.stringify(board)
-            }).then(response => {
+            }).then( ({data: {board, log}} ) => {
 
-                console.log({response})
-                dispatch(BoardActions.boardCreated(response.data))
+                console.log({board, log})
+                dispatch(BoardActions.boardCreated(board))
 
-                return Promise.resolve(response.data)
+                return Promise.resolve(board)
 
             }).catch(error => {
                 console.log("ERROR creating board", {error})

@@ -65,8 +65,9 @@ class CardEditingContainer extends Component {
 
     handleCreateCommentClick = (e) => {
         const {comment} = this.state
+        const {list: {forBoard} } = this.props
         this.setState( (state) => ({ ...state,  isCommentCreated: true}))
-        this.props.create_comment(comment).then( () => {
+        this.props.create_comment(comment, forBoard).then( () => {
             this.setState( (state) => ({ ...state, comment: '', isCommentCreated: false }))
         })
     }
@@ -119,6 +120,8 @@ class CardEditingContainer extends Component {
     }
 
     render() {
+
+        console.log("this.props", this.props)
 
         const {list, list: {cards}, userPhoto, userName} = this.props
         const {comment, isAttachmentLoading} = this.state
@@ -275,12 +278,12 @@ const mapStateToProps = ({lists: {boardProject}, user}, ownProps) => ({
 })
 
 const mapDispatchToProps = (dispatch, ownProps) => ({
-    create_comment(description) {
+    create_comment(description, forBoard) {
 
         const {cardId} = ownProps.match.params
         const body = { description }
         
-        return dispatch( CommentActions.create_comment(body, cardId) )
+        return dispatch( CommentActions.create_comment(body, cardId, forBoard) )
     },
     update_card(updates) {
 

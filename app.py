@@ -33,6 +33,9 @@ from server.models.comments.comment import Comment
 ## CheckList
 from server.models.checklist.checklist import Checklist
 
+## Log
+from server.models.logs.log import Log
+
 
 ############ FLask App  ############
 
@@ -244,10 +247,10 @@ def assign_board_to_team(teamId):
     if request.method == "POST" and request.is_json:
         CONTENT = request.get_json()
         user = User.get_user_by_email(session['email'])
-        authorId = user.get("_id")
+        userId = user.get("_id")
+        authorId = userId
         userName = user.get("name")
 
-        
 
         boardName = CONTENT['boardName']
         styleSettings = CONTENT['styleSettings']
@@ -273,8 +276,12 @@ def assign_board_to_team(teamId):
             teamClass.assign_board(boardId)
 
         _, board = Board.get_board(boardId)
+
+        ### Creating Log document
+        justCreatedLogId = Log(userId=userId,boardId=boardId).create_for_board()
+        log = Log.get_by_id(justCreatedLogId)
         
-        return jsonify(board)
+        return jsonify(board=board, log=log)
 
 
 @app.route('/boards/remove_board/<string:boardId>', methods=["DELETE"])
@@ -284,10 +291,15 @@ def remove_board(boardId):
         
         try:
             Board.remove_board(boardId, Team.remove_board)
+
+            ### Removing logs
+            boardLog = Log.get_by_query({'boardId': boardId})
+            Log.remove(boardLog['_id'])
             return jsonify(boardId)
 
         except BoardError.BoardError as error:
             return jsonify(error=error.message)
+            
         return "Done"
 
 @app.route('/boards/update/<string:boardId>', methods=['POST'])
@@ -653,19 +665,25 @@ def add_comment_to_card(cardId):
 
         description = CONTENT.get("description")
         user = User.get_user_by_email(session['email'])
+        userId = user.get("_id")
+
+        boardId = CONTENT.get("boardId")
 
         commentId = Comment(
             description=description,
-            authorId=user.get("_id"),
+            authorId=userId,
             forCard=cardId
         ).save()
+
+        logId = Log(userId=userId, boardId=boardId).create_for_comment(cardId=cardId, body=description)
+        log = Log.get_by_id(logId)
 
         cursorComment, _ = Comment.get_by_id(commentId)
         classCard, _ = Card.get_card_by_id(cardId)
         classCard.add_comment(cursorComment.get('_id'))
         User(**user).add_comment(commentId)
 
-        return jsonify(cursorComment)
+        return jsonify(logo=log,comment=cursorComment)
 
 
 @app.route("/comment/get_comments_for_card/<string:cardId>", methods=["GET"])

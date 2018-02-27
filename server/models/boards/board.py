@@ -11,6 +11,7 @@ class Board(object):
                 isImportant=False,  
                 _id=None,
                 reletedTo={"teamId": None, "teamName": None},
+                members=None,
                 styleSettings=None,
                 timeCreated=None,
                 lists=None):
@@ -23,6 +24,8 @@ class Board(object):
         self.isImportant = isImportant
         self.authorId = authorId
         self._id = uuid.uuid4().hex if _id is None else _id
+
+        self.members = members if members is not None else list()
 
         self.styleSettings = self.defaultStyleSettings() if styleSettings is None else styleSettings
         self.timeCreated = datetime.datetime.now() if timeCreated is None else timeCreated

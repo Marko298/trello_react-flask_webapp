@@ -28,7 +28,7 @@ export default class CommentActions{
         }
     }
 
-    static create_comment(body, cardId) {
+    static create_comment(body, cardId, boardId) {
         return (dispatch, getState)  => {
             let {user} = getState()
             return axios({
@@ -36,14 +36,13 @@ export default class CommentActions{
                 method: 'POST',
                 withCredentials: true,
                 headers: api.headers(),
-                data: JSON.stringify(body)
-            }).then(response => {
-                let {data} = response
+                data: JSON.stringify({...body, boardId})
+            }).then( ({data: {comment, log} }) => {
 
                 let {name: user_name, photo: user_photo} = user
 
                 let prepareComment = {
-                    ...data,
+                    ...comment,
                     user_name,
                     user_photo
                 }
