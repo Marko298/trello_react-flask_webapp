@@ -11,10 +11,11 @@ ct = datetime.now(tz=tz)
 time = ct.isoformat()
 
 class Comment(object):
-    def __init__(self, description, authorId, forCard, timeCreated=None, _id=None):
+    def __init__(self, description, authorId, forCard, isEdited=False, timeCreated=None, _id=None):
         self.description = description
         self.authorId = authorId
         self.forCard = forCard
+        self.isEdited = isEdited
         self.timeCreated = time if timeCreated is None else timeCreated
         self._id = uuid.uuid4().hex if _id is None else _id
     
@@ -31,7 +32,7 @@ class Comment(object):
         return [c for c in cursors]
 
     def update_comment(self, updates):
-        commentId = Database.update_one('comments', {'_id': self._id }, {'description': updates})
+        commentId = Database.update_one('comments', {'_id': self._id }, {'description': updates, 'isEdited' : True})
         if commentId.acknowledged:
             cursor, _ = Comment.get_by_id(self._id)
             return cursor
@@ -54,5 +55,6 @@ class Comment(object):
             "authorId": self.authorId,
             "forCard": self.forCard,
             "description": self.description,
-            "timeCreated": self.timeCreated
+            "timeCreated": self.timeCreated,
+            "isEdited" : self.isEdited
         }

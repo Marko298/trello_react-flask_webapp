@@ -189,11 +189,11 @@ export default class CommentActions{
                 headers: api.headers(),
                 withCredentials: true,
                 data: JSON.stringify(newDescription)
-            }).then(({data}) => {
+            }).then( ({data: {comment, log}} ) => {
 
                 console.log("COMMENT IS EDDITED")
                 dispatch(
-                    CommentActions.edit_comment_success(data)
+                    CommentActions.edit_comment_success(comment)
                 )
 
             }).catch(error => {
@@ -219,10 +219,11 @@ export default class CommentActions{
                 method: 'DELETE',
                 headers: api.headers(),
                 withCredentials: true
-            }).then(({data: isDeleted}) => {
+            }).then( ({data: {comment, log} }) => {
 
-                if(isDeleted) {
-                    console.log("COMMENT DELETED")
+                console.log({comment, log})
+
+                if(comment) {
                     dispatch(
                         CommentActions.remove_comment_success(commentId)
                     )

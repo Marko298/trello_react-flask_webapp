@@ -8,24 +8,14 @@ tz = pytz.timezone("Europe/Kiev")
 ct = datetime.now(tz=tz)
 time = ct.isoformat()
 
-# {
-#     _id: "ASdasda43d3",
-#     userId: "asdasdewd33d",
-#     boardId: "fjfytjfghgh",
-#     cardId: '234234234'
-#     logType: 'comment',
-#     created: 'Date()',
-#     action: 'save',
-#     body: 'content'
-# }
-
 class Log:
     collection = 'logs'
 
     actions = {
         'CREATE' : 'create',
         'DELETE' : 'delete',
-        'UPDATE' : 'update'
+        'UPDATE' : 'update',
+        'ASSIGN' : 'assign'
     }
 
     logType = {
@@ -38,16 +28,37 @@ class Log:
         'CHECKLIST_ITEM' : 'checklist_item'
     }
 
-    def __init__(self, userId, boardId, logType=None, action=None, body=None, cardId=None, created=None, _id=None):
+    def __init__(
+            self, 
+            userId, 
+            boardId, 
+            commentId=None, 
+            teamId=None, 
+            isEdited=False, 
+            logType=None, 
+            listId=None, 
+            action=None, 
+            body=None, 
+            cardId=None, 
+            created=None, 
+            _id=None
+        ):
         self.userId = userId
         self.boardId = boardId
         self._id = uuid.uuid4().hex if _id is None else _id
         self.created = time if created is None else created
 
+        self.teamId = teamId
+        self.commentId = commentId
+        self.listId = listId
+
         self.logType = logType
         self.action = action
         self.cardId = cardId
         self.body = body
+
+        self.isEdited = isEdited
+
 
 
     @property
@@ -56,7 +67,15 @@ class Log:
             "_id" : self._id,
             "userId" : self.userId,
             "boardId" : self.boardId,
-            "created" : self.created
+            "created" : self.created,
+            "isEdited" : self.isEdited,
+            "teamId": self.teamId,
+            "commentId": self.commentId,
+            "listId" : self.listId,
+            "logType" : self.logType,
+            "action" :self.action,
+            "cardId" : self.cardId,
+            "body" : self.body,
         }
     
     @staticmethod
@@ -80,12 +99,49 @@ class Log:
         ### check if boardId exist
         cursor = Database.find(Log.collection, {'boardId': boardId})
         return [c for c in cursor]
+    
+    def _action(self, action='c'):
+        
+        if action == 'c':
+            logAction = Log.actions['CREATE']
+        elif action == 'u':
+            logAction = Log.actions['UPDATE']
+        elif action == 'd':
+            logAction = Log.actions['DELETE']
+        elif action == 'a':
+            logAction = Log.actions['ASSIGN']
+
+        return logAction
+        
+    def assign_to(self, logType, addonsInfo=dict()):
+            
+        prepareData = {
+            **self.rest,
+            "action" : self._action(action='a'),
+            "logType" : logType,
+            **addonsInfo
+        }
+
+        logId = Database.insert(Log.collection, prepareData)
+
+        return logId
+
+    # def create(self, addonsInfo, action=None):
+            
+    #     prepareData = {
+    #         **self.rest,
+    #         "action" : self._action(action='c'),
+    #         "logType" : 
+
+    #     }
+
 
     def create_for_board(self):
         prepareData = {
             **self.rest,
+            "teamId" : self.teamId,
             "logType": Log.logType['BOARD'],
-            "action": Log.actions['CREATE'],
+            "action": Log.actions['ASSIGN'],
             "cardId" : None,
             "body" : None
         }
@@ -93,22 +149,51 @@ class Log:
         logId = Database.insert(Log.collection, prepareData)
         return logId
 
-    def create_for_comment(self, cardId, body):
+    def for_comment(self, cardId, body, commentId, action='c'):
+        if action == 'u':
+            commentAction = Log.actions['UPDATE']
+        elif action == 'd':
+            commentAction = Log.actions['DELETE']
+        else:
+            commentAction = Log.actions['CREATE']
+            
         prepareData = {
             **self.rest,
             "logType": Log.logType['COMMENT'],
-            "action": Log.actions['CREATE'],
+            "action": commentAction,
             "cardId" : cardId,
+            "commentId" : commentId,
             "body" : body
         }
 
         logId = Database.insert(Log.collection, prepareData)
         return logId
+    
+
+    def for_list(self, listId, listTitle):
+        prepareData = {
+            **self.rest,
+            'listId' : listId,
+            "logType": Log.logType['LIST'],
+            "action": Log.actions['CREATE'],
+            'body' : listTitle
+        }
+
+        Database.insert(Log.collection, prepareData)
         
+
 
     @staticmethod
     def remove(_id):
         Database.delete_one(Log.collection, {'_id': _id})
+    
+    def update(self, updates):
+        query = {'_id' : self._id}
+        update = {**updates, "isEdited" : True, "action" : Log.actions['UPDATE']} 
+        Database.update_one(Log.collection, query, update)
+        updatedCursor = Log.get_by_id(self._id)
+
+        return updatedCursor
 
 
     def dict_from_class(self):

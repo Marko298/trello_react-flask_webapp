@@ -288,9 +288,9 @@ export default class BoardActions {
                 method: 'DELETE',
                 headers: api.headers(),
                 withCredentials: true
-            }).then((response) => {
-                console.log({response})
-                dispatch(BoardActions.board_success_deleted(response.data))
+            }).then( ({data: {board, log}}) => {
+                console.log({board, log})
+                dispatch(BoardActions.board_success_deleted(board))
 
             }).catch(error => {
                 console.log("CANNOT DELETE THIS POSE", {error})

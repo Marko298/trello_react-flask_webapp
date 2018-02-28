@@ -35,6 +35,7 @@ from server.models.checklist.checklist import Checklist
 
 ## Log
 from server.models.logs.log import Log
+import server.models.logs.decorators as loging
 
 
 ############ FLask App  ############
@@ -243,6 +244,7 @@ def get_board_by_id(boardId):
 
 @app.route("/boards/add_board/<string:teamId>", methods=["POST", "GET"])
 @user_dec.login_required
+@loging.assign_log(keyWord='board', path=['reletedTo', 'teamId'], logType='board')
 def assign_board_to_team(teamId):
     if request.method == "POST" and request.is_json:
         CONTENT = request.get_json()
@@ -251,10 +253,8 @@ def assign_board_to_team(teamId):
         authorId = userId
         userName = user.get("name")
 
-
         boardName = CONTENT['boardName']
         styleSettings = CONTENT['styleSettings']
-
 
         if teamId == authorId:
             reletedTo = {
@@ -277,29 +277,19 @@ def assign_board_to_team(teamId):
 
         _, board = Board.get_board(boardId)
 
-        ### Creating Log document
-        justCreatedLogId = Log(userId=userId,boardId=boardId).create_for_board()
-        log = Log.get_by_id(justCreatedLogId)
-        
-        return jsonify(board=board, log=log)
+        return board
 
 
 @app.route('/boards/remove_board/<string:boardId>', methods=["DELETE"])
 @user_dec.login_required
+@loging.remove_with_logs(keyWord='board')
 def remove_board(boardId):
     if request.method == 'DELETE':
-        
         try:
             Board.remove_board(boardId, Team.remove_board)
-
-            ### Removing logs
-            boardLog = Log.get_by_query({'boardId': boardId})
-            Log.remove(boardLog['_id'])
-            return jsonify(boardId)
-
+            return boardId
         except BoardError.BoardError as error:
             return jsonify(error=error.message)
-            
         return "Done"
 
 @app.route('/boards/update/<string:boardId>', methods=['POST'])
@@ -675,7 +665,7 @@ def add_comment_to_card(cardId):
             forCard=cardId
         ).save()
 
-        logId = Log(userId=userId, boardId=boardId).create_for_comment(cardId=cardId, body=description)
+        logId = Log(userId=userId, boardId=boardId).for_comment(cardId=cardId, body=description, commentId=commentId)
         log = Log.get_by_id(logId)
 
         cursorComment, _ = Comment.get_by_id(commentId)
@@ -701,6 +691,7 @@ def get_comments_for_card(cardId):
 
 @app.route('/comment/delete_comment/<string:cardId>/<string:commentId>', methods=["DELETE"])
 @user_dec.login_required
+@loging.remove_with_logs(keyWord='comment')
 def remove_comment(cardId, commentId):
     _, classComment = Comment.get_by_id(commentId)
     result = classComment.delete_comment(commentId)
@@ -708,7 +699,8 @@ def remove_comment(cardId, commentId):
     if result:
         cardClass, _ = Card.get_card_by_id(cardId)
         cardClass.remove_comment(commentId)
-        return jsonify(result)
+
+        return result
 
     
 
@@ -721,8 +713,13 @@ def edit_comment(commentId):
         description = CONTENT.get('description')
         _ , commentClass = Comment.get_by_id(commentId)
         updatedCursorComment = commentClass.update_comment(description)
+        commentId = updatedCursorComment['_id']
 
-        return jsonify(updatedCursorComment)
+        reletedToThisCommentLog = Log.get_by_query({ 'commentId' : commentId })
+        classLog = Log(**reletedToThisCommentLog)
+        updatedLog = classLog.update({ "body" : description })
+
+        return jsonify(comment=updatedCursorComment, log=updatedLog)
 
 
 
